@@ -19,9 +19,9 @@ public class RotateTowardsPath : MonoBehaviour
 
     void Update()
     {
+        UpdateTarget();
         if (aiPath != null && !isRotating) // Only rotate if not currently in the coroutine rotation
         {
-            UpdateTarget();
             RotateContinuously();
         }
     }

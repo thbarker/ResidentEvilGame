@@ -1983,7 +1983,7 @@ MonoBehaviour:
   manualDebugFloorRoof: 0
   showSearchTree: 0
   unwalkableNodeDebugSize: 0.3
-  logPathResults: 1
+  logPathResults: 4
   maxNearestNodeDistance: 100
   scanOnStartup: 1
   fullGetNearestSearch: 0
@@ -2042,7 +2042,7 @@ MonoBehaviour:
     seed: 0
     pivotPointRoot: {fileID: 0}
     spreadOutCount: 1
-  showGraphs: 1
+  showGraphs: 0
 --- !u!4 &1222669188
 Transform:
   m_ObjectHideFlags: 0
@@ -2405,9 +2405,8 @@ MonoBehaviour:
   sensitivityY: 5
   sensitivityCoefficient: 100
   aimYaw: 45
+  aiming: 0
   cameraChild: {fileID: 1119412655}
-  player: {fileID: 2094627787}
-  playerMovement: {fileID: 2094627793}
   defaultCameraDistance: 5
 --- !u!1 &2094627787 stripped
 GameObject:
