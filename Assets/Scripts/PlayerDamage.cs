@@ -53,7 +53,6 @@ public class PlayerDamage : MonoBehaviour
 
     public void GetBit(Transform bitePosition, Transform zombiePosition)
     {
-        Debug.Log("Player is being bitten.");
         animator.SetTrigger("GetBit");
         isBeingBitten = true;
         biteTransform = bitePosition;

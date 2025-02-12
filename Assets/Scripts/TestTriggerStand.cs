@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class TestTriggerStand : MonoBehaviour
@@ -9,19 +10,27 @@ public class TestTriggerStand : MonoBehaviour
     public RotateTowardsPath script;
     public Transform biteTransform; // This is where the player will be when the bite animation occurs
     public Rigidbody rb;
+    public bool startStanding = true;
 
     public string[] targetStates;
 
     private bool shouldTarget = false;
-    private bool canBite = false; // Variable to control the bite cooldown
+    private bool canReach = true; // Variable to control the reach cooldown
+    private bool canBite = false; // Variable to control if zombie can bite
     private float distanceToPlayer = 0f;
     private bool cooldownActive = false;
+    private bool allowReachRotation = true;
+    private float walkReachTransitionCounter = 0f;
 
 
     [SerializeField]
-    private float biteThreshold;
+    private float biteThreshold, reachThreshold, reachDuration;
     [SerializeField]
-    private float biteCooldown = 5f; // Cooldown in seconds before the zombie can bite again
+    private float reachCooldown = 5f; // Cooldown in seconds before the zombie can bite again
+    [SerializeField]
+    private float detectionDistance = 10f;
+    [SerializeField]
+    private float reachRotationSpeed = 1;
 
     // Start is called before the first frame update
     void Start()
@@ -37,6 +46,7 @@ public class TestTriggerStand : MonoBehaviour
         UpdateTargetting();
         DetectDistanceToPlayer();
         UpdateAnimController();
+        Debug.Log(canReach);
     }
 
     void UpdateTargetting()
@@ -45,13 +55,9 @@ public class TestTriggerStand : MonoBehaviour
         shouldTarget = false;
         foreach (string s in targetStates)
         {
-            if (animator.GetCurrentAnimatorStateInfo(0).IsName(s))
+            if (animator.GetCurrentAnimatorStateInfo(0).IsName(s) && canReach)
             {
                 shouldTarget = true;
-                if(!cooldownActive)
-                {
-                    canBite = true;
-                }
             }
         }
     }
@@ -71,26 +77,34 @@ public class TestTriggerStand : MonoBehaviour
     {
         if(animator)
         {
-            animator.SetBool("CanBite", canBite);
+            animator.SetBool("StartStanding", startStanding);
+            animator.SetBool("CanReach", canReach);
         }
-        // Bite if the player is too close and the zombie can bite
-        if (distanceToPlayer < biteThreshold && canBite)
+        if(distanceToPlayer < detectionDistance)
         {
-            if (animator)
-                animator.SetTrigger("Bite");
-            if (player && player.GetComponent<PlayerDamage>())
-            {
-                Debug.Log("Calling GetBit()");
-                player.GetComponent<PlayerDamage>().GetBit(biteTransform, transform);
-                canBite = false; // Disable further bites until cooldown is over
-                StartCoroutine(BiteCooldown());
-            }
+            animator.SetTrigger("Detect");
+        }
+        if (distanceToPlayer < reachThreshold && canReach)
+        {
+            // Reach toward the player if the reach threshold is entered
+            StartCoroutine(Reach());
         }
 
         if (Input.GetButtonDown("Jump") && animator)
         {
             animator.SetTrigger("Stand");
         }
+
+        UpdateRotationScript();
+
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            animator.SetTrigger("Hit");
+        }
+    }
+
+    private void UpdateRotationScript()
+    {
         if (script && animator && shouldTarget)
         {
             script.Activate(true);
@@ -99,18 +113,67 @@ public class TestTriggerStand : MonoBehaviour
         {
             script.Activate(false);
         }
+    }
+    IEnumerator Reach()
+    {
+        canReach = false;
+        canBite = true;
+        shouldTarget = false;
+        allowReachRotation = true;
+        animator.SetTrigger("Reach");
+        animator.ResetTrigger("StopReaching");
+        Debug.Log("Reaching");
 
-        if (Input.GetKeyDown(KeyCode.K))
+        float startTime = Time.time;
+        while (Time.time - startTime < reachDuration)
         {
-            animator.SetTrigger("Hit");
+            RotateTowardsPlayer(); // Rotate towards player while reaching
+            yield return null;
         }
+
+        animator.SetTrigger("StopReaching");
+        animator.ResetTrigger("Reach");
+        canBite = false;
+        Debug.Log("StopReaching");
+
+        StartCoroutine(ReachCooldown());
+        StopCoroutine(Reach());
     }
 
-    IEnumerator BiteCooldown()
+    private void RotateTowardsPlayer()
     {
-        cooldownActive = true;
-        yield return new WaitForSeconds(biteCooldown);
-        canBite = true; // Re-enable biting after cooldown
-        cooldownActive = false;
+        if (player && allowReachRotation)
+        {
+            Vector3 direction = (player.transform.position - transform.position).normalized;
+            Quaternion lookRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * reachRotationSpeed);
+        }
+    }
+    IEnumerator ReachCooldown()
+    {
+        yield return new WaitForSeconds(reachCooldown);
+        canReach = true;
+        StopCoroutine(ReachCooldown());
+    }
+
+    public void Bite()
+    {
+        // Bite if can Bite
+        if (canBite)
+        {
+            if (animator)
+                animator.SetTrigger("Bite");
+            if (player && player.GetComponent<PlayerDamage>())
+            {
+                Debug.Log("Calling GetBit()");
+                player.GetComponent<PlayerDamage>().GetBit(biteTransform, transform);
+                canReach = false; // Disable further bites until cooldown is over
+                canBite = false; 
+                allowReachRotation = false;  // Disable rotation when biting
+                StartCoroutine(ReachCooldown());
+                StopCoroutine(Reach());
+            }
+        }
+        
     }
 }
