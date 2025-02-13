@@ -11,6 +11,7 @@ public class TestTriggerStand : MonoBehaviour
     public Transform biteTransform; // This is where the player will be when the bite animation occurs
     public Rigidbody rb;
     public bool startStanding = true;
+    public ReachCollision reachCollisionScript;
 
     public string[] targetStates;
 
@@ -24,7 +25,7 @@ public class TestTriggerStand : MonoBehaviour
 
 
     [SerializeField]
-    private float biteThreshold, reachThreshold, reachDuration;
+    private float biteThreshold, reachThreshold, reachDuration, biteCooldown;
     [SerializeField]
     private float reachCooldown = 5f; // Cooldown in seconds before the zombie can bite again
     [SerializeField]
@@ -46,7 +47,6 @@ public class TestTriggerStand : MonoBehaviour
         UpdateTargetting();
         DetectDistanceToPlayer();
         UpdateAnimController();
-        Debug.Log(canReach);
     }
 
     void UpdateTargetting()
@@ -118,6 +118,8 @@ public class TestTriggerStand : MonoBehaviour
     {
         canReach = false;
         canBite = true;
+        Debug.Log("Setting Can Bite to True");
+        reachCollisionScript.Activate(true);
         shouldTarget = false;
         allowReachRotation = true;
         animator.SetTrigger("Reach");
@@ -134,6 +136,8 @@ public class TestTriggerStand : MonoBehaviour
         animator.SetTrigger("StopReaching");
         animator.ResetTrigger("Reach");
         canBite = false;
+        Debug.Log("Setting Can Bite to False");
+        reachCollisionScript.Activate(false);
         Debug.Log("StopReaching");
 
         StartCoroutine(ReachCooldown());
@@ -148,6 +152,12 @@ public class TestTriggerStand : MonoBehaviour
             Quaternion lookRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * reachRotationSpeed);
         }
+    }
+    IEnumerator BiteCooldown()
+    {
+        yield return new WaitForSeconds(biteCooldown);
+        canReach = true;
+        StopCoroutine(BiteCooldown());
     }
     IEnumerator ReachCooldown()
     {
@@ -166,14 +176,17 @@ public class TestTriggerStand : MonoBehaviour
             if (player && player.GetComponent<PlayerDamage>())
             {
                 Debug.Log("Calling GetBit()");
-                player.GetComponent<PlayerDamage>().GetBit(biteTransform, transform);
                 canReach = false; // Disable further bites until cooldown is over
-                canBite = false; 
+                canBite = false;
+                Debug.Log("Setting Can Bite to False");
+                reachCollisionScript.Activate(false);
+                player.GetComponent<PlayerDamage>().GetBit(biteTransform, transform);
                 allowReachRotation = false;  // Disable rotation when biting
-                StartCoroutine(ReachCooldown());
                 StopCoroutine(Reach());
+                StartCoroutine(BiteCooldown());
             }
         }
         
     }
+
 }

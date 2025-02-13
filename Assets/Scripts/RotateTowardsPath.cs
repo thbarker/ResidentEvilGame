@@ -38,7 +38,7 @@ public class RotateTowardsPath : MonoBehaviour
         {
             // Handle cases where there is no next waypoint (perhaps the end of the path)
             // You might want to keep the visual at the last known position or hide it.
-            Debug.Log("No next waypoint available or end of path reached.");
+            //Debug.Log("No next waypoint available or end of path reached.");
         }
     }
 
