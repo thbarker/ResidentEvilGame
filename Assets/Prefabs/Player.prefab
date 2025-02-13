@@ -342,9 +342,6 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: e127294b6b981aa4893c5564c134a3b1, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5823865784553607632}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: e127294b6b981aa4893c5564c134a3b1, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 2726999940352987718}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: e127294b6b981aa4893c5564c134a3b1, type: 3}
       insertIndex: -1
@@ -395,27 +392,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: e127294b6b981aa4893c5564c134a3b1, type: 3}
   m_PrefabInstance: {fileID: 8396396748044815565}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5823865784553607632
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8666218205627937180}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e46b09221672224da834e5e1c9ebaeb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cameraTransform: {fileID: 0}
-  animator: {fileID: 0}
-  moveStates:
-  - Rifle Aiming
-  - Walking
-  moveSpeed: 2
-  mouseSensitivity: 1000
-  distanceFromTarget: 5
-  verticalAngleLimit: 45
 --- !u!114 &2726999940352987718
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -447,7 +423,7 @@ MonoBehaviour:
   moveStates:
   - Rifle Aiming
   - Walking
-  moveSpeed: 2
+  moveSpeed: 0
   mouseSensitivity: 1000
   distanceFromTarget: 5
   verticalAngleLimit: 45
