@@ -1,69 +1,173 @@
-using Unity.VisualScripting;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(Animator))]
 public class PlayerMovement : MonoBehaviour
 {
     public Transform cameraTransform;
     public Animator animator;
     [SerializeField]
     private string[] moveStates;
-    public float moveSpeed = 5.0f;
-    public float mouseSensitivity = 100.0f;
-    public float distanceFromTarget = 5.0f;
-    public float verticalAngleLimit = 45.0f;  // Limit for vertical camera rotation
+    public float moveSpeed = 80.0f;
+    public float runSpeed = 200.0f;
+    public float backwardSpeed = 60f;
+    public float rotationSpeed = 1.0f;
+    public float quickTurnSpeed = 0.25f;
+    public float quickTurnDelay = 0.5f;
 
     private Rigidbody rb; // Reference to the Rigidbody component
     private bool canMove = true;  // Default to true to allow movement initially
+    private bool aiming = false;
+    private bool isRunning = false;
+    private bool isQuickTurning = false;
+
+    private float currentSpeed;
+    private float x, z;
+
+    public PlayerControls controls;
+
+    private void Awake()
+    {
+        controls = new PlayerControls(); // Ensure that controls is initialized
+
+        // Assuming 'z' and 'x' are float since they're 1D axes
+        controls.Player.Vertical.performed += ctx => z = ctx.ReadValue<float>();
+        controls.Player.Horizontal.performed += ctx => x = ctx.ReadValue<float>();
+
+        // Cancel events should reset the values to zero
+        controls.Player.Vertical.canceled += ctx => z = 0;
+        controls.Player.Horizontal.canceled += ctx => x = 0;
+
+        // Sprint
+        controls.Player.Run.performed += ctx => isRunning = true;
+        controls.Player.Run.canceled += ctx => isRunning = false;
+
+        // Aim
+        controls.Player.Aim.performed += ctx => UpdateAiming(true);
+        controls.Player.Aim.canceled += ctx => UpdateAiming(false);
+    }
 
     void Start()
     {
+        controls = new PlayerControls();
         rb = GetComponent<Rigidbody>(); // Get the Rigidbody component
         animator = GetComponent<Animator>();
+        currentSpeed = moveSpeed;
+    }
+
+    private void OnEnable()
+    {
+        controls.Player.Enable();
+    }
+    private void OnDisable()
+    {
+        controls.Player.Disable();
     }
 
     void FixedUpdate()
     {
         UpdateCanMove();
-        UpdateAnimations();
         if (canMove)
         {
-            MoveAndRotatePlayerCameraRelative();
+
+            RotatePlayer();
+            if (!aiming && !isQuickTurning) 
+            {
+                MovePlayer();
+            }
         }
     }
 
-    void MoveAndRotatePlayerCameraRelative()
+    void MovePlayer()
     {
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
 
-        Vector3 moveDirection = cameraTransform.right * x + cameraTransform.forward * z;
-        moveDirection.y = 0; // Ensure the movement is strictly horizontal
+        Vector3 movement = new Vector3();
 
-        // Move the Rigidbody to the new position
-        rb.MovePosition(rb.position + moveDirection.normalized * moveSpeed * Time.fixedDeltaTime);
+        // Calculate the new position
+        if (z > 0)
+            movement = transform.forward * z * currentSpeed * Time.deltaTime;
+        else if (z < 0)
+            movement = transform.forward * z * backwardSpeed * Time.deltaTime;
 
-        // Rotate player to face the movement direction
-        if (moveDirection != Vector3.zero)
+        // Apply velocity
+        rb.velocity = new Vector3(movement.x, rb.velocity.y, movement.z);
+
+
+        // Forward
+        if (z > 0.1)
         {
-            Quaternion newRotation = Quaternion.LookRotation(moveDirection);
-            rb.MoveRotation(Quaternion.Slerp(rb.rotation, newRotation, Time.fixedDeltaTime * 10)); // Smooth rotation
+            animator.SetFloat("Direction", 1);
+            animator.SetFloat("WalkCycleOffset", 0.425f);
         }
-
-        if (Mathf.Abs(x) > 0.1 || Mathf.Abs(z) > 0.1)
+        // Backward
+        if (z < 0.1)
+        {
+            animator.SetFloat("Direction", -(backwardSpeed / moveSpeed));
+            animator.SetFloat("WalkCycleOffset", 0.375f);
+        }
+        // Walking
+        if (Mathf.Abs(z) > 0.1 && !isRunning)
         {
             animator.SetBool("Walking", true);
+            currentSpeed = moveSpeed;
         }
+        // Stop Walking
         else
         {
             animator.SetBool("Walking", false);
         }
+        // Running
+        if (z > 0.1 && isRunning)
+        {
+            // If We transition from walk to run, start the run cycle at the corresponding offset
+            if(animator.GetCurrentAnimatorStateInfo(0).IsName("Walking"))
+            {
+                float animationProgress = (animator.GetCurrentAnimatorStateInfo(0).normalizedTime + 0.275f) % 1;
+                Debug.Log(animationProgress);
+                animator.SetFloat("RunCycleOffset", animationProgress);
+            }
+            // If We transition from idle to run, start the run cycle at the corresponding offset
+            if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+            {
+                animator.SetFloat("RunCycleOffset", 0.275f);
+            }
+            currentSpeed = runSpeed;
+            animator.SetBool("Running", true);
+        }
+        // Stop Running
+        else
+        {
+            currentSpeed = moveSpeed;
+            animator.SetBool("Running", false);
+        }
+        // Quick Turn
+        if (z < - 0.1 && isRunning)
+        {
+            if(!isQuickTurning)
+                StartCoroutine(QuickTurn());
+        }
+        
     }
 
+    void RotatePlayer()
+    {
+        // Calculate the rotation amount
+        float rotationAmount = x * rotationSpeed * Time.deltaTime;
+
+        // Current rotation
+        Quaternion currentRotation = rb.rotation;
+
+        // Calculate new rotation
+        Quaternion newRotation = currentRotation * Quaternion.Euler(0, rotationAmount, 0);
+
+        // Apply new rotation to the Rigidbody
+        rb.MoveRotation(newRotation);
+    }
 
 
     public void SetCanMove(bool moveAllowed)
     {
-        Debug.Log("Setting Can Move to " + moveAllowed);
         canMove = moveAllowed;
     }
 
@@ -78,10 +182,54 @@ public class PlayerMovement : MonoBehaviour
                 canMove = true;
             }
         }
+
+        if(animator.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+        {
+            animator.SetBool("GettingBit", false);
+        }
     }
 
-    void UpdateAnimations()
+    void UpdateAiming(bool on)
     {
-        // Additional animation updates can be handled here if needed
+        if (on)
+        {
+            currentSpeed = moveSpeed;
+            aiming = true;
+            animator.SetBool("Aiming", true);
+        }
+        else
+        {
+            aiming = false;
+            animator.SetBool("Aiming", false);
+        }
     }
+
+    IEnumerator QuickTurn()
+    {
+        if (canMove)
+        {
+            isQuickTurning = true;
+            Quaternion initialRotation = transform.rotation;  // Capture the initial rotation
+            Quaternion targetRotation = initialRotation * Quaternion.Euler(0, 180, 0);  // Calculate the target rotation
+
+            float elapsedTime = 0;  // Track the elapsed time
+            while (elapsedTime < quickTurnSpeed)
+            {
+                // Update the elapsed time
+                elapsedTime += Time.deltaTime;
+                // Calculate the fraction of time completed
+                float fraction = elapsedTime / quickTurnSpeed;
+                // Interpolate rotation from initial to target over time
+                transform.rotation = Quaternion.Lerp(initialRotation, targetRotation, fraction);
+                // Wait until the next frame to continue
+                yield return null;
+            }
+            // Ensure the rotation is exactly at the target to avoid small errors
+            transform.rotation = targetRotation;
+
+            yield return new WaitForSeconds(quickTurnDelay);
+            isQuickTurning = false;
+        }
+    }
+
 }
