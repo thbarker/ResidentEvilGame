@@ -1681,7 +1681,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7356855964007267659, guid: 7fd9d6c3f8b8a5b44ae67000ed7b916e, type: 3}
       propertyPath: quickTurnDelay
-      value: 0.15
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 7356855964007267659, guid: 7fd9d6c3f8b8a5b44ae67000ed7b916e, type: 3}
       propertyPath: quickTurnSpeed
@@ -1693,7 +1693,7 @@ PrefabInstance:
       objectReference: {fileID: 117939771}
     - target: {fileID: 7356855964007267659, guid: 7fd9d6c3f8b8a5b44ae67000ed7b916e, type: 3}
       propertyPath: moveStates.Array.size
-      value: 4
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7356855964007267659, guid: 7fd9d6c3f8b8a5b44ae67000ed7b916e, type: 3}
       propertyPath: moveStates.Array.data[1]
@@ -1706,6 +1706,14 @@ PrefabInstance:
     - target: {fileID: 7356855964007267659, guid: 7fd9d6c3f8b8a5b44ae67000ed7b916e, type: 3}
       propertyPath: moveStates.Array.data[3]
       value: Aiming
+      objectReference: {fileID: 0}
+    - target: {fileID: 7356855964007267659, guid: 7fd9d6c3f8b8a5b44ae67000ed7b916e, type: 3}
+      propertyPath: moveStates.Array.data[4]
+      value: Aiming_Up
+      objectReference: {fileID: 0}
+    - target: {fileID: 7356855964007267659, guid: 7fd9d6c3f8b8a5b44ae67000ed7b916e, type: 3}
+      propertyPath: moveStates.Array.data[5]
+      value: Aiming_Down
       objectReference: {fileID: 0}
     - target: {fileID: 8107499646984413766, guid: 7fd9d6c3f8b8a5b44ae67000ed7b916e, type: 3}
       propertyPath: m_ApplyRootMotion

@@ -21,6 +21,7 @@ public class PlayerMovement : MonoBehaviour
     private bool aiming = false;
     private bool isRunning = false;
     private bool isQuickTurning = false;
+    private bool canQuickTurn = true;
 
     private float currentSpeed;
     private float x, z;
@@ -68,6 +69,7 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         UpdateCanMove();
+        UpdateVerticalAim();
         if (canMove)
         {
 
@@ -75,6 +77,7 @@ public class PlayerMovement : MonoBehaviour
             if (!aiming && !isQuickTurning) 
             {
                 MovePlayer();
+
             }
         }
     }
@@ -124,7 +127,6 @@ public class PlayerMovement : MonoBehaviour
             if(animator.GetCurrentAnimatorStateInfo(0).IsName("Walking"))
             {
                 float animationProgress = (animator.GetCurrentAnimatorStateInfo(0).normalizedTime + 0.275f) % 1;
-                Debug.Log(animationProgress);
                 animator.SetFloat("RunCycleOffset", animationProgress);
             }
             // If We transition from idle to run, start the run cycle at the corresponding offset
@@ -144,7 +146,7 @@ public class PlayerMovement : MonoBehaviour
         // Quick Turn
         if (z < - 0.1 && isRunning)
         {
-            if(!isQuickTurning)
+            if(canQuickTurn)
                 StartCoroutine(QuickTurn());
         }
         
@@ -164,7 +166,6 @@ public class PlayerMovement : MonoBehaviour
         // Apply new rotation to the Rigidbody
         rb.MoveRotation(newRotation);
     }
-
 
     public void SetCanMove(bool moveAllowed)
     {
@@ -191,6 +192,7 @@ public class PlayerMovement : MonoBehaviour
 
     void UpdateAiming(bool on)
     {
+        rb.velocity = Vector3.zero;
         if (on)
         {
             currentSpeed = moveSpeed;
@@ -204,11 +206,21 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    void UpdateVerticalAim()
+    {
+        if(aiming)
+        {
+            animator.SetFloat("VerticalAim", z);
+        }
+    }
+
     IEnumerator QuickTurn()
     {
         if (canMove)
         {
             isQuickTurning = true;
+            canQuickTurn = false;
+            animator.SetBool("QuickTurn", true);
             Quaternion initialRotation = transform.rotation;  // Capture the initial rotation
             Quaternion targetRotation = initialRotation * Quaternion.Euler(0, 180, 0);  // Calculate the target rotation
 
@@ -226,10 +238,13 @@ public class PlayerMovement : MonoBehaviour
             }
             // Ensure the rotation is exactly at the target to avoid small errors
             transform.rotation = targetRotation;
+            animator.SetBool("QuickTurn", false);
+            isQuickTurning = false;
 
             yield return new WaitForSeconds(quickTurnDelay);
-            isQuickTurning = false;
+            canQuickTurn = true;
         }
     }
+
 
 }
