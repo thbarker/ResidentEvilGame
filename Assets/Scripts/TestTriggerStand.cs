@@ -31,7 +31,9 @@ public class TestTriggerStand : MonoBehaviour
     [SerializeField]
     private float detectionDistance = 10f;
     [SerializeField]
-    private float reachRotationSpeed = 1;
+    private float reachRotationSpeed = 1f;
+    [SerializeField]
+    private float lockedYPosition = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -47,6 +49,7 @@ public class TestTriggerStand : MonoBehaviour
         UpdateTargetting();
         DetectDistanceToPlayer();
         UpdateAnimController();
+        UpdateY();
     }
 
     void UpdateTargetting()
@@ -100,6 +103,7 @@ public class TestTriggerStand : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.K))
         {
             animator.SetTrigger("Hit");
+            StartCoroutine(ResetHitTrigger());
         }
     }
 
@@ -113,6 +117,12 @@ public class TestTriggerStand : MonoBehaviour
         {
             script.Activate(false);
         }
+    }
+
+    // This function makes sure that the Y position of the zombie doesn't shift 
+    private void UpdateY()
+    {
+        transform.position = new Vector3(transform.position.x, lockedYPosition, transform.position.z);
     }
     IEnumerator Reach()
     {
@@ -164,6 +174,12 @@ public class TestTriggerStand : MonoBehaviour
         yield return new WaitForSeconds(reachCooldown);
         canReach = true;
         StopCoroutine(ReachCooldown());
+    }
+
+    IEnumerator ResetHitTrigger()
+    {
+        yield return null;
+        animator.ResetTrigger("Hit");
     }
 
     public void Bite()
