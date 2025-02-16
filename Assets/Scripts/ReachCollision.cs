@@ -5,9 +5,9 @@ using UnityEngine;
 public class ReachCollision : MonoBehaviour
 {
     public TestTriggerStand script;
-    private bool active = false;
+    public bool active = false;
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         if(other.gameObject.tag == "Player" && active)
         {

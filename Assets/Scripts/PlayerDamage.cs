@@ -12,6 +12,8 @@ public class PlayerDamage : MonoBehaviour
     private float lerpTime = 0.25f;  // Time in seconds to complete the lerp
     [SerializeField]
     private PlayerMovement movementScript;
+    [SerializeField]
+    private float biteDuration = 3f;
     private float currentLerpTime = 0.0f;
 
     // Start is called before the first frame update
@@ -53,11 +55,20 @@ public class PlayerDamage : MonoBehaviour
 
     public void GetBit(Transform bitePosition, Transform zombiePosition)
     {
+        StartCoroutine(BiteSequence(bitePosition, zombiePosition));
+    }
+
+    private IEnumerator BiteSequence(Transform bitePosition, Transform zombiePosition)
+    {
         animator.SetTrigger("GetBit");
         animator.SetBool("GettingBit", true);
         isBeingBitten = true;
         biteTransform = bitePosition;
         zombieTransform = zombiePosition;
         currentLerpTime = 0.0f;  // Reset the lerp time
+        yield return null;
+        animator.ResetTrigger("GetBit");
+        yield return new WaitForSeconds(biteDuration);
+        animator.SetBool("GettingBit", false);
     }
 }

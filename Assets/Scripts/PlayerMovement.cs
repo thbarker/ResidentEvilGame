@@ -183,11 +183,6 @@ public class PlayerMovement : MonoBehaviour
                 canMove = true;
             }
         }
-
-        if(animator.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
-        {
-            animator.SetBool("GettingBit", false);
-        }
     }
 
     void UpdateAiming(bool on)
