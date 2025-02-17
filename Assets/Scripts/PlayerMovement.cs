@@ -48,15 +48,6 @@ public class PlayerMovement : MonoBehaviour
         controls.Player.Aim.performed += ctx => UpdateAiming(true);
         controls.Player.Aim.canceled += ctx => UpdateAiming(false);
     }
-
-    void Start()
-    {
-        controls = new PlayerControls();
-        rb = GetComponent<Rigidbody>(); // Get the Rigidbody component
-        animator = GetComponent<Animator>();
-        currentSpeed = moveSpeed;
-    }
-
     private void OnEnable()
     {
         controls.Player.Enable();
@@ -65,6 +56,14 @@ public class PlayerMovement : MonoBehaviour
     {
         controls.Player.Disable();
     }
+    void Start()
+    {
+        controls = new PlayerControls();
+        rb = GetComponent<Rigidbody>(); // Get the Rigidbody component
+        animator = GetComponent<Animator>();
+        currentSpeed = moveSpeed;
+    }
+
 
     void FixedUpdate()
     {

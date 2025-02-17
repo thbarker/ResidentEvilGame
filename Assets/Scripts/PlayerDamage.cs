@@ -25,6 +25,7 @@ public class PlayerDamage : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         if (isBeingBitten)
         {
             // Increment the lerp time
@@ -37,9 +38,6 @@ public class PlayerDamage : MonoBehaviour
             // Calculate the lerp percentage
             float perc = currentLerpTime / lerpTime;
 
-            // Lerp the position
-            transform.position = Vector3.Lerp(transform.position, biteTransform.position, perc);
-
             // Lerp the rotation to face the zombie
             Quaternion targetRotation = Quaternion.LookRotation(zombieTransform.position - transform.position);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, perc);
@@ -50,6 +48,7 @@ public class PlayerDamage : MonoBehaviour
                 isBeingBitten = false;  // Stops the lerp process
                 currentLerpTime = 0.0f;  // Reset the lerp timer for the next time
             }
+        
         }
     }
 
@@ -66,9 +65,9 @@ public class PlayerDamage : MonoBehaviour
         biteTransform = bitePosition;
         zombieTransform = zombiePosition;
         currentLerpTime = 0.0f;  // Reset the lerp time
-        yield return null;
+        yield return new WaitForSeconds(0.5f);
         animator.ResetTrigger("GetBit");
-        yield return new WaitForSeconds(biteDuration);
+        yield return new WaitForSeconds(biteDuration - 0.5f);
         animator.SetBool("GettingBit", false);
     }
 }

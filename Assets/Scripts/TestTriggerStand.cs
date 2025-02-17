@@ -6,6 +6,7 @@ using UnityEngine;
 public class TestTriggerStand : MonoBehaviour
 {
     public Animator animator;
+    private CapsuleCollider collider;
     public GameObject player;
     public RotateTowardsPath script;
     public Transform biteTransform; // This is where the player will be when the bite animation occurs
@@ -16,10 +17,11 @@ public class TestTriggerStand : MonoBehaviour
     public string[] targetStates;
 
     private bool shouldTarget = false;
-    private bool canReach = true; // Variable to control the reach cooldown
-    private bool canBite = false; // Variable to control if zombie can bite
+    public bool canReach = true; // Variable to control the reach cooldown
+    public bool canBite = false; // Variable to control if zombie can bite
     private float distanceToPlayer = 0f;
-    private bool cooldownActive = false;
+    private bool reachCoroutineRunning = false;
+    private bool lerpCoroutineRunning = false;
     private bool allowReachRotation = true;
     private float walkReachTransitionCounter = 0f;
 
@@ -38,7 +40,8 @@ public class TestTriggerStand : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Rigidbody rb = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
+        collider = GetComponent<CapsuleCollider>();
         animator = GetComponent<Animator>();
         player = GameObject.FindWithTag("Player");
     }
@@ -126,32 +129,36 @@ public class TestTriggerStand : MonoBehaviour
     }
     IEnumerator Reach()
     {
+        if (reachCoroutineRunning == true)
+            yield break;
+        reachCoroutineRunning = true;
         canReach = false;
-        reachCollisionScript.Activate(true);
         shouldTarget = false;
         allowReachRotation = true;
         animator.SetTrigger("Reach");
-        animator.ResetTrigger("StopReaching");
-        Debug.Log("Reaching");
 
+        // The zombie doesn't activate a bite until the reach is 0.5 seconds in
+        yield return new WaitForSeconds(0.5f);
+        reachCollisionScript.Activate(true);
         canBite = true;
-        Debug.Log("Setting Can Bite to True");
 
         float startTime = Time.time;
-        while (Time.time - startTime < reachDuration)
+
+        // During the duration of the reach, the zombie rotates towards the player
+        while (Time.time - startTime < reachDuration - 0.5f)
         {
             RotateTowardsPlayer(); // Rotate towards player while reaching
             yield return null;
         }
 
-        animator.SetTrigger("StopReaching");
         animator.ResetTrigger("Reach");
+        yield return new WaitForSeconds(1f);
         canBite = false;
-        Debug.Log("Setting Can Bite to False");
         reachCollisionScript.Activate(false);
-        Debug.Log("StopReaching");
         yield return new WaitForSeconds(reachCooldown);
         canReach = true;
+        Debug.Log("Setting can Reach to True");
+        reachCoroutineRunning = false;
     }
 
     private void RotateTowardsPlayer()
@@ -165,18 +172,64 @@ public class TestTriggerStand : MonoBehaviour
     }
     IEnumerator BiteSequence()
     {
-        Debug.Log("Calling GetBit()");
+        animator.applyRootMotion = false;
+        collider.radius = 0.1f;
         player.GetComponent<PlayerDamage>().GetBit(biteTransform, transform);
         canReach = false; // Disable further reaches until bite sequence is over
         canBite = false; // Disable further bite attempts until bite sequence is over
-        Debug.Log("Setting Can Bite to False");
         animator.SetTrigger("Bite"); // Trigger the Bite animation
         reachCollisionScript.Activate(false); // Disable the reach collision box
         allowReachRotation = false;  // Disable rotation when biting
+        StartCoroutine(LerpToPlayer());
         yield return null;
         animator.ResetTrigger("Bite"); // Reset the Trigger for the Bite animation next frame
         yield return new WaitForSeconds(biteDuration);
+        collider.radius = 0.1f;
         canReach = true;
+    }
+
+    IEnumerator LerpToPlayer()
+    {
+        if (lerpCoroutineRunning)
+        {
+            yield break;
+        }
+        lerpCoroutineRunning = true;
+
+        rb.velocity = Vector3.zero;
+        yield return new WaitForSeconds(0.25f);
+
+        Vector3 startPosition = transform.position;  // Start position of the object
+        // Calculate the target position as 0.5 units in front of the player
+        Vector3 targetPosition = player.transform.position + player.transform.forward * 0.5f;
+
+        float timeElapsed = 0f;
+        float lerpDuration = 0.5f;  // Duration over which the lerp takes place
+
+        while (timeElapsed < lerpDuration)
+        {
+            // Calculate the percentage of completion using the elapsed time and duration
+            float t = timeElapsed / lerpDuration;
+            t = t * t * (3f - 2f * t);  // Applying smoothstep for a smoother interpolation
+
+            // Update the position of the object
+            transform.position = Vector3.Lerp(startPosition, targetPosition, t);
+
+            // Increment the elapsed time by the time passed since last frame
+            timeElapsed += Time.deltaTime;
+
+            // Wait until the next frame before continuing the loop
+            yield return null;
+        }
+
+        // Ensure the object's position is exactly at the calculated target position
+        transform.position = targetPosition;
+
+        // Set Velocity to zero in case of low friction
+        rb.velocity = Vector3.zero;
+        yield return new WaitForSeconds(1f);
+        animator.applyRootMotion = true;
+        lerpCoroutineRunning = false; // Reset the flag
     }
 
     IEnumerator ResetHitTrigger()
