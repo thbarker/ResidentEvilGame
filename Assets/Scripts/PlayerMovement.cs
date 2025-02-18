@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(PlayerInputManager))]
 public class PlayerMovement : MonoBehaviour
 {
     public Transform cameraTransform;
@@ -26,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
     public float verticalAimTime = 0.1f;
 
     private Rigidbody rb; // Reference to the Rigidbody component
+    private PlayerControls controls;
     private bool inputEnabled = true;  // Default to true to allow player input
     private bool aiming = false;
     private bool isRunning = false;
@@ -37,11 +40,10 @@ public class PlayerMovement : MonoBehaviour
     private float currentSpeed;
     private float x, z;
 
-    public PlayerControls controls;
-
     private void Awake()
     {
-        controls = new PlayerControls(); // Ensure that controls is initialized
+        // Get reference to player controls
+        controls = PlayerInputManager.controls;
 
         // Assuming 'z' and 'x' are float since they're 1D axes
         controls.Player.Vertical.performed += ctx => z = ctx.ReadValue<float>();
@@ -69,17 +71,9 @@ public class PlayerMovement : MonoBehaviour
             UpdateAiming(false);
         };
     }
-    private void OnEnable()
-    {
-        controls.Player.Enable();
-    }
-    private void OnDisable()
-    {
-        controls.Player.Disable();
-    }
+    
     void Start()
     {
-        controls = new PlayerControls();
         rb = GetComponent<Rigidbody>(); // Get the Rigidbody component
         animator = GetComponent<Animator>();
         currentSpeed = moveSpeed;
@@ -242,7 +236,6 @@ public class PlayerMovement : MonoBehaviour
 
             // Lerping the verticalAimLerpValue towards z over time
             verticalAimLerpValue = Mathf.Lerp(verticalAimLerpValue, z, lerpSpeed);
-            Debug.Log(verticalAimLerpValue.ToString());
 
             // Determine the offset based on the sign of z to handle smooth transition
             float aimOffset = (z >= 0) ? upAimOffset : downAimOffset;
