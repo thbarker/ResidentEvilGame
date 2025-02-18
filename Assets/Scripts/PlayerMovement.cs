@@ -15,6 +15,15 @@ public class PlayerMovement : MonoBehaviour
     public float rotationSpeed = 1.0f;
     public float quickTurnSpeed = 0.25f;
     public float quickTurnDelay = 0.5f;
+    [Range(0f, 1f)]
+    [Tooltip("Intensity of aiming up, where a value of 1 is aiming 90 degrees and a value of 0 is no vertical aiming")]
+    public float upAimOffset = 0.5f;
+    [Range(0f, 1f)]
+    [Tooltip("Intensity of aiming down, where a value of 1 is aiming 90 degrees and a value of 0 is no vertical aiming")]
+    public float downAimOffset = 0.5f;
+    [Range(0.01f, 1f)]
+    [Tooltip("Amount of time it takes to look up/down. Used for the vertical aim smoothing")]
+    public float verticalAimTime = 0.1f;
 
     private Rigidbody rb; // Reference to the Rigidbody component
     private bool inputEnabled = true;  // Default to true to allow player input
@@ -22,6 +31,8 @@ public class PlayerMovement : MonoBehaviour
     private bool isRunning = false;
     private bool isQuickTurning = false;
     private bool canQuickTurn = true;
+    private bool aimAfterQuickTurn = false;
+    private float verticalAimLerpValue = 0;
 
     private float currentSpeed;
     private float x, z;
@@ -48,7 +59,10 @@ public class PlayerMovement : MonoBehaviour
         controls.Player.Aim.performed += ctx =>
         {
             StartCoroutine(Aim());
-            UpdateAiming(true);
+            if (!isQuickTurning)
+                UpdateAiming(true);
+            else
+                aimAfterQuickTurn = true;
         };
         controls.Player.Aim.canceled += ctx =>
         {
@@ -97,8 +111,10 @@ public class PlayerMovement : MonoBehaviour
         // Calculate the new position
         if (z > 0)
             movement = transform.forward * z * currentSpeed * Time.deltaTime;
-        else if (z < 0)
+        else if (z < 0 && canQuickTurn)
             movement = transform.forward * z * backwardSpeed * Time.deltaTime;
+        else
+            movement = Vector3.zero;
 
         // Apply velocity
         rb.velocity = new Vector3(movement.x, rb.velocity.y, movement.z);
@@ -161,7 +177,6 @@ public class PlayerMovement : MonoBehaviour
 
     void RotatePlayer()
     {
-        Debug.Log("Rotating");
         // Calculate the rotation amount
         float rotationAmount = x * rotationSpeed * Time.deltaTime;
 
@@ -195,9 +210,12 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator Aim()
     {
-        animator.SetTrigger("Aim");
-        yield return new WaitForSeconds(0.25f);
-        animator.ResetTrigger("Aim");
+        if (!isQuickTurning)
+        {
+            animator.SetTrigger("Aim");
+            yield return new WaitForSeconds(0.25f);
+            animator.ResetTrigger("Aim");
+        }
     }
     void UpdateAiming(bool on)
     {
@@ -217,11 +235,24 @@ public class PlayerMovement : MonoBehaviour
 
     void UpdateVerticalAim()
     {
-        if(aiming)
+        if (aiming)
         {
-            animator.SetFloat("VerticalAim", z);
+            // Calculate lerp speed, ensuring no division by zero
+            float lerpSpeed = verticalAimTime != 0 ? Time.deltaTime / verticalAimTime : Time.deltaTime;
+
+            // Lerping the verticalAimLerpValue towards z over time
+            verticalAimLerpValue = Mathf.Lerp(verticalAimLerpValue, z, lerpSpeed);
+            Debug.Log(verticalAimLerpValue.ToString());
+
+            // Determine the offset based on the sign of z to handle smooth transition
+            float aimOffset = (z >= 0) ? upAimOffset : downAimOffset;
+
+            // Use a blended approach for setting the vertical aim, smoothing out the transition around z = 0
+            float verticalAimTemp = 1 - ((verticalAimLerpValue * (aimOffset)) + 1) / 2;
+            animator.SetFloat("VerticalAim", verticalAimTemp);
         }
     }
+
     void UpdateRotationAnim()
     {
         animator.SetFloat("Rotation", x);
@@ -233,29 +264,59 @@ public class PlayerMovement : MonoBehaviour
         {
             isQuickTurning = true;
             canQuickTurn = false;
-            animator.SetBool("QuickTurn", true);
-            Quaternion initialRotation = transform.rotation;  // Capture the initial rotation
-            Quaternion targetRotation = initialRotation * Quaternion.Euler(0, 180, 0);  // Calculate the target rotation
+            rb.velocity = Vector3.zero;
+            animator.SetBool("QuickTurn", true); 
+            animator.SetLayerWeight(1, 0);
+            animator.SetLayerWeight(2, 1);
+            Quaternion initialRotation = transform.rotation; // Capture the initial rotation
+            Quaternion targetRotation = initialRotation * Quaternion.Euler(0, 90, 0); // Calculate the target rotation
 
+            // Rotate the object 90 degrees clockwise
             float elapsedTime = 0;  // Track the elapsed time
-            while (elapsedTime < quickTurnSpeed)
+            while (elapsedTime < quickTurnSpeed / 2)
             {
                 // Update the elapsed time
                 elapsedTime += Time.deltaTime;
                 // Calculate the fraction of time completed
-                float fraction = elapsedTime / quickTurnSpeed;
+                float fraction = elapsedTime / quickTurnSpeed * 2;
+                // Interpolate rotation from initial to target over time
+                transform.rotation = Quaternion.Lerp(initialRotation, targetRotation, fraction);
+                // Wait until the next frame to continue
+                yield return null;
+            }
+
+            // Rotate the object 90 degrees clockwise again
+            initialRotation = transform.rotation; // Capture the initial rotation
+            targetRotation = initialRotation * Quaternion.Euler(0, 90, 0); // Calculate the target rotation
+
+            elapsedTime = 0;  // Track the elapsed time
+            while (elapsedTime < quickTurnSpeed / 2)
+            {
+                // Update the elapsed time
+                elapsedTime += Time.deltaTime;
+                // Calculate the fraction of time completed
+                float fraction = elapsedTime / quickTurnSpeed * 2;
                 // Interpolate rotation from initial to target over time
                 transform.rotation = Quaternion.Lerp(initialRotation, targetRotation, fraction);
                 // Wait until the next frame to continue
                 yield return null;
             }
             // Ensure the rotation is exactly at the target to avoid small errors
-            transform.rotation = targetRotation;
+            //transform.rotation = targetRotation;
             animator.SetBool("QuickTurn", false);
             isQuickTurning = false;
 
             yield return new WaitForSeconds(quickTurnDelay);
+            animator.SetLayerWeight(1, 1);
+            animator.SetLayerWeight(2, 0);
             canQuickTurn = true;
+            if(aimAfterQuickTurn)
+            {
+                StartCoroutine(Aim());
+                UpdateAiming(true);
+                aiming = true;
+                aimAfterQuickTurn = false;
+            }
         }
     }
 
