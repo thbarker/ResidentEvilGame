@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
     public Transform cameraTransform;
     public Animator animator;
     [SerializeField]
-    private string[] moveStates;
+    private string[] disableInputStates;
     public float moveSpeed = 80.0f;
     public float runSpeed = 200.0f;
     public float backwardSpeed = 60f;
@@ -17,7 +17,7 @@ public class PlayerMovement : MonoBehaviour
     public float quickTurnDelay = 0.5f;
 
     private Rigidbody rb; // Reference to the Rigidbody component
-    private bool canMove = true;  // Default to true to allow movement initially
+    private bool inputEnabled = true;  // Default to true to allow player input
     private bool aiming = false;
     private bool isRunning = false;
     private bool isQuickTurning = false;
@@ -45,8 +45,15 @@ public class PlayerMovement : MonoBehaviour
         controls.Player.Run.canceled += ctx => isRunning = false;
 
         // Aim
-        controls.Player.Aim.performed += ctx => UpdateAiming(true);
-        controls.Player.Aim.canceled += ctx => UpdateAiming(false);
+        controls.Player.Aim.performed += ctx =>
+        {
+            StartCoroutine(Aim());
+            UpdateAiming(true);
+        };
+        controls.Player.Aim.canceled += ctx =>
+        {
+            UpdateAiming(false);
+        };
     }
     private void OnEnable()
     {
@@ -67,9 +74,10 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        UpdateCanMove();
+        UpdateInputEnabled();
         UpdateVerticalAim();
-        if (canMove)
+        UpdateRotationAnim();
+        if (inputEnabled)
         {
 
             RotatePlayer();
@@ -153,6 +161,7 @@ public class PlayerMovement : MonoBehaviour
 
     void RotatePlayer()
     {
+        Debug.Log("Rotating");
         // Calculate the rotation amount
         float rotationAmount = x * rotationSpeed * Time.deltaTime;
 
@@ -166,24 +175,30 @@ public class PlayerMovement : MonoBehaviour
         rb.MoveRotation(newRotation);
     }
 
-    public void SetCanMove(bool moveAllowed)
+    public void SetInputEnabled(bool on)
     {
-        canMove = moveAllowed;
+        inputEnabled = on;
     }
 
-    void UpdateCanMove()
+    void UpdateInputEnabled()
     {
         // Detect if the player can move based on animationState
-        canMove = false;
-        foreach (string s in moveStates)
+        inputEnabled = false;
+        foreach (string s in disableInputStates)
         {
-            if (animator.GetCurrentAnimatorStateInfo(0).IsName(s))
+            if (!animator.GetCurrentAnimatorStateInfo(0).IsName(s))
             {
-                canMove = true;
+                inputEnabled = true;
             }
         }
     }
 
+    private IEnumerator Aim()
+    {
+        animator.SetTrigger("Aim");
+        yield return new WaitForSeconds(0.25f);
+        animator.ResetTrigger("Aim");
+    }
     void UpdateAiming(bool on)
     {
         rb.velocity = Vector3.zero;
@@ -207,10 +222,14 @@ public class PlayerMovement : MonoBehaviour
             animator.SetFloat("VerticalAim", z);
         }
     }
+    void UpdateRotationAnim()
+    {
+        animator.SetFloat("Rotation", x);
+    }
 
     IEnumerator QuickTurn()
     {
-        if (canMove)
+        if (inputEnabled)
         {
             isQuickTurning = true;
             canQuickTurn = false;
