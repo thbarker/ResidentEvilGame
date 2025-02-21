@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
+[RequireComponent(typeof(PlayerMovement))]
+[RequireComponent(typeof(Animator))]
 public class PlayerShoot : MonoBehaviour
 {
     private PlayerControls controls;
+    private PlayerMovement playerMovement;
     private Animator animator;
     [SerializeField]
     [Range(0.01f, 2f)]
     private float fireRate;
-    private bool canAttack = true;
+    private bool canAttack = false;
     private bool isAttacking = false;
     private void Awake()
     {
@@ -23,6 +26,7 @@ public class PlayerShoot : MonoBehaviour
         };
         controls.Player.Attack.canceled += ctx =>
         {
+            animator.ResetTrigger("Attack");
             isAttacking = false;
         };
 
@@ -30,6 +34,7 @@ public class PlayerShoot : MonoBehaviour
     private void Start()
     {
         animator = GetComponent<Animator>();
+        playerMovement = GetComponent<PlayerMovement>();
     }
 
     private void FixedUpdate()
@@ -55,6 +60,13 @@ public class PlayerShoot : MonoBehaviour
     }
     private void UpdateAnimationLayer()
     {
-
+        animator.SetFloat("AttackSpeed", (1 / fireRate));
+        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Aiming"))
+        {
+            canAttack = true;
+        } else
+        {
+            canAttack = false;
+        }
     }
 }

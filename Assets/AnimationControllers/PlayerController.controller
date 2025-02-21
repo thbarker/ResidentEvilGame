@@ -358,7 +358,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 4956f62a4025b9740b26fbdbd01641c7, type: 3}
+  m_Motion: {fileID: 7400000, guid: b95524d100e29e64fa681cdfec1c6e53, type: 3}
   m_Tag: 
   m_SpeedParameter: Direction
   m_MirrorParameter: 
@@ -397,7 +397,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Attack
-  m_Speed: 1
+  m_Speed: 0.15
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 5744131317499039953}
@@ -406,13 +406,13 @@ AnimatorState:
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
   m_Mirror: 0
-  m_SpeedParameterActive: 0
+  m_SpeedParameterActive: 1
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
   m_Motion: {fileID: 4214218136199257635}
   m_Tag: 
-  m_SpeedParameter: 
+  m_SpeedParameter: AttackSpeed
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
@@ -561,6 +561,25 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
+--- !u!1107 &-3523955352227748422
+AnimatorStateMachine:
+  serializedVersion: 6
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Baretta Layer
+  m_ChildStates: []
+  m_ChildStateMachines: []
+  m_AnyStateTransitions: []
+  m_EntryTransitions: []
+  m_StateMachineTransitions: {}
+  m_StateMachineBehaviours: []
+  m_AnyStatePosition: {x: 50, y: 20, z: 0}
+  m_EntryPosition: {x: 50, y: 120, z: 0}
+  m_ExitPosition: {x: 800, y: 120, z: 0}
+  m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
+  m_DefaultState: {fileID: 0}
 --- !u!1101 &-3289184038397261061
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -621,7 +640,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 1
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 5bcb3b5258840724a8117018fd6a9edb, type: 3}
+  m_Motion: {fileID: 2431989963116037705, guid: 0c2da16e78a46e548aef776df7f5e292, type: 3}
   m_Tag: 
   m_SpeedParameter: Direction
   m_MirrorParameter: 
@@ -634,7 +653,7 @@ AnimatorStateMachine:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Lower Body Layer
+  m_Name: Lower Body Layer Additive
   m_ChildStates: []
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
@@ -709,7 +728,7 @@ AnimatorStateMachine:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Lower Body Layer Additive
+  m_Name: Lower Body Layer Override
   m_ChildStates: []
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
@@ -777,7 +796,7 @@ AnimatorStateMachine:
     m_Position: {x: 760, y: 100, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -5309919560304579219}
-    m_Position: {x: 620, y: 210, z: 0}
+    m_Position: {x: 620, y: 200, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions:
   - {fileID: -8027917148279514944}
@@ -952,6 +971,12 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 9100000}
+  - m_Name: AttackSpeed
+    m_Type: 1
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 9100000}
   - m_Name: Walking
     m_Type: 4
     m_DefaultFloat: 0
@@ -1014,7 +1039,7 @@ AnimatorController:
     m_SyncedLayerAffectsTiming: 0
     m_Controller: {fileID: 9100000}
   - serializedVersion: 5
-    m_Name: Lower Body Layer
+    m_Name: Lower Body Layer Additive
     m_StateMachine: {fileID: -2209212952437641775}
     m_Mask: {fileID: 31900000, guid: 0acc31fd6fc69d54bafc3c9191e16729, type: 2}
     m_Motions:
@@ -1039,6 +1064,9 @@ AnimatorController:
     - serializedVersion: 2
       m_State: {fileID: 0}
       m_Motion: {fileID: 0}
+    - serializedVersion: 2
+      m_State: {fileID: -2683625473463307893}
+      m_Motion: {fileID: 0}
     m_Behaviours: []
     m_BlendingMode: 1
     m_SyncedLayerIndex: 0
@@ -1047,7 +1075,7 @@ AnimatorController:
     m_SyncedLayerAffectsTiming: 0
     m_Controller: {fileID: 9100000}
   - serializedVersion: 5
-    m_Name: Lower Body Layer Additive
+    m_Name: Lower Body Layer Override
     m_StateMachine: {fileID: -1476568291090329216}
     m_Mask: {fileID: 31900000, guid: 0acc31fd6fc69d54bafc3c9191e16729, type: 2}
     m_Motions:
@@ -1062,9 +1090,9 @@ AnimatorController:
     m_SyncedLayerAffectsTiming: 0
     m_Controller: {fileID: 9100000}
   - serializedVersion: 5
-    m_Name: Upper Body Layer
+    m_Name: Magnum Layer
     m_StateMachine: {fileID: 1478443245497624243}
-    m_Mask: {fileID: 31900000, guid: 33200209a72768a42962c75f6bd5b2dd, type: 2}
+    m_Mask: {fileID: 31900000, guid: 6a8df9218f2c6be4284f2b343199947e, type: 2}
     m_Motions:
     - serializedVersion: 2
       m_State: {fileID: -4925858496511634688}
@@ -1077,7 +1105,25 @@ AnimatorController:
       m_Motion: {fileID: -4791504522942941401, guid: 100c4c745288de8429f1b85ace8e5cf1, type: 3}
     - serializedVersion: 2
       m_State: {fileID: -5309919560304579219}
-      m_Motion: {fileID: 7400000, guid: e86d049196358b04db27b4261d5ce99a, type: 3}
+      m_Motion: {fileID: -1184796108249086264, guid: 613fef2f32176fe47bce048e963f963f, type: 3}
+    m_Behaviours: []
+    m_BlendingMode: 1
+    m_SyncedLayerIndex: 0
+    m_DefaultWeight: 0
+    m_IKPass: 0
+    m_SyncedLayerAffectsTiming: 0
+    m_Controller: {fileID: 9100000}
+  - serializedVersion: 5
+    m_Name: Baretta Layer
+    m_StateMachine: {fileID: -3523955352227748422}
+    m_Mask: {fileID: 31900000, guid: 6a8df9218f2c6be4284f2b343199947e, type: 2}
+    m_Motions:
+    - serializedVersion: 2
+      m_State: {fileID: -5309919560304579219}
+      m_Motion: {fileID: -1184796108249086264, guid: 93abae885f3da4942b8649b6d03f9dc1, type: 3}
+    - serializedVersion: 2
+      m_State: {fileID: -2683625473463307893}
+      m_Motion: {fileID: 0}
     m_Behaviours: []
     m_BlendingMode: 1
     m_SyncedLayerIndex: 0
@@ -1123,7 +1169,7 @@ AnimatorStateMachine:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Upper Body Layer
+  m_Name: Magnum Layer
   m_ChildStates: []
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
@@ -1437,7 +1483,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 1
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: a7c1f26dde9bbfa4fabc4a16e3dfb0e4, type: 3}
+  m_Motion: {fileID: 2431989963116037705, guid: a96cde361c50aa446843dd77465119e8, type: 3}
   m_Tag: 
   m_SpeedParameter: Direction
   m_MirrorParameter: 
