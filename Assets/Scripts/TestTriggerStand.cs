@@ -17,6 +17,7 @@ public class TestTriggerStand : MonoBehaviour
 
     public string[] targetStates;
 
+    private Coroutine reachCoroutine;
     private bool shouldTarget = false;
     public bool canReach = true; // Variable to control the reach cooldown
     public bool canBite = false; // Variable to control if zombie can bite
@@ -28,13 +29,28 @@ public class TestTriggerStand : MonoBehaviour
 
 
     [SerializeField]
-    private float biteThreshold, reachThreshold, reachDuration, biteDuration;
+    [Tooltip("Time during a reach that a bite is allowed.")]
+    private float biteThreshold;
     [SerializeField]
+    [Tooltip("Distance that a reach should be triggered")]
+    private float reachThreshold;
+    [SerializeField]
+    [Tooltip("Time it takes to perform a reach.")]
+    private float reachDuration;
+    [SerializeField]
+    [Tooltip("Time it takes to perform a bite.")]
+    private float biteDuration;
+    [SerializeField]
+    [Tooltip("Time it takes to reach again after reaching/biting.")]
     private float reachCooldown = 5f; // Cooldown in seconds before the zombie can bite again
     [SerializeField]
     private float detectionDistance = 10f;
     [SerializeField]
-    private float reachRotationSpeed = 1f;
+    [Tooltip("Speed at which the zombie rotates towards player when reaching.")]
+    private float reachRotationSpeed = 5f;
+    [SerializeField]
+    [Tooltip("Speed at which the zombie rotates towards player when biting.")]
+    private float biteRotationSpeed = 25f;
     [SerializeField]
     private float lockedYPosition = 0;
 
@@ -95,7 +111,7 @@ public class TestTriggerStand : MonoBehaviour
         if (distanceToPlayer < reachThreshold && canReach)
         {
             // Reach toward the player if the reach threshold is entered
-            StartCoroutine(Reach());
+            reachCoroutine = StartCoroutine(Reach());
         }
 
         if (Input.GetButtonDown("Jump") && animator)
@@ -149,44 +165,52 @@ public class TestTriggerStand : MonoBehaviour
         // During the duration of the reach, the zombie rotates towards the player
         while (Time.time - startTime < reachDuration - 0.5f)
         {
-            RotateTowardsPlayer(); // Rotate towards player while reaching
+            RotateTowardsPlayer(reachRotationSpeed); // Rotate towards player while reaching
             yield return null;
         }
 
         animator.ResetTrigger("Reach");
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(biteThreshold);
         canBite = false;
         reachCollisionScript.Activate(false);
+        allowReachRotation = false;  // Disable rotation after reaching
         yield return new WaitForSeconds(reachCooldown);
         canReach = true;
         Debug.Log("Setting can Reach to True");
         reachCoroutineRunning = false;
     }
 
-    private void RotateTowardsPlayer()
+    private void RotateTowardsPlayer(float rotationSpeed)
     {
         if (player && allowReachRotation)
         {
             Vector3 direction = (player.transform.position - transform.position).normalized;
             Quaternion lookRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * reachRotationSpeed);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotationSpeed);
         }
     }
     IEnumerator BiteSequence()
     {
         animator.applyRootMotion = false;
         collider.radius = 0.1f;
-        player.GetComponent<PlayerDamage>().GetBit(biteTransform, transform);
+        playerDamage.GetBit(biteTransform, transform);
         canReach = false; // Disable further reaches until bite sequence is over
         canBite = false; // Disable further bite attempts until bite sequence is over
         animator.SetTrigger("Bite"); // Trigger the Bite animation
         reachCollisionScript.Activate(false); // Disable the reach collision box
-        allowReachRotation = false;  // Disable rotation when biting
         StartCoroutine(LerpToPlayer());
         yield return null;
         animator.ResetTrigger("Bite"); // Reset the Trigger for the Bite animation next frame
-        yield return new WaitForSeconds(biteDuration);
+        // During the duration of the bite, the zombie rotates towards the player at a quicker speed
+        float startTime = Time.time;
+        while (Time.time - startTime < biteDuration)
+        {
+            RotateTowardsPlayer(biteRotationSpeed); // Rotate towards player while reaching
+            yield return null;
+        }
+        allowReachRotation = false;  // Disable rotation after biting
         collider.radius = 0.1f;
+        yield return new WaitForSeconds(reachCooldown);
         canReach = true;
     }
 
@@ -247,22 +271,15 @@ public class TestTriggerStand : MonoBehaviour
         {
             if (player && playerDamage)
             {
-                StopCoroutine(Reach());
+                if (reachCoroutine != null)
+                {
+                    StopCoroutine(reachCoroutine);
+                    reachCoroutineRunning = false;
+                }
+                reachCoroutine = null;
                 StartCoroutine(BiteSequence());
             }
         }
         
     }
-
-    public void PushBack()
-    {
-        if (player != null)
-        {
-            Debug.Log("Pushing");
-            Vector3 forceDirection = transform.position - player.transform.position; // Calculate direction from player to this object
-            forceDirection.Normalize(); // Normalize the direction vector to have a magnitude of 1
-            rb.AddForce(forceDirection * 100 * playerDamage.GetPushForce(), ForceMode.Impulse); // Apply the force
-        }
-    }
-
 }

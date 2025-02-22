@@ -192,12 +192,12 @@ public class PlayerMovement : MonoBehaviour
     void UpdateInputEnabled()
     {
         // Detect if the player can move based on animationState
-        inputEnabled = false;
+        inputEnabled = true;
         foreach (string s in disableInputStates)
         {
-            if (!animator.GetCurrentAnimatorStateInfo(0).IsName(s))
+            if (animator.GetCurrentAnimatorStateInfo(0).IsName(s))
             {
-                inputEnabled = true;
+                inputEnabled = false;
             }
         }
     }

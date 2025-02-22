@@ -61,6 +61,7 @@ public class PlayerDamage : MonoBehaviour
 
     private IEnumerator BiteSequence(Transform bitePosition, Transform zombiePosition)
     {
+        movementScript.SetInputEnabled(false);
         animator.SetTrigger("GetBit");
         animator.SetBool("GettingBit", true);
         isBeingBitten = true;
@@ -71,10 +72,35 @@ public class PlayerDamage : MonoBehaviour
         animator.ResetTrigger("GetBit");
         yield return new WaitForSeconds(biteDuration - 0.5f);
         animator.SetBool("GettingBit", false);
+        movementScript.SetInputEnabled(true);
     }
 
     public float GetPushForce()
     {
         return pushForce;
+    }
+
+    public void PushBack()
+    {
+        // Prepare the origin of the overlap circle to the center of the player gameobject
+        Vector3 origin = new Vector3(transform.position.x, transform.position.y + 1, transform.position.z);
+
+        // Get all colliders within the detectionRadius that match the layer mask
+        Collider[] hitColliders = Physics.OverlapSphere(origin, 2f);
+        foreach (var hitCollider in hitColliders)
+        {
+            Debug.Log(hitCollider);
+            if (hitCollider.CompareTag("Enemy")) // Make sure the collider has the Enemy tag
+            {
+                Debug.Log("Enemy");
+                // Attempt to get the Pushable script attached to the collider
+                Pushable pushable = hitCollider.GetComponent<Pushable>();
+                if (pushable != null)
+                {
+                    // Call the PushBack function on the Pushable script
+                    pushable.PushBack();
+                }
+            }
+        }
     }
 }
