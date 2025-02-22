@@ -8,6 +8,7 @@ public class TestTriggerStand : MonoBehaviour
     public Animator animator;
     private CapsuleCollider collider;
     public GameObject player;
+    public PlayerDamage playerDamage;
     public RotateTowardsPath script;
     public Transform biteTransform; // This is where the player will be when the bite animation occurs
     public Rigidbody rb;
@@ -44,6 +45,7 @@ public class TestTriggerStand : MonoBehaviour
         collider = GetComponent<CapsuleCollider>();
         animator = GetComponent<Animator>();
         player = GameObject.FindWithTag("Player");
+        playerDamage = player.GetComponent<PlayerDamage>();
     }
 
     // Update is called once per frame
@@ -243,13 +245,24 @@ public class TestTriggerStand : MonoBehaviour
         // Bite if can Bite
         if (canBite)
         {
-            if (player && player.GetComponent<PlayerDamage>())
+            if (player && playerDamage)
             {
                 StopCoroutine(Reach());
                 StartCoroutine(BiteSequence());
             }
         }
         
+    }
+
+    public void PushBack()
+    {
+        if (player != null)
+        {
+            Debug.Log("Pushing");
+            Vector3 forceDirection = transform.position - player.transform.position; // Calculate direction from player to this object
+            forceDirection.Normalize(); // Normalize the direction vector to have a magnitude of 1
+            rb.AddForce(forceDirection * 100 * playerDamage.GetPushForce(), ForceMode.Impulse); // Apply the force
+        }
     }
 
 }

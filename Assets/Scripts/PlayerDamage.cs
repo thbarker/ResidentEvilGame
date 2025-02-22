@@ -11,6 +11,8 @@ public class PlayerDamage : MonoBehaviour
     [SerializeField] 
     private float lerpTime = 0.25f;  // Time in seconds to complete the lerp
     [SerializeField]
+    private float pushForce = 5f;  // Time in seconds to complete the lerp
+    [SerializeField]
     private PlayerMovement movementScript;
     [SerializeField]
     private float biteDuration = 3f;
@@ -69,5 +71,10 @@ public class PlayerDamage : MonoBehaviour
         animator.ResetTrigger("GetBit");
         yield return new WaitForSeconds(biteDuration - 0.5f);
         animator.SetBool("GettingBit", false);
+    }
+
+    public float GetPushForce()
+    {
+        return pushForce;
     }
 }
