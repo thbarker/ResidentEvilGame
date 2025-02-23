@@ -17,10 +17,12 @@ public class PlayerDamage : MonoBehaviour
     [SerializeField]
     private float biteDuration = 3f;
     private float currentLerpTime = 0.0f;
+    private Rigidbody rb;
 
     // Start is called before the first frame update
     void Start()
     {
+        rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
     }
 
@@ -61,6 +63,7 @@ public class PlayerDamage : MonoBehaviour
 
     private IEnumerator BiteSequence(Transform bitePosition, Transform zombiePosition)
     {
+        rb.velocity = Vector3.zero;
         movementScript.SetInputEnabled(false);
         animator.SetTrigger("GetBit");
         animator.SetBool("GettingBit", true);
@@ -89,10 +92,8 @@ public class PlayerDamage : MonoBehaviour
         Collider[] hitColliders = Physics.OverlapSphere(origin, 2f);
         foreach (var hitCollider in hitColliders)
         {
-            Debug.Log(hitCollider);
             if (hitCollider.CompareTag("Enemy")) // Make sure the collider has the Enemy tag
             {
-                Debug.Log("Enemy");
                 // Attempt to get the Pushable script attached to the collider
                 Pushable pushable = hitCollider.GetComponent<Pushable>();
                 if (pushable != null)
