@@ -8,6 +8,7 @@ public class RotateTowardsPath : MonoBehaviour
 {
     public float transitionSpeed = 0.1f; // Duration to transition the rotation in the coroutine
     public float walkingRotationSpeed = 1f; // Speed factor for continuous rotation during walking
+    private GameObject player;
 
     private Quaternion targetRotation; // Desired rotation
     private bool isRotating = false; // Flag to control coroutine-based rotation
@@ -16,6 +17,11 @@ public class RotateTowardsPath : MonoBehaviour
     public AIPath aiPath;
     private Vector3 target; // Target to rotate towards
     public GameObject visual;
+
+    private void Start()
+    {
+        player = GameObject.FindWithTag("Player");
+    }
 
     void Update()
     {
@@ -26,14 +32,30 @@ public class RotateTowardsPath : MonoBehaviour
         }
     }
     private void UpdateTarget() {
-        Vector3? nextWaypoint = aiPath.GetNextWaypoint();
-
-        if (nextWaypoint.HasValue)
+        RaycastHit hit;
+        Vector3 direction = player.transform.position - transform.position; // Direction from this object to the player
+        Vector3 origin = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
+        // Perform the raycast
+        if (Physics.Raycast(origin, direction.normalized, out hit, 100f))
         {
-            Vector3 position = nextWaypoint.Value;
-            target = position;
-            visual.transform.position = position;
+            // Check if the raycast hit the player
+            if (hit.collider.tag == "Player")
+            {
+                target = player.transform.position;
+            }
+            else
+            {
+                Vector3? nextWaypoint = aiPath.GetNextWaypoint();
+                if (nextWaypoint.HasValue)
+                {
+                    Vector3 position = nextWaypoint.Value;
+                    target = position;
+                    visual.transform.position = position;
+                }
+            }
         }
+
+        
         else
         {
             // Handle cases where there is no next waypoint (perhaps the end of the path)

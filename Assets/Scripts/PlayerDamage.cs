@@ -9,7 +9,7 @@ public class PlayerDamage : MonoBehaviour
     private Transform biteTransform;
     private Transform zombieTransform;
     [SerializeField] 
-    private float lerpTime = 0.25f;  // Time in seconds to complete the lerp
+    private float lerpTime = 1f;  // Time in seconds to complete the lerp
     [SerializeField]
     private float pushForce = 5f;  // Time in seconds to complete the lerp
     [SerializeField]
@@ -39,12 +39,12 @@ public class PlayerDamage : MonoBehaviour
                 currentLerpTime = lerpTime;
             }
 
-            // Calculate the lerp percentage
-            float perc = currentLerpTime / lerpTime;
+            // Calculate the lerp time 
+            float t = currentLerpTime / lerpTime;
 
             // Lerp the rotation to face the zombie
             Quaternion targetRotation = Quaternion.LookRotation(zombieTransform.position - transform.position);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, perc);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, t);
 
             // Reset the lerp if it completes
             if (currentLerpTime >= lerpTime)
@@ -103,5 +103,10 @@ public class PlayerDamage : MonoBehaviour
                 }
             }
         }
+    }
+
+    public Vector3 GetVelocity()
+    {
+        return rb.velocity;
     }
 }

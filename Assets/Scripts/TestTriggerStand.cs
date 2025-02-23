@@ -59,6 +59,12 @@ public class TestTriggerStand : MonoBehaviour
     private float biteRotationSpeed = 25f;
     [SerializeField]
     private float lockedYPosition = 0;
+    [SerializeField]
+    private float scaledReachThreshold;
+    [SerializeField]
+    private float playerWalkSpeed = 1.5f;
+    [SerializeField]
+    private float playerRunSpeed = 2.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -75,11 +81,41 @@ public class TestTriggerStand : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        ScaleReachThreshold();
         DebugTimeScale();
         UpdateTargetting();
         DetectDistanceToPlayer();
         UpdateAnimController();
         UpdateY();
+    }
+
+    private void ScaleReachThreshold()
+    {
+        Vector3 playerVelocity = playerDamage.GetVelocity();
+
+        Vector3 directionToPlayer = (player.transform.position - transform.position).normalized;
+
+        // Calculate the relative speed as the projection of the player's velocity on the directionToPlayer
+        float relativeSpeed = -1 * Vector3.Dot(playerVelocity, directionToPlayer);
+
+        if (relativeSpeed <= playerWalkSpeed)
+        {
+            // If speed is just under the walk speed or less, use the default threshold
+            scaledReachThreshold = reachThreshold;
+        }
+        else if (relativeSpeed >= playerRunSpeed)
+        {
+            // If speed is run speed or more, use 1.5 times the default threshold
+            scaledReachThreshold = reachThreshold * 1.5f;
+        }
+        else
+        {
+            // Scale the threshold linearly between default and 1.5 times the default
+            // Calculate how far the speed is between walk and run speed
+            float t = (relativeSpeed - playerWalkSpeed) / (playerRunSpeed - playerWalkSpeed);
+            // Linearly interpolate between defaultReachThreshold and defaultReachThreshold * 1.5 based on t
+            scaledReachThreshold = Mathf.Lerp(reachThreshold, reachThreshold * 1.5f, t);
+        }
     }
 
     void DebugTimeScale()
@@ -133,7 +169,7 @@ public class TestTriggerStand : MonoBehaviour
         {
             animator.SetTrigger("Detect");
         }
-        if (distanceToPlayer < reachThreshold && canReach)
+        if (distanceToPlayer < scaledReachThreshold && canReach)
         {
             // Reach toward the player if the reach threshold is entered
             reachCoroutine = StartCoroutine(Reach());
@@ -241,6 +277,7 @@ public class TestTriggerStand : MonoBehaviour
             yield return null;
         }
         allowReachRotation = false;  // Disable rotation after biting
+        animator.applyRootMotion = true;
         yield return new WaitForSeconds(reachCooldown);
         canReach = true;
     }
@@ -254,20 +291,25 @@ public class TestTriggerStand : MonoBehaviour
         lerpCoroutineRunning = true;
 
         rb.velocity = Vector3.zero;
-        yield return new WaitForSeconds(0.25f);
+        //yield return new WaitForSeconds(0.25f);
 
-        Vector3 startPosition = transform.position;  // Start position of the object
-        // Calculate the target position as 0.5 units in front of the player
-        Vector3 targetPosition = player.transform.position + player.transform.forward * 0.25f;
+        // Start position of the object
+        Vector3 startPosition = transform.position;
+
+        // Calculate the direction from the player to the zombie
+        Vector3 directionToZombie = (transform.position - player.transform.position).normalized;
+
+        // Set the target position to be a certain distance from the player, but towards the zombie
+        Vector3 targetPosition = player.transform.position + directionToZombie * 0.25f;
 
         float timeElapsed = 0f;
-        float lerpDuration = 0.5f;  // Duration over which the lerp takes place
+        float lerpDuration = 1f;  // Duration over which the lerp takes place
 
-        while (timeElapsed < lerpDuration)
+        while (timeElapsed < lerpDuration || distanceToPlayer < 0.25)
         {
             // Calculate the percentage of completion using the elapsed time and duration
             float t = timeElapsed / lerpDuration;
-            t = 1 - Mathf.Pow(1 - t, 3); // Ease out the speed
+            t = 1 - Mathf.Pow(1 - t, 2); // Ease out the speed
 
             // Update the position of the object
             transform.position = Vector3.Lerp(startPosition, targetPosition, t);
@@ -283,7 +325,7 @@ public class TestTriggerStand : MonoBehaviour
         transform.position = targetPosition;
 
         // Set Velocity to zero in case of low friction
-        //rb.velocity = Vector3.zero;
+        rb.velocity = Vector3.zero;
         yield return new WaitForSeconds(1f);
         //animator.applyRootMotion = true;
         lerpCoroutineRunning = false; // Reset the flag
