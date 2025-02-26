@@ -2267,6 +2267,10 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 895701951076616298, guid: 8bb0a7c535ebf4d40b6a2ab4c663e250, type: 3}
+      propertyPath: playerRunSpeed
+      value: 1.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 895701951076616298, guid: 8bb0a7c535ebf4d40b6a2ab4c663e250, type: 3}
       propertyPath: reachThreshold
       value: 1.5
       objectReference: {fileID: 0}
