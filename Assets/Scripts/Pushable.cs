@@ -12,6 +12,7 @@ public class Pushable : MonoBehaviour
     private PlayerDamage playerDamage;
     private AIPath aiPath;
     private Animator animator;
+    private TestTriggerStand controllerScript;
     public float decelerationRate = 1f;
 
     private bool pushingBack = false;
@@ -30,6 +31,7 @@ public class Pushable : MonoBehaviour
         }
         aiPath = GetComponent<AIPath>();
         animator = GetComponent<Animator>();
+        controllerScript = GetComponent<TestTriggerStand>();
     }
 
     // Update is called once per frame
@@ -37,12 +39,11 @@ public class Pushable : MonoBehaviour
     {
         if (pushingBack)
         {
-            if (rb.velocity.magnitude < 0.1)
+            if (rb.velocity.magnitude < 0.01)
             {
                 // Enable the pathing when pushback is done
                 aiPath.enabled = true;
                 pushingBack = false; 
-                //animator.applyRootMotion = true;
             } else
             {
                 // Slow down after the push
@@ -54,7 +55,10 @@ public class Pushable : MonoBehaviour
     {
         if (player != null)
         {
-            Debug.Log("Pushing!");
+            Debug.Log(this.name + "Getting Pushed");
+            animator.applyRootMotion = false;
+            if(playerDamage.GetBitingZombie() != gameObject)
+                controllerScript.PushBackAnimation(); // Animate the zombie
             pushingBack = true;
             Vector3 forceDirection = transform.position - player.transform.position; // Calculate direction from player to this object
             forceDirection.Normalize(); // Normalize the direction vector to have a magnitude of 1

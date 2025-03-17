@@ -6,8 +6,15 @@ using UnityEngine.UIElements;
 
 public class RotateTowardsPath : MonoBehaviour
 {
-    public float transitionSpeed = 0.1f; // Duration to transition the rotation in the coroutine
-    public float walkingRotationSpeed = 1f; // Speed factor for continuous rotation during walking
+    [Tooltip("Duration to transition the rotation in the coroutine")]
+    public float transitionSpeed = 0.1f;
+    [Tooltip("Speed factor for continuous rotation during walking")]
+    public float walkingRotationSpeed = 1f;
+    [Tooltip("Maximum rotation speed when facing away from the player")]
+    public float maxRotationSpeed = 2f;
+    [Tooltip("Minimum rotation speed when facing toward from the player")]
+    public float minRotationSpeed = 1f;
+
     private GameObject player;
 
     private Quaternion targetRotation; // Desired rotation
@@ -72,6 +79,9 @@ public class RotateTowardsPath : MonoBehaviour
             Vector3 directionToTarget = target - transform.position;
             directionToTarget.y = 0; // Keep the rotation horizontal
             Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+
+            UpdateWalkingRotationSpeed(targetRotation); // Update rotation speed based on the current and target rotation
+
             // Smoothly rotate towards the target rotation at a different speed when walking
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, walkingRotationSpeed * Time.deltaTime);
         }
@@ -99,13 +109,20 @@ public class RotateTowardsPath : MonoBehaviour
 
         Debug.DrawLine(transform.position, target, Color.red);
     }
+    void UpdateWalkingRotationSpeed(Quaternion targetRotation)
+    {
+        float angleToTarget = Quaternion.Angle(transform.rotation, targetRotation);
+
+        // Scale rotation speed based on the angle to the target
+        walkingRotationSpeed = Mathf.Lerp(minRotationSpeed, maxRotationSpeed, angleToTarget / 180f);
+    }
 
     public void Activate(bool on)
     {
         if (on && !isRotating)
         {
             active = true;
-            StartCoroutine(RotateToTarget());
+            //StartCoroutine(RotateToTarget());
         }
         else
         {

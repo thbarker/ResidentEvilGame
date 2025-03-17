@@ -29,14 +29,18 @@ public class TestTriggerStand : MonoBehaviour
     private bool lerpCoroutineRunning = false;
     private bool allowReachRotation = true;
     private float walkReachTransitionCounter = 0f;
+    private bool detectedPlayer = false;
 
 
     [SerializeField]
     [Tooltip("Time during a reach that a bite is allowed.")]
     private float biteThreshold;
     [SerializeField]
-    [Tooltip("Distance that a reach should be triggered")]
+    [Tooltip("Distance that a reach should be triggered.")]
     private float reachThreshold;
+    [SerializeField]
+    [Tooltip("Amount that a reach threshold increases with relative player speed. 1 means no change to the reach threshold, > 1 means the faster the player moves towards the zombie, the sooner it can begin to reach.")]
+    private float reachThresholdMultiplier = 1.25f;
     [SerializeField]
     [Tooltip("Time it takes to perform a reach.")]
     private float reachDuration;
@@ -81,10 +85,10 @@ public class TestTriggerStand : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        DetectDistanceToPlayer();
         ScaleReachThreshold();
         DebugTimeScale();
         UpdateTargetting();
-        DetectDistanceToPlayer();
         UpdateAnimController();
         UpdateY();
     }
@@ -106,7 +110,7 @@ public class TestTriggerStand : MonoBehaviour
         else if (relativeSpeed >= playerRunSpeed)
         {
             // If speed is run speed or more, use 1.5 times the default threshold
-            scaledReachThreshold = reachThreshold * 1.5f;
+            scaledReachThreshold = reachThreshold * reachThresholdMultiplier;
         }
         else
         {
@@ -140,7 +144,7 @@ public class TestTriggerStand : MonoBehaviour
         shouldTarget = false;
         foreach (string s in targetStates)
         {
-            if (animator.GetCurrentAnimatorStateInfo(0).IsName(s) && canReach)
+            if (animator.GetCurrentAnimatorStateInfo(0).IsName(s) && canReach && !playerDamage.GetIsBeingBitten())
             {
                 shouldTarget = true;
             }
@@ -167,11 +171,25 @@ public class TestTriggerStand : MonoBehaviour
         }
         if(distanceToPlayer < detectionDistance)
         {
-            animator.SetTrigger("Detect");
-        }
-        if (distanceToPlayer < scaledReachThreshold && canReach)
+            detectedPlayer = true;
+            animator.SetBool("Detect", true);
+        } else if (distanceToPlayer > detectionDistance + 2)
         {
-            // Reach toward the player if the reach threshold is entered
+            detectedPlayer = false;
+            animator.SetBool("Detect", false);
+        }
+        if(playerDamage.GetIsBeingBitten() && (distanceToPlayer < reachThreshold * reachThresholdMultiplier + 1) && !canBite)
+        {
+            reachCollisionScript.Activate(false);
+            canBite = false;
+            animator.SetBool("DifferentZombieBiting", true);
+        } else
+        {
+            animator.SetBool("DifferentZombieBiting", false);
+        }
+        if (distanceToPlayer < scaledReachThreshold && canReach && !playerDamage.GetIsBeingBitten())
+        {
+            // Reach toward the player if the reach threshold is entered and the player isn't being bit
             reachCoroutine = StartCoroutine(Reach());
         }
 
@@ -184,14 +202,13 @@ public class TestTriggerStand : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.K))
         {
-            animator.SetTrigger("Hit");
-            StartCoroutine(ResetHitTrigger());
+            Headshot();
         }
     }
 
     private void UpdateRotationScript()
     {
-        if (script && animator && shouldTarget)
+        if (script && animator && shouldTarget && detectedPlayer)
         {
             script.Activate(true);
         }
@@ -253,10 +270,18 @@ public class TestTriggerStand : MonoBehaviour
     }
     IEnumerator BiteSequence()
     {
+        if (playerDamage.GetIsBeingBitten() && playerDamage.GetBitingZombie() != gameObject)
+        {
+            animator.applyRootMotion = false;
+            aiPath.enabled = false;
+            canBite = false; // Disable further bite attempts until bite sequence is over
+            reachCollisionScript.Activate(false); // Disable the reach collision box
+            yield break; 
+        }
         animator.applyRootMotion = false;
         aiPath.enabled = false;
         collider.radius = 0.01f;
-        playerDamage.GetBit(biteTransform, transform);
+        playerDamage.GetBit(gameObject, biteTransform, transform);
         canReach = false; // Disable further reaches until bite sequence is over
         canBite = false; // Disable further bite attempts until bite sequence is over
         animator.SetTrigger("Bite"); // Trigger the Bite animation
@@ -277,7 +302,6 @@ public class TestTriggerStand : MonoBehaviour
             yield return null;
         }
         allowReachRotation = false;  // Disable rotation after biting
-        animator.applyRootMotion = true;
         yield return new WaitForSeconds(reachCooldown);
         canReach = true;
     }
@@ -331,10 +355,28 @@ public class TestTriggerStand : MonoBehaviour
         lerpCoroutineRunning = false; // Reset the flag
     }
 
+    public void Headshot()
+    {
+        animator.SetTrigger("Hit");
+        StartCoroutine(ResetHitTrigger());
+    }
+    public void PushBackAnimation()
+    {
+        animator.SetTrigger("PushBack");
+        canReach = false;
+        StartCoroutine(ResetPushBackTrigger());
+    }
     IEnumerator ResetHitTrigger()
     {
         yield return null;
         animator.ResetTrigger("Hit");
+    }
+    IEnumerator ResetPushBackTrigger()
+    {
+        yield return new WaitForSeconds(0.25f); ;
+        animator.ResetTrigger("PushBack");
+        yield return new WaitForSeconds(reachCooldown);
+        canReach = true;
     }
 
     public void Bite()
@@ -346,14 +388,20 @@ public class TestTriggerStand : MonoBehaviour
             {
                 if (reachCoroutine != null)
                 {
-                    StopCoroutine(reachCoroutine);
-                    reachCoroutineRunning = false;
+                    EndReachCoroutine();
                 }
                 reachCoroutine = null;
                 StartCoroutine(BiteSequence());
             }
         }
         
+    }
+
+    public void EndReachCoroutine()
+    {
+        if(reachCoroutineRunning)
+            StopCoroutine(reachCoroutine);
+        reachCoroutineRunning = false;
     }
 
     public void StopVelocity()
@@ -372,4 +420,13 @@ public class TestTriggerStand : MonoBehaviour
     {
         animator.applyRootMotion = true;
     }
+    void OnDrawGizmosSelected()
+    {
+        // Set the color of the Gizmo, optional
+        Gizmos.color = Color.red;
+
+        // Draw a wire sphere around the GameObject to visually indicate the detection range
+        Gizmos.DrawWireSphere(transform.position, detectionDistance);
+    }
+
 }

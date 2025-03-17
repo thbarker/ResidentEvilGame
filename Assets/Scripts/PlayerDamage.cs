@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerDamage : MonoBehaviour
 {
     Animator animator;
+    private bool isLerping = false;
     private bool isBeingBitten = false;
     private Transform biteTransform;
     private Transform zombieTransform;
@@ -18,6 +19,7 @@ public class PlayerDamage : MonoBehaviour
     private float biteDuration = 3f;
     private float currentLerpTime = 0.0f;
     private Rigidbody rb;
+    private GameObject bitingZombie;
 
     // Start is called before the first frame update
     void Start()
@@ -29,8 +31,7 @@ public class PlayerDamage : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-        if (isBeingBitten)
+        if (isLerping)
         {
             // Increment the lerp time
             currentLerpTime += Time.deltaTime;
@@ -49,15 +50,16 @@ public class PlayerDamage : MonoBehaviour
             // Reset the lerp if it completes
             if (currentLerpTime >= lerpTime)
             {
-                isBeingBitten = false;  // Stops the lerp process
+                isLerping = false;  // Stops the lerp process
                 currentLerpTime = 0.0f;  // Reset the lerp timer for the next time
             }
         
         }
     }
 
-    public void GetBit(Transform bitePosition, Transform zombiePosition)
+    public void GetBit(GameObject zombie, Transform bitePosition, Transform zombiePosition)
     {
+        bitingZombie = zombie;
         StartCoroutine(BiteSequence(bitePosition, zombiePosition));
     }
 
@@ -67,15 +69,18 @@ public class PlayerDamage : MonoBehaviour
         movementScript.SetInputEnabled(false);
         animator.SetTrigger("GetBit");
         animator.SetBool("GettingBit", true);
+        isLerping = true;
         isBeingBitten = true;
         biteTransform = bitePosition;
         zombieTransform = zombiePosition;
-        currentLerpTime = 0.0f;  // Reset the lerp time
+        currentLerpTime = 0.0f; // Reset the lerp time
         yield return new WaitForSeconds(0.5f);
         animator.ResetTrigger("GetBit");
         yield return new WaitForSeconds(biteDuration - 0.5f);
         animator.SetBool("GettingBit", false);
+        isBeingBitten = false;
         movementScript.SetInputEnabled(true);
+        bitingZombie = null;
     }
 
     public float GetPushForce()
@@ -103,6 +108,15 @@ public class PlayerDamage : MonoBehaviour
                 }
             }
         }
+    }
+    public bool GetIsBeingBitten()
+    {
+        return isBeingBitten;
+    }
+
+    public GameObject GetBitingZombie()
+    {
+        return bitingZombie;
     }
 
     public Vector3 GetVelocity()
