@@ -19,6 +19,7 @@ public class RotateTowardsPath : MonoBehaviour
 
     private Quaternion targetRotation; // Desired rotation
     private bool isRotating = false; // Flag to control coroutine-based rotation
+    [SerializeField]
     private bool active = false;
 
     public AIPath aiPath;

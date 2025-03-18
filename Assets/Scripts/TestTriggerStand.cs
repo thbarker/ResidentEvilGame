@@ -30,6 +30,10 @@ public class TestTriggerStand : MonoBehaviour
     private bool allowReachRotation = true;
     private float walkReachTransitionCounter = 0f;
     private bool detectedPlayer = false;
+    private bool dead = false;
+    [SerializeField]
+    [Range(0, 500)]
+    private int health = 100;
 
 
     [SerializeField]
@@ -164,26 +168,32 @@ public class TestTriggerStand : MonoBehaviour
 
     void UpdateAnimController()
     {
-        if(animator)
+        if(dead)
+        {
+            return;
+        }
+        if (animator)
         {
             animator.SetBool("StartStanding", startStanding);
             animator.SetBool("CanReach", canReach);
         }
-        if(distanceToPlayer < detectionDistance)
+        if (distanceToPlayer < detectionDistance)
         {
             detectedPlayer = true;
             animator.SetBool("Detect", true);
-        } else if (distanceToPlayer > detectionDistance + 2)
+        }
+        else if (distanceToPlayer > detectionDistance + 2)
         {
             detectedPlayer = false;
             animator.SetBool("Detect", false);
         }
-        if(playerDamage.GetIsBeingBitten() && (distanceToPlayer < reachThreshold * reachThresholdMultiplier + 1) && !canBite)
+        if (playerDamage.GetIsBeingBitten() && (distanceToPlayer < reachThreshold * reachThresholdMultiplier + 1) && !canBite)
         {
             reachCollisionScript.Activate(false);
             canBite = false;
             animator.SetBool("DifferentZombieBiting", true);
-        } else
+        }
+        else
         {
             animator.SetBool("DifferentZombieBiting", false);
         }
@@ -202,13 +212,13 @@ public class TestTriggerStand : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.K))
         {
-            Headshot();
+            StartCoroutine(Die());
         }
     }
 
     private void UpdateRotationScript()
     {
-        if (script && animator && shouldTarget && detectedPlayer)
+        if (script && animator && shouldTarget && detectedPlayer && !dead)
         {
             script.Activate(true);
         }
@@ -359,6 +369,18 @@ public class TestTriggerStand : MonoBehaviour
     {
         animator.SetTrigger("Hit");
         StartCoroutine(ResetHitTrigger());
+    }
+
+    public IEnumerator Die()
+    {
+        script.Activate(false);
+        shouldTarget = false;
+        animator.SetTrigger("Death");
+        dead = true;
+        yield return null;
+        animator.SetBool("Dead", true);
+        yield return new WaitForSeconds(1f);
+        collider.enabled = false;
     }
     public void PushBackAnimation()
     {

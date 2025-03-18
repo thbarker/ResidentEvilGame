@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f4883a8b97670374a8cd9e4f1f0a54b7
+guid: 30f987c421a5ff84eb9aac6ca62cf8e3
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable:
@@ -46,7 +46,7 @@ ModelImporter:
       name: Zombie_Idle_Death
       takeName: Take 001
       internalID: 0
-      firstFrame: 0
+      firstFrame: 59
       lastFrame: 60
       wrapMode: 0
       orientationOffsetY: 0
@@ -54,7 +54,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 1
       loopBlendPositionY: 1
