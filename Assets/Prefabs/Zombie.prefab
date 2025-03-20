@@ -66,7 +66,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df776668ee7a5124e85abf24655bf445, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  script: {fileID: 895701951076616298}
+  controllerScript: {fileID: 0}
   active: 0
 --- !u!1 &7556438667196294831
 GameObject:
@@ -117,7 +117,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.49
+      value: 7.13
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalPosition.y
@@ -125,7 +125,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.01
+      value: 3.46
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalRotation.w
@@ -439,7 +439,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 895701951076616298}
+      addedObject: {fileID: 7784779643980759966}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6987880576637890375}
@@ -472,7 +472,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
   m_PrefabInstance: {fileID: 5087992854838632297}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &895701951076616298
+--- !u!114 &7784779643980759966
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -481,7 +481,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5358517586339095096}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 242fd7fd4c4f7944abaeab83e5c060d1, type: 3}
+  m_Script: {fileID: 11500000, guid: db543acdff7fb094bb71d5c0356721ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 0}
@@ -496,13 +496,14 @@ MonoBehaviour:
   - Walk
   canReach: 1
   canBite: 0
+  health: 100
   biteThreshold: 0.5
   reachThreshold: 1.75
   reachThresholdMultiplier: 1.25
   reachDuration: 2
   biteDuration: 3
   reachCooldown: 1.5
-  detectionDistance: 5
+  detectionDistance: 10
   reachRotationSpeed: 4
   reachBoost: 1
   biteRotationSpeed: 20
@@ -526,6 +527,7 @@ MonoBehaviour:
   walkingRotationSpeed: 0.2
   maxRotationSpeed: 0.4
   minRotationSpeed: 0.1
+  active: 0
   aiPath: {fileID: 2999398385124668116}
   visual: {fileID: 0}
 --- !u!114 &1308341620092205938

@@ -12,7 +12,7 @@ public class Pushable : MonoBehaviour
     private PlayerDamage playerDamage;
     private AIPath aiPath;
     private Animator animator;
-    private TestTriggerStand controllerScript;
+    private ZombieController controllerScript;
     public float decelerationRate = 1f;
 
     private bool pushingBack = false;
@@ -31,7 +31,7 @@ public class Pushable : MonoBehaviour
         }
         aiPath = GetComponent<AIPath>();
         animator = GetComponent<Animator>();
-        controllerScript = GetComponent<TestTriggerStand>();
+        controllerScript = GetComponent<ZombieController>();
     }
 
     // Update is called once per frame
@@ -58,12 +58,18 @@ public class Pushable : MonoBehaviour
             Debug.Log(this.name + "Getting Pushed");
             animator.applyRootMotion = false;
             if(playerDamage.GetBitingZombie() != gameObject)
-                controllerScript.PushBackAnimation(); // Animate the zombie
+                controllerScript.StateMachine.ChangeState(controllerScript.KnockbackState);
             pushingBack = true;
             Vector3 forceDirection = transform.position - player.transform.position; // Calculate direction from player to this object
             forceDirection.Normalize(); // Normalize the direction vector to have a magnitude of 1
             rb.velocity = Vector3.zero; // Reset the velocity before the push
-            rb.AddForce(forceDirection * 100 * playerDamage.GetPushForce(), ForceMode.Impulse); // Apply the force
+            // Calculate the distance between the player and this object
+            float distance = Vector3.Distance(transform.position, player.transform.position);
+            // Use distance to scale the force, lessening the force the farther the object is
+            float scaledForce = (100 * playerDamage.GetPushForce()) / Mathf.Clamp(distance, 1, float.MaxValue); // Example scaling factor
+            // Apply the scaled force
+            Vector3 pushForce = forceDirection * scaledForce;
+            rb.AddForce(pushForce, ForceMode.Impulse); // Apply the force
         }
     }
 }

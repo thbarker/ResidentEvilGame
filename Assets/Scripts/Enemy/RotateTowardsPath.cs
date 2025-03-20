@@ -120,14 +120,6 @@ public class RotateTowardsPath : MonoBehaviour
 
     public void Activate(bool on)
     {
-        if (on && !isRotating)
-        {
-            active = true;
-            //StartCoroutine(RotateToTarget());
-        }
-        else
-        {
-            active = false;
-        }
+        active = on;
     }
 }

@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class ReachCollision : MonoBehaviour
 {
-    public TestTriggerStand script;
+    public ZombieController controllerScript;
     public bool active = false;
 
-    private void Update()
+    private void Start()
     {
+        controllerScript = transform.parent.GetComponent<ZombieController>();
     }
 
     private void OnTriggerStay(Collider other)
@@ -16,7 +17,7 @@ public class ReachCollision : MonoBehaviour
         if(other.gameObject.tag == "Player" && active)
         {
             Debug.Log("Reach Collision is calling Bite()");
-            script.Bite();
+            controllerScript.Bite();
         }
     }
 

@@ -17,6 +17,8 @@ public class PlayerDamage : MonoBehaviour
     private PlayerMovement movementScript;
     [SerializeField]
     private float biteDuration = 3f;
+    [SerializeField]
+    private float pushRadius = 2f;
     private float currentLerpTime = 0.0f;
     private Rigidbody rb;
     private GameObject bitingZombie;
@@ -94,7 +96,7 @@ public class PlayerDamage : MonoBehaviour
         Vector3 origin = new Vector3(transform.position.x, transform.position.y + 1, transform.position.z);
 
         // Get all colliders within the detectionRadius that match the layer mask
-        Collider[] hitColliders = Physics.OverlapSphere(origin, 2f);
+        Collider[] hitColliders = Physics.OverlapSphere(origin, pushRadius);
         foreach (var hitCollider in hitColliders)
         {
             if (hitCollider.CompareTag("Enemy")) // Make sure the collider has the Enemy tag

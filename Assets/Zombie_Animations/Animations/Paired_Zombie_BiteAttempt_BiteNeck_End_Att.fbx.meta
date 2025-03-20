@@ -69,7 +69,7 @@ ModelImporter:
       - time: 0.32868016
         functionName: ApplyRootMotion
         data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 242fd7fd4c4f7944abaeab83e5c060d1, type: 3}
+        objectReferenceParameter: {fileID: 11500000, guid: db543acdff7fb094bb71d5c0356721ed, type: 3}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
