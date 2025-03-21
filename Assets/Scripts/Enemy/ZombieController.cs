@@ -99,7 +99,7 @@ public class ZombieController : Damageable
     {
         health -= damage;
         knockbackThreshold -= damage;
-        if(knockbackThreshold <= 0 )
+        if(knockbackThreshold <= 0 && health > 0)
         {
             StateMachine.ChangeState(KnockbackState);
             knockbackThreshold = Random.Range(minKnockThreshold, maxKnockThreshold);

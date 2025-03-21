@@ -29,6 +29,7 @@ public class ZombieKnockbackState : EnemyState
     public override void EnterState()
     {
         base.EnterState();
+        Debug.Log("Entering Knockback");
         animator.SetTrigger("PushBack");
         direction = (player.transform.position - zombieTransform.position).normalized;
         lookRotation = Quaternion.LookRotation(direction);
@@ -38,8 +39,7 @@ public class ZombieKnockbackState : EnemyState
     public override void ExitState()
     {
         base.ExitState();
-        animator.applyRootMotion = true;
-        animator.ResetTrigger("PushBack");
+        Debug.Log("Exiting Knockback");
     }
 
     public override void FrameUpdate()
@@ -47,9 +47,14 @@ public class ZombieKnockbackState : EnemyState
         base.FrameUpdate();
         if (Time.time - startTime > 0.875f)
         {
+            animator.applyRootMotion = true;
+            animator.ResetTrigger("PushBack");
+        }
+        if (Time.time - startTime > 1.5f)
+        {
             zombieController.StateMachine.ChangeState(zombieController.IdleState);
         }
-
+        
         RotateTowardsPlayer(4f);
     }
 
