@@ -15,7 +15,7 @@ public class Pushable : MonoBehaviour
     private ZombieController controllerScript;
     public float decelerationRate = 1f;
 
-    private bool pushingBack = false;
+    public bool pushingBack = false;
 
     // Start is called before the first frame update
     void Start()

@@ -45,12 +45,14 @@ public class ZombieKnockbackState : EnemyState
     public override void FrameUpdate()
     {
         base.FrameUpdate();
-        if (Time.time - startTime > 0.875)
+        if (Time.time - startTime > 0.875f)
         {
             zombieController.StateMachine.ChangeState(zombieController.IdleState);
         }
+
         RotateTowardsPlayer(4f);
     }
+
 
     public override void PhysicsUpdate()
     {

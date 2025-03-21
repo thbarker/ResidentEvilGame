@@ -2,7 +2,7 @@ using Pathfinding;
 using System.Collections;
 using UnityEngine;
 
-public class ZombieController : MonoBehaviour
+public class ZombieController : Damageable
 {
     #region State Machine
     public EnemyStateMachine StateMachine { get; set; }
@@ -35,6 +35,8 @@ public class ZombieController : MonoBehaviour
     private bool detectedPlayer = false;
     private bool dead = false;
     public bool bite = false;
+    private float maxHealth;
+    private float knockbackThreshold;
     #endregion
 
     #region Tunables
@@ -74,11 +76,41 @@ public class ZombieController : MonoBehaviour
     private float minReachThreshold = 1f;
     [SerializeField]
     [Tooltip("Maximum Reach Trigger Distance.")]
-    private float maxReachThreshold = 1.7f;
+    private float maxReachThreshold = 1.7f; [SerializeField]
+    [Tooltip("Minimum Damage Range for a random knockback on damage.")]
+    [Range(0, 100f)]
+    private float minKnockThreshold = 10f;
     [SerializeField]
-    [Range(0, 500)]
-    private int health = 100;
+    [Tooltip("Maximum Damage Range for a random knockback on damage.")]
+    [Range(0, 100f)]
+    private float maxKnockThreshold = 30f;
+
+    void OnValidate()
+    {
+        // Ensure min is always less than max
+        if (minKnockThreshold >= maxKnockThreshold)
+        {
+            maxKnockThreshold = minKnockThreshold + 1f; // Increment max to be just above min
+        }
+    }
     #endregion
+
+    public override void ApplyDamage(float damage)
+    {
+        health -= damage;
+        knockbackThreshold -= damage;
+        if(knockbackThreshold <= 0 )
+        {
+            StateMachine.ChangeState(KnockbackState);
+            knockbackThreshold = Random.Range(minKnockThreshold, maxKnockThreshold);
+        }
+    }
+
+    protected override void Die()
+    {
+        base.Die();
+        StateMachine.ChangeState(DieState);
+    }
 
     public void AnimationTriggerEvent(AnimationTriggerType triggerType)
     {
@@ -116,12 +148,19 @@ public class ZombieController : MonoBehaviour
     void Start()
     {
         StateMachine.Initialize(IdleState);
+
+        knockbackThreshold = Random.Range(minKnockThreshold, maxKnockThreshold);
     }
 
     // Update is called once per frame
     void Update()
     {
         StateMachine.CurrentEnemyState.FrameUpdate();
+
+        if (Input.GetKeyDown(KeyCode.H)) 
+        {
+            TakeDamage(10);
+        }
 
         DebugTimeScale();
         UpdateAnimController();
@@ -179,18 +218,6 @@ public class ZombieController : MonoBehaviour
         animator.SetTrigger("Hit");
         StartCoroutine(ResetHitTrigger());
     }
-
-    public IEnumerator Die()
-    {
-        script.Activate(false);
-        shouldTarget = false;
-        animator.SetTrigger("Death");
-        dead = true;
-        yield return null;
-        animator.SetBool("Dead", true);
-        yield return new WaitForSeconds(1f);
-        capsuleCollider.enabled = false;
-    }
     public void PushBackAnimation()
     {
         animator.SetTrigger("PushBack");
@@ -234,6 +261,8 @@ public class ZombieController : MonoBehaviour
 
         // Draw a wire sphere around the GameObject to visually indicate the detection range
         Gizmos.DrawWireSphere(transform.position, detectionDistance);
+
+
     }
 
     public float GetDetectionDistance()
@@ -281,4 +310,5 @@ public class ZombieController : MonoBehaviour
     {
         return biteRotationSpeed;
     }
+
 }
