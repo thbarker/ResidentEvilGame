@@ -13,8 +13,13 @@ public class PlayerShoot : MonoBehaviour
     [SerializeField]
     [Range(0.01f, 2f)]
     private float fireRate;
+    [SerializeField]
+    [Range(0f, 50f)]
+    private float damage;
+    public Transform shootingPoint;
     private bool canAttack = false;
     private bool isAttacking = false;
+    private bool attackCooldown = false;
     private void Awake()
     {
         // Get reference to player controls
@@ -45,10 +50,31 @@ public class PlayerShoot : MonoBehaviour
 
     private IEnumerator Attack()
     {
+        if (!canAttack || attackCooldown)
+            yield break;
         animator.SetTrigger("Attack");
-        canAttack = false;
+        attackCooldown = true;
+
+        // Perform raycast
+        RaycastHit hit;
+        Vector3 rayOrigin = shootingPoint.position; // This might need to be adjusted based on your character
+        Vector3 rayDirection = shootingPoint.forward; // Assumes the character shoots forward
+        Debug.Log("Shooting");
+        if (Physics.Raycast(rayOrigin, rayDirection, out hit, 100f))
+        {
+            // Debug to visualize the ray in the scene view
+            Debug.DrawRay(rayOrigin, rayDirection * 100f, Color.red, 2f);
+
+            // Check if the hit object has a Damageable component
+            Damageable damageable = hit.collider.GetComponent<Damageable>();
+            if (damageable != null)
+            {
+                damageable.TakeDamage(damage); // Apply damage
+            }
+        }
+
         yield return new WaitForSeconds(fireRate);
-        canAttack = true;
+        attackCooldown = false;
     }
 
     private void UpdateAttack()

@@ -42,7 +42,6 @@ public class Pushable : MonoBehaviour
             if (rb.velocity.magnitude < 0.01)
             {
                 // Enable the pathing when pushback is done
-                aiPath.enabled = true;
                 pushingBack = false; 
             } else
             {

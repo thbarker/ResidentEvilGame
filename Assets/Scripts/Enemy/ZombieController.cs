@@ -104,6 +104,11 @@ public class ZombieController : Damageable
             StateMachine.ChangeState(KnockbackState);
             knockbackThreshold = Random.Range(minKnockThreshold, maxKnockThreshold);
         }
+        if(knockbackThreshold > 0 && health > 0)
+        {
+            // Potentially add a hit reaction that doesn't slow the movement
+            // Headshot();
+        }
     }
 
     protected override void Die()

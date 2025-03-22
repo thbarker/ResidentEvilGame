@@ -1,3 +1,4 @@
+using Pathfinding;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,7 @@ using UnityEngine;
 public class ZombieTargetState : EnemyState
 {
     private Animator animator;
+    private AIPath aiPath;
     private RotateTowardsPath rotateTowardsPath;
     private PlayerDamage playerDamage;
     private Transform playerTransform;
@@ -21,6 +23,7 @@ public class ZombieTargetState : EnemyState
         rotateTowardsPath = zombieController.GetComponent<RotateTowardsPath>();
         playerDamage = zombieController.playerDamage;
         playerTransform = zombieController.player.transform;
+        aiPath = zombieController.aiPath;
 
         detectionDistance = zombieController.GetDetectionDistance();
         reachThreshold = zombieController.GetReachThreshold();
@@ -39,6 +42,7 @@ public class ZombieTargetState : EnemyState
         base.EnterState();
         // Activate the rotation script
         Debug.Log("Entering Walking State");
+        aiPath.enabled = true;
         rotateTowardsPath.Activate(true);
     }
 
