@@ -291,7 +291,7 @@ public class TestTriggerStand : MonoBehaviour
         animator.applyRootMotion = false;
         aiPath.enabled = false;
         collider.radius = 0.01f;
-        playerDamage.GetBit(gameObject, biteTransform, transform);
+        playerDamage.GetBit(gameObject, transform);
         canReach = false; // Disable further reaches until bite sequence is over
         canBite = false; // Disable further bite attempts until bite sequence is over
         animator.SetTrigger("Bite"); // Trigger the Bite animation

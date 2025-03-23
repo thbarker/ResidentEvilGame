@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 872251309927705148}
   - component: {fileID: 1909413417058445530}
   - component: {fileID: 4593006263817351901}
-  m_Layer: 6
+  m_Layer: 2
   m_Name: ReachCollider
   m_TagString: Untagged
   m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}
@@ -117,7 +117,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7.13
+      value: 6.24
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalPosition.y
@@ -125,23 +125,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3.46
+      value: 0.18
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.0074936547
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.999972
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -149,7 +149,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 179.141
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -370,7 +370,7 @@ PrefabInstance:
     - target: {fileID: 5866666021909216657, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 928aa685a4c78334e9e1a92bb70ff944, type: 2}
+      objectReference: {fileID: 9100000, guid: ca696a072d007ed4e9f68bd6405dac8f, type: 2}
     - target: {fileID: 5901213795655131968, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -484,33 +484,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db543acdff7fb094bb71d5c0356721ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  health: 100
   animator: {fileID: 0}
+  aiPath: {fileID: 0}
+  capsuleCollider: {fileID: 0}
   player: {fileID: 0}
   playerDamage: {fileID: 0}
   script: {fileID: 6987880576637890375}
   biteTransform: {fileID: 1110648040963748045}
   rb: {fileID: 0}
-  startStanding: 1
   reachCollisionScript: {fileID: 4593006263817351901}
-  targetStates:
-  - Walk
-  canReach: 1
-  canBite: 0
-  health: 100
+  colliderRadius: 0
+  startStanding: 1
+  bite: 0
   biteThreshold: 0.5
   reachThreshold: 1.75
   reachThresholdMultiplier: 1.25
-  reachDuration: 2
+  reachDuration: 1
   biteDuration: 3
   reachCooldown: 1.5
   detectionDistance: 10
-  reachRotationSpeed: 4
+  reachRotationSpeed: 5
   reachBoost: 1
   biteRotationSpeed: 20
   lockedYPosition: 0
-  scaledReachThreshold: 0
-  playerWalkSpeed: 1
-  playerRunSpeed: 1.7
+  minReachThreshold: 1
+  maxReachThreshold: 1.7
+  minKnockThreshold: 30
+  maxKnockThreshold: 60
 --- !u!114 &6987880576637890375
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -524,9 +525,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   transitionSpeed: 0.5
-  walkingRotationSpeed: 0.2
-  maxRotationSpeed: 0.4
-  minRotationSpeed: 0.1
+  walkingRotationSpeed: 0.4
+  maxRotationSpeed: 0.8
+  minRotationSpeed: 0.2
   active: 0
   aiPath: {fileID: 2999398385124668116}
   visual: {fileID: 0}
@@ -634,9 +635,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
-  m_Height: 1.75
+  m_Height: 2.25
   m_Direction: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 1.2, z: 0}
 --- !u!54 &6711738967179157443
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -645,7 +646,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5358517586339095096}
   serializedVersion: 4
-  m_Mass: 100
+  m_Mass: 10
   m_Drag: 5
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -677,3 +678,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   decelerationRate: 0
+  pushingBack: 0

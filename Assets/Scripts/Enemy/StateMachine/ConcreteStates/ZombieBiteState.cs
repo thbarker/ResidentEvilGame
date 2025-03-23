@@ -25,7 +25,7 @@ public class ZombieBiteState : EnemyState
     public ZombieBiteState(ZombieController zombieController, EnemyStateMachine enemyStateMachine) : base(zombieController, enemyStateMachine)
     {
         animator = zombieController.animator;
-        playerDamage = zombieController.playerDamage;
+        playerDamage = zombieController.player.GetComponent<PlayerDamage>();
         playerTransform = zombieController.player.transform;
         aiPath = zombieController.aiPath;
         capsuleCollider = zombieController.capsuleCollider;
@@ -45,7 +45,8 @@ public class ZombieBiteState : EnemyState
         animator.applyRootMotion = false;
         aiPath.enabled = false;
         capsuleCollider.radius = 0.01f;
-        playerDamage.GetBit(zombieController.gameObject, zombieController.biteTransform, zombieController.transform); 
+        Debug.Log(playerDamage);
+        playerDamage.GetBit(zombieController.gameObject, zombieController.transform); 
         animator.SetTrigger("Bite"); // Trigger the Bite animation
         startTime = Time.time;
         timeElapsed = 0;

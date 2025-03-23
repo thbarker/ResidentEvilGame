@@ -4,17 +4,15 @@ using UnityEngine;
 
 public class PlayerDamage : MonoBehaviour
 {
-    Animator animator;
-    private bool isLerping = false;
+    Animator animator; 
     private bool isBeingBitten = false;
-    private Transform biteTransform;
-    private Transform zombieTransform;
+    public Transform zombieTransform;
     [SerializeField] 
     private float lerpTime = 1f;  // Time in seconds to complete the lerp
     [SerializeField]
     private float pushForce = 5f;  // Time in seconds to complete the lerp
     [SerializeField]
-    private PlayerMovement movementScript;
+    private PlayerMovement playerMovement;
     [SerializeField]
     private float biteDuration = 3f;
     [SerializeField]
@@ -28,61 +26,14 @@ public class PlayerDamage : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
+        playerMovement = GetComponent<PlayerMovement>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (isLerping)
-        {
-            // Increment the lerp time
-            currentLerpTime += Time.deltaTime;
-            if (currentLerpTime > lerpTime)
-            {
-                currentLerpTime = lerpTime;
-            }
-
-            // Calculate the lerp time 
-            float t = currentLerpTime / lerpTime;
-
-            // Lerp the rotation to face the zombie
-            Quaternion targetRotation = Quaternion.LookRotation(zombieTransform.position - transform.position);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, t);
-
-            // Reset the lerp if it completes
-            if (currentLerpTime >= lerpTime)
-            {
-                isLerping = false;  // Stops the lerp process
-                currentLerpTime = 0.0f;  // Reset the lerp timer for the next time
-            }
-        
-        }
-    }
-
-    public void GetBit(GameObject zombie, Transform bitePosition, Transform zombiePosition)
+    public void GetBit(GameObject zombie, Transform zombieTransform)
     {
         bitingZombie = zombie;
-        StartCoroutine(BiteSequence(bitePosition, zombiePosition));
-    }
-
-    private IEnumerator BiteSequence(Transform bitePosition, Transform zombiePosition)
-    {
-        rb.velocity = Vector3.zero;
-        movementScript.SetInputEnabled(false);
-        animator.SetTrigger("GetBit");
-        animator.SetBool("GettingBit", true);
-        isLerping = true;
-        isBeingBitten = true;
-        biteTransform = bitePosition;
-        zombieTransform = zombiePosition;
-        currentLerpTime = 0.0f; // Reset the lerp time
-        yield return new WaitForSeconds(0.5f);
-        animator.ResetTrigger("GetBit");
-        yield return new WaitForSeconds(biteDuration - 0.5f);
-        animator.SetBool("GettingBit", false);
-        isBeingBitten = false;
-        movementScript.SetInputEnabled(true);
-        bitingZombie = null;
+        this.zombieTransform = zombieTransform;
+        playerMovement.StateMachine.ChangeState(playerMovement.BitState);
     }
 
     public float GetPushForce()
@@ -115,14 +66,35 @@ public class PlayerDamage : MonoBehaviour
     {
         return isBeingBitten;
     }
+    public void SetIsBeingBitten(bool flag)
+    {
+        isBeingBitten = flag;
+    }
 
     public GameObject GetBitingZombie()
     {
         return bitingZombie;
     }
 
+    public void ResetBitingZombie()
+    {
+        bitingZombie = null;
+    }
+
     public Vector3 GetVelocity()
     {
         return rb.velocity;
+    }
+    public float GetLerpTime()
+    {
+        return lerpTime;
+    }
+    public float GetBiteDuration()
+    {
+        return biteDuration;
+    }
+    public float GetPushRadius()
+    {
+        return pushRadius;
     }
 }
