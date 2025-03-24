@@ -26,6 +26,9 @@ public class PlayerMovement : MonoBehaviour
     public float runSpeed = 200.0f;
     public float backwardSpeed = 60f;
     public float rotationSpeed = 1.0f;
+    [Range(0.1f, 10f)]
+    [Tooltip("Speed of the rotation toward a newly selected target")]
+    public float changeTargetSpeed = 5.0f;
     [Range(0.01f, 1f)]
     public float quickTurnDuration = 0.25f;
     [Range(0.1f, 1f)]
@@ -38,7 +41,7 @@ public class PlayerMovement : MonoBehaviour
     public float downAimOffset = 0.5f;
     [Range(0.01f, 1f)]
     [Tooltip("Amount of time it takes to look up/down. Used for the vertical aim smoothing")]
-    public float verticalAimTime = 0.1f;
+    public float verticalAimTime = 0.1f; 
 
     public Rigidbody rb; // Reference to the Rigidbody component
     public PlayerControls controls;
@@ -106,17 +109,17 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        StateMachine.CurrentEnemyState.FrameUpdate();
+        StateMachine.CurrentPlayerState.FrameUpdate();
     }
 
     void FixedUpdate()
     {
-        StateMachine.CurrentEnemyState.PhysicsUpdate();
+        StateMachine.CurrentPlayerState.PhysicsUpdate();
         UpdateInputEnabled();
     }
     public void AnimationTriggerEvent(AnimationTriggerType triggerType)
     {
-        StateMachine.CurrentEnemyState.AnimationTriggerEvent(triggerType);
+        StateMachine.CurrentPlayerState.AnimationTriggerEvent(triggerType);
     }
 
     public enum AnimationTriggerType

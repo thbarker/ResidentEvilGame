@@ -25,6 +25,7 @@ public class ZombieController : Damageable
     public Transform biteTransform; // This is where the player will be when the bite animation occurs
     public Rigidbody rb;
     public ReachCollision reachCollisionScript;
+    private ZombieList zombieList;
     #endregion
 
     #region Helpers
@@ -114,6 +115,7 @@ public class ZombieController : Damageable
     protected override void Die()
     {
         base.Die();
+        zombieList.Remove(gameObject);
         StateMachine.ChangeState(DieState);
     }
 
@@ -137,6 +139,13 @@ public class ZombieController : Damageable
         player = GameObject.FindWithTag("Player");
         playerDamage = player.GetComponent<PlayerDamage>();
         aiPath = GetComponent<AIPath>();
+        zombieList = player.transform.Find("ZombieList").GetComponent<ZombieList>();
+
+        if (!zombieList) Debug.LogError("Scene must have a zombie list gameobject tagged as ZombieList");
+        else
+        {
+            zombieList.Add(gameObject);
+        }
 
         StateMachine = new EnemyStateMachine();
 

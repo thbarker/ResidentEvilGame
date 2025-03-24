@@ -33,8 +33,7 @@ public class PlayerShoot : MonoBehaviour
         {
             animator.ResetTrigger("Attack");
             isAttacking = false;
-        };
-
+        }; 
     }
     private void Start()
     {
@@ -84,10 +83,11 @@ public class PlayerShoot : MonoBehaviour
             StartCoroutine(Attack());
         }
     }
+
     private void UpdateAnimationLayer()
     {
         animator.SetFloat("AttackSpeed", (1 / fireRate));
-        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Aiming"))
+        if(playerMovement.StateMachine.CurrentPlayerState == playerMovement.AimState)
         {
             canAttack = true;
         } else
