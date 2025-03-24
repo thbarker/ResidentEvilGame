@@ -9,6 +9,7 @@ public class PlayerShoot : MonoBehaviour
 {
     private PlayerControls controls;
     private PlayerMovement playerMovement;
+    private ZombieList zombieList;
     private Animator animator;
     [SerializeField]
     [Range(0.01f, 2f)]
@@ -39,6 +40,7 @@ public class PlayerShoot : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         playerMovement = GetComponent<PlayerMovement>();
+        zombieList = transform.Find("ZombieList").GetComponent<ZombieList>();
     }
 
     private void FixedUpdate()
@@ -54,11 +56,13 @@ public class PlayerShoot : MonoBehaviour
         animator.SetTrigger("Attack");
         attackCooldown = true;
 
+        // Become Detected by all Zombies
+        zombieList.DetectedByAll();
+
         // Perform raycast
         RaycastHit hit;
         Vector3 rayOrigin = shootingPoint.position; // This might need to be adjusted based on your character
         Vector3 rayDirection = shootingPoint.forward; // Assumes the character shoots forward
-        Debug.Log("Shooting");
         if (Physics.Raycast(rayOrigin, rayDirection, out hit, 100f))
         {
             // Debug to visualize the ray in the scene view

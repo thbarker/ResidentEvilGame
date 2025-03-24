@@ -144,4 +144,16 @@ public class ZombieList : MonoBehaviour
         }
     }
 
+    public void DetectedByAll()
+    {
+        ZombieController zombieController;
+        foreach (GameObject zombie in allZombies)
+        {
+            zombieController  = zombie.GetComponent<ZombieController>();
+            if(!zombieController.GetDetectedPlayer())
+            {
+                zombieController.DetectPlayer();
+            }
+        }
+    }
 }

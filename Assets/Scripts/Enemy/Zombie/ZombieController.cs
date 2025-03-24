@@ -60,7 +60,14 @@ public class ZombieController : Damageable
     [Tooltip("Time it takes to reach again after reaching/biting.")]
     private float reachCooldown = 1.5f; // Cooldown in seconds before the zombie can bite again
     [SerializeField]
-    private float detectionDistance = 10f;
+    [Tooltip("Distance for detection when player is directly behind the zombie. Note that this scales with direction in a cubic curve.")]
+    private float minDetectionDistance = 2f;
+    [SerializeField]
+    [Tooltip("Distance for detection when player is directly in front of the zombie. Note that this scales with direction in a cubic curve.")]
+    private float maxDetectionDistance = 20f;
+    [SerializeField]
+    [Tooltip("Time it takes to forget about the player, and stop targeting.")]
+    private float losePlayerTime = 4f;
     [SerializeField]
     [Tooltip("Speed at which the zombie rotates towards player when reaching.")]
     private float reachRotationSpeed = 5f;
@@ -268,21 +275,17 @@ public class ZombieController : Damageable
     {
         //animator.applyRootMotion = true;
     }
+
+    public void DetectPlayer()
+    {
+        animator.SetBool("Detect", true);
+        SetDetectedPlayer(true);
+        StateMachine.ChangeState(TargetState);
+    }
     void OnDrawGizmosSelected()
     {
-        // Set the color of the Gizmo, optional
-        Gizmos.color = Color.red;
-
-        // Draw a wire sphere around the GameObject to visually indicate the detection range
-        Gizmos.DrawWireSphere(transform.position, detectionDistance);
-
-
     }
-
-    public float GetDetectionDistance()
-    {
-        return detectionDistance;
-    }
+    #region Getters
     public float GetMinReachThreshold()
     {
         return minReachThreshold;
@@ -290,6 +293,14 @@ public class ZombieController : Damageable
     public float GetMaxReachThreshold()
     {
         return maxReachThreshold;
+    }
+    public float GetMinDetectionDistance()
+    {
+        return minDetectionDistance;
+    }
+    public float GetMaxDetectionDistance()
+    {
+        return maxDetectionDistance;
     }
     public float GetReachThreshold()
     {
@@ -324,5 +335,20 @@ public class ZombieController : Damageable
     {
         return biteRotationSpeed;
     }
+    public float GetLosePlayerTime()
+    {
+        return losePlayerTime;
+    }
+    public bool GetDetectedPlayer()
+    {
+        return detectedPlayer;
+    }
+    #endregion
 
+    #region Setters
+    public void SetDetectedPlayer(bool detectedPlayer)
+    {
+        this.detectedPlayer = detectedPlayer;
+    }
+    #endregion
 }

@@ -38,6 +38,7 @@ public class RotateTowardsPath : MonoBehaviour
         {
             RotateContinuously();
         }
+        Debug.Log(walkingRotationSpeed);
     }
     private void UpdateTarget() {
         RaycastHit hit;
@@ -112,10 +113,21 @@ public class RotateTowardsPath : MonoBehaviour
     }
     void UpdateWalkingRotationSpeed(Quaternion targetRotation)
     {
-        float angleToTarget = Quaternion.Angle(transform.rotation, targetRotation);
+        Vector3 direction = player.transform.position - transform.position;
+
+        // Normalize the direction vector to ensure it's a unit vector
+        Vector3 normalizedDir = direction.normalized;
+
+        // Calculate the dot product with the forward vector
+        float dotProduct = Vector3.Dot(normalizedDir, -transform.forward);
+
+        float t = (dotProduct + 1) / 2;
+
+        float curvedT = Mathf.Pow(t, 4f);
 
         // Scale rotation speed based on the angle to the target
-        walkingRotationSpeed = Mathf.Lerp(minRotationSpeed, maxRotationSpeed, angleToTarget / 180f);
+        walkingRotationSpeed = Mathf.Lerp(minRotationSpeed, maxRotationSpeed, curvedT);
+       
     }
 
     public void Activate(bool on)
