@@ -2,13 +2,13 @@ using UnityEngine;
 
 public abstract class Damageable : MonoBehaviour
 {
-    public abstract void ApplyDamage(float damage);
+    public abstract void ApplyDamage(int damage);
 
     [SerializeField]
-    [Range(0f, 500f)]
-    protected float health;
+    [Range(0, 9999)]
+    protected int health;
 
-    public void TakeDamage(float damage)
+    public void TakeDamage(int damage)
     {
         ApplyDamage(damage);
         if (health <= 0)
@@ -16,4 +16,9 @@ public abstract class Damageable : MonoBehaviour
     }
 
     protected virtual void Die() {}
+
+    public int GetHealth()
+    {
+        return health;
+    }
 }

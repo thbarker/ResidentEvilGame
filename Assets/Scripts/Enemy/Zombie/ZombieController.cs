@@ -1,5 +1,6 @@
 using Pathfinding;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ZombieController : Damageable
@@ -13,6 +14,7 @@ public class ZombieController : Damageable
     public ZombieBiteState BiteState { get; set; }
     public ZombieKnockbackState KnockbackState { get; set; }
     public ZombieDieState DieState { get; set; }
+    public ZombieEatState EatState { get; set; }
     #endregion
 
     #region Components
@@ -36,7 +38,6 @@ public class ZombieController : Damageable
     private bool detectedPlayer = false;
     private bool dead = false;
     public bool bite = false;
-    private float maxHealth;
     private float knockbackThreshold;
     #endregion
 
@@ -92,6 +93,14 @@ public class ZombieController : Damageable
     [Tooltip("Maximum Damage Range for a random knockback on damage.")]
     [Range(0, 100f)]
     private float maxKnockThreshold = 30f;
+    [SerializeField]
+    [Tooltip("How big of a range should the random health variation be.")]
+    [Range(0, 500)]
+    private int healthVariation = 30;
+    [SerializeField]
+    [Tooltip("How much damage the zombie deals when biting.")]
+    [Range(0, 500)]
+    private int biteDamage = 25;
 
     void OnValidate()
     {
@@ -100,10 +109,84 @@ public class ZombieController : Damageable
         {
             maxKnockThreshold = minKnockThreshold + 1f; // Increment max to be just above min
         }
+        if(healthVariation > (health) / 2)
+        { 
+            healthVariation = (health) / 2;
+        }
+    }
+    #endregion
+    #region Getters
+    public float GetMinReachThreshold()
+    {
+        return minReachThreshold;
+    }
+    public float GetMaxReachThreshold()
+    {
+        return maxReachThreshold;
+    }
+    public float GetMinDetectionDistance()
+    {
+        return minDetectionDistance;
+    }
+    public float GetMaxDetectionDistance()
+    {
+        return maxDetectionDistance;
+    }
+    public float GetReachThreshold()
+    {
+        return reachThreshold;
+    }
+    public float GetReachThresholdMultiplier()
+    {
+        return reachThresholdMultiplier;
+    }
+    public float GetReachRotationSpeed()
+    {
+        return reachRotationSpeed;
+    }
+    public float GetReachDuration()
+    {
+        return reachDuration;
+    }
+
+    public float GetBiteThreshold()
+    {
+        return biteThreshold;
+    }
+    public float GetReachCooldown()
+    {
+        return reachCooldown;
+    }
+    public float GetBiteDuration()
+    {
+        return biteDuration;
+    }
+    public float GetBiteRotationSpeed()
+    {
+        return biteRotationSpeed;
+    }
+    public float GetLosePlayerTime()
+    {
+        return losePlayerTime;
+    }
+    public bool GetDetectedPlayer()
+    {
+        return detectedPlayer;
+    }
+    public int GetBiteDamage()
+    {
+        return biteDamage;
     }
     #endregion
 
-    public override void ApplyDamage(float damage)
+    #region Setters
+    public void SetDetectedPlayer(bool detectedPlayer)
+    {
+        this.detectedPlayer = detectedPlayer;
+    }
+    #endregion
+
+    public override void ApplyDamage(int damage)
     {
         health -= damage;
         knockbackThreshold -= damage;
@@ -163,7 +246,11 @@ public class ZombieController : Damageable
         BiteState = new ZombieBiteState(this, StateMachine);
         KnockbackState = new ZombieKnockbackState(this, StateMachine);
         DieState = new ZombieDieState(this, StateMachine);
-}
+        EatState = new ZombieEatState(this, StateMachine);
+
+        health = Random.Range(health - healthVariation, health + healthVariation);
+        health = Mathf.Clamp(health, 0, int.MaxValue);
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -285,70 +372,5 @@ public class ZombieController : Damageable
     void OnDrawGizmosSelected()
     {
     }
-    #region Getters
-    public float GetMinReachThreshold()
-    {
-        return minReachThreshold;
-    }
-    public float GetMaxReachThreshold()
-    {
-        return maxReachThreshold;
-    }
-    public float GetMinDetectionDistance()
-    {
-        return minDetectionDistance;
-    }
-    public float GetMaxDetectionDistance()
-    {
-        return maxDetectionDistance;
-    }
-    public float GetReachThreshold()
-    {
-        return reachThreshold;
-    }
-    public float GetReachThresholdMultiplier()
-    {
-        return reachThresholdMultiplier;
-    }
-    public float GetReachRotationSpeed()
-    {
-        return reachRotationSpeed;
-    }
-    public float GetReachDuration()
-    {
-        return reachDuration;
-    }
-
-    public float GetBiteThreshold()
-    {
-        return biteThreshold;
-    }
-    public float GetReachCooldown()
-    {
-        return reachCooldown;
-    }
-    public float GetBiteDuration()
-    {
-        return biteDuration;
-    }
-    public float GetBiteRotationSpeed()
-    {
-        return biteRotationSpeed;
-    }
-    public float GetLosePlayerTime()
-    {
-        return losePlayerTime;
-    }
-    public bool GetDetectedPlayer()
-    {
-        return detectedPlayer;
-    }
-    #endregion
-
-    #region Setters
-    public void SetDetectedPlayer(bool detectedPlayer)
-    {
-        this.detectedPlayer = detectedPlayer;
-    }
-    #endregion
+    
 }

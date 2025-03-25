@@ -68,12 +68,18 @@ public class ZombieBiteState : EnemyState
     public override void ExitState()
     {
         base.ExitState();
+        playerDamage.TakeDamage(zombieController.GetBiteDamage());
         animator.applyRootMotion = true;
     }
 
     public override void FrameUpdate()
     {
         base.FrameUpdate();
+        if(playerDamage.dead)
+        {
+            animator.SetBool("Idle", true);
+            zombieController.StateMachine.ChangeState(zombieController.IdleState);
+        }
         // Lerp to Player
         LerpToPlayer();
 

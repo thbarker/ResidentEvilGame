@@ -2,24 +2,46 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerDamage : MonoBehaviour
+public class PlayerDamage : Damageable
 {
-    Animator animator; 
-    private bool isBeingBitten = false;
-    public Transform zombieTransform;
-    [SerializeField] 
-    private float lerpTime = 1f;  // Time in seconds to complete the lerp
-    [SerializeField]
-    private float pushForce = 5f;  // Time in seconds to complete the lerp
-    [SerializeField]
-    private PlayerMovement playerMovement;
-    [SerializeField]
-    private float biteDuration = 3f;
-    [SerializeField]
-    private float pushRadius = 2f;
-    private float currentLerpTime = 0.0f;
+    #region References
     private Rigidbody rb;
     private GameObject bitingZombie;
+    public Animator animator; 
+    public Transform zombieTransform;
+    [SerializeField]
+    private PlayerMovement playerMovement;
+    #endregion
+
+    #region Helpers
+    private bool isBeingBitten = false;
+    private float currentLerpTime = 0.0f;
+    public bool dead = false;
+    #endregion
+
+    #region Tunables
+    [SerializeField]
+    [Tooltip("Time in seconds to complete the lerp to zombie when bitten")]
+    private float lerpTime = 1f;
+    [SerializeField]
+    [Tooltip("Amount of force used to push away zombies after a bite")]
+    private float pushForce = 5f;
+    [SerializeField]
+    [Tooltip("How long does the bite last in seconds")]
+    private float biteDuration = 3f;
+    [SerializeField]
+    [Tooltip("Range used to push away zombies after a bite")]
+    private float pushRadius = 2f;
+    [SerializeField]
+    [Tooltip("Maximum Player Health")]
+    [Range(0, 500)]
+    public int maxHealth = 100;
+    #endregion
+
+    private void Awake()
+    {
+        health = maxHealth;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -96,5 +118,19 @@ public class PlayerDamage : MonoBehaviour
     public float GetPushRadius()
     {
         return pushRadius;
+    }
+
+    public override void ApplyDamage(int damage)
+    {
+        health -= damage;
+    }
+
+    protected override void Die()
+    {
+        if(!isBeingBitten)
+        {
+            playerMovement.StateMachine.ChangeState(playerMovement.DieState);
+        }
+        dead = true;
     }
 }

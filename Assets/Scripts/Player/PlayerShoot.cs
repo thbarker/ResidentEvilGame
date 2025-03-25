@@ -15,8 +15,8 @@ public class PlayerShoot : MonoBehaviour
     [Range(0.01f, 2f)]
     private float fireRate;
     [SerializeField]
-    [Range(0f, 50f)]
-    private float damage;
+    [Range(0, 50)]
+    private int damage = 10;
     public Transform shootingPoint;
     private bool canAttack = false;
     private bool isAttacking = false;

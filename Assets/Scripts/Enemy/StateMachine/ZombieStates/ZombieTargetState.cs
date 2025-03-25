@@ -59,6 +59,11 @@ public class ZombieTargetState : EnemyState
     public override void FrameUpdate()
     {
         base.FrameUpdate();
+        // If the player is dead return to idle
+        if (playerDamage.dead && zombieController.GetDistanceToPlayer() < 1f)
+        {
+            zombieController.StateMachine.ChangeState(zombieController.EatState);
+        }
         // Scale the Reach Threshold with player speed relative zombie
         ScaleReachThreshold();
 
@@ -74,12 +79,15 @@ public class ZombieTargetState : EnemyState
         
         // If the player is being bit while the zombie is targeting, return to idle when close enough
         if (playerDamage.GetIsBeingBitten() 
-            && zombieController.GetDistanceToPlayer() < 1)
+            && zombieController.GetDistanceToPlayer() < 1
+            && !playerDamage.dead)
         {
             zombieController.StateMachine.ChangeState(zombieController.IdleState);
         }
-        // If the reach threshold is entered and the player isn't being bit, reach toward the player
-        if (zombieController.GetDistanceToPlayer() < scaledReachThreshold && !playerDamage.GetIsBeingBitten())
+        // If the reach threshold is entered and the player isn't being bit or dead, reach toward the player
+        if (zombieController.GetDistanceToPlayer() < scaledReachThreshold 
+            && !playerDamage.GetIsBeingBitten() 
+            && !playerDamage.dead)
         {
             zombieController.StateMachine.ChangeState(zombieController.ReachState);
         }

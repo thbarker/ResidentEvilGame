@@ -55,8 +55,8 @@ public class ZombieReachState : EnemyState
     public override void FrameUpdate()
     {
         base.FrameUpdate();
-        // If the player is being bit while the zombie is reaching, return to idle
-        if (playerDamage.GetIsBeingBitten())
+        // If the player is being bit or dead while the zombie is reaching, return to idle
+        if (playerDamage.GetIsBeingBitten() || playerDamage.dead)
         {
             zombieController.StateMachine.ChangeState(zombieController.IdleState);
         }

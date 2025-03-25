@@ -58,7 +58,13 @@ public class PlayerBitState : PlayerState
         }
         if (Time.time - startTime > biteDuration)
         {
-            playerMovement.StateMachine.ChangeState(playerMovement.MoveState);
+            if(playerDamage.GetHealth() <= 0)
+            {
+                playerMovement.StateMachine.ChangeState(playerMovement.DieState);
+            } else
+            {
+                playerMovement.StateMachine.ChangeState(playerMovement.MoveState);
+            }
         }
         // Increment the lerp time
         currentLerpTime += Time.deltaTime;

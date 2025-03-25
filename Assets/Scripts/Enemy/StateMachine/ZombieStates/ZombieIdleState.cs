@@ -9,11 +9,13 @@ public class ZombieIdleState : EnemyState
     private Animator animator;
     private Transform transform;
     private GameObject player;
+    private PlayerDamage playerDamage;
     public ZombieIdleState(ZombieController zombieController, EnemyStateMachine enemyStateMachine) : base(zombieController, enemyStateMachine)
     {
         animator = zombieController.GetComponent<Animator>();
         transform = zombieController.transform;
         player = zombieController.player;
+        playerDamage = zombieController.playerDamage;
         minDetectionDistance = zombieController.GetMinDetectionDistance();
         maxDetectionDistance = zombieController.GetMaxDetectionDistance();
     }
@@ -35,21 +37,24 @@ public class ZombieIdleState : EnemyState
 
     public override void FrameUpdate()
     {
-        base.FrameUpdate(); 
-        // Perform raycast to detect line of sight of zombie
-        Vector3 direction = player.transform.position - transform.position;
-        float distance = MapDirectionToValue(direction);
-        direction.Normalize();
-        Vector3 origin = new Vector3(transform.position.x, transform.position.y + 1, transform.position.z);
-        Debug.DrawLine(origin, origin + direction * distance, Color.magenta);
-        // Perform the raycast
-        if (Physics.Raycast(origin, direction, out RaycastHit hit, distance))
+        base.FrameUpdate();
+        if (!playerDamage.dead)
         {
-            // Check if the hit object is the player
-            if (hit.collider.gameObject == player)
+            // Perform raycast to detect line of sight of zombie
+            Vector3 direction = player.transform.position - transform.position;
+            float distance = MapDirectionToValue(direction);
+            direction.Normalize();
+            Vector3 origin = new Vector3(transform.position.x, transform.position.y + 1, transform.position.z);
+            Debug.DrawLine(origin, origin + direction * distance, Color.magenta);
+            // Perform the raycast
+            if (Physics.Raycast(origin, direction, out RaycastHit hit, distance))
             {
-                // Detect Player
-                DetectPlayer();
+                // Check if the hit object is the player
+                if (hit.collider.gameObject == player)
+                {
+                    // Detect Player
+                    DetectPlayer();
+                }
             }
         }
     }
