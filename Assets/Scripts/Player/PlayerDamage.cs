@@ -125,6 +125,13 @@ public class PlayerDamage : Damageable
         health -= damage;
     }
 
+    public void Heal(int damage)
+    {
+        health += damage;
+        if(health > maxHealth) 
+            health = maxHealth;
+    }
+
     protected override void Die()
     {
         if(!isBeingBitten)

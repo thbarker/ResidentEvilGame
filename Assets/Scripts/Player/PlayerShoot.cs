@@ -13,12 +13,12 @@ public class PlayerShoot : MonoBehaviour
     private Animator animator;
     [SerializeField]
     [Range(0.01f, 2f)]
-    private float fireRate;
+    public float fireRate;
     [SerializeField]
     [Range(0, 50)]
     private int damage = 10;
     public Transform shootingPoint;
-    private bool canAttack = false;
+    public bool canAttack = false;
     private bool isAttacking = false;
     private bool attackCooldown = false;
     private void Awake()
@@ -41,12 +41,6 @@ public class PlayerShoot : MonoBehaviour
         animator = GetComponent<Animator>();
         playerMovement = GetComponent<PlayerMovement>();
         zombieList = transform.Find("ZombieList").GetComponent<ZombieList>();
-    }
-
-    private void FixedUpdate()
-    {
-        UpdateAttack();
-        UpdateAnimationLayer();
     }
 
     private IEnumerator Attack()
@@ -80,23 +74,11 @@ public class PlayerShoot : MonoBehaviour
         attackCooldown = false;
     }
 
-    private void UpdateAttack()
+    public void UpdateAttack()
     {
         if(canAttack && isAttacking)
         {
             StartCoroutine(Attack());
-        }
-    }
-
-    private void UpdateAnimationLayer()
-    {
-        animator.SetFloat("AttackSpeed", (1 / fireRate));
-        if(playerMovement.StateMachine.CurrentPlayerState == playerMovement.AimState)
-        {
-            canAttack = true;
-        } else
-        {
-            canAttack = false;
         }
     }
 }

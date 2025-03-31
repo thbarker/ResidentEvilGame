@@ -205,6 +205,7 @@ public class PlayerMovement : MonoBehaviour
 
         // Apply new rotation to the Rigidbody
         rb.MoveRotation(newRotation);
+        UpdateRotationAnim();
     }
 
     public void SetInputEnabled(bool on)

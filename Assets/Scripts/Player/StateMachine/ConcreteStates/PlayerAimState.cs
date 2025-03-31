@@ -9,9 +9,11 @@ public class PlayerAimState : PlayerState
     private Animator animator;
     private Transform transform;
     private PlayerControls controls;
+    private PlayerShoot playerShoot;
     private ZombieList zombieList; 
     private int currentTargetIndex = -1; // Start with -1 to indicate no target initially
     private bool isRotating = false;
+    private bool canAttack = false;
     public float rotationSpeed;  // Adjust this value to control the speed of rotation
     private Quaternion targetRotation;
 
@@ -26,6 +28,8 @@ public class PlayerAimState : PlayerState
 
         // Get reference to player controls
         controls = PlayerInputManager.controls;
+        
+        playerShoot = playerMovement.GetComponent<PlayerShoot>();
 
         controls.Player.ChangeTarget.performed += ctx => ChangeTarget();
         zombieList = playerMovement.transform.Find("ZombieList").GetComponent<ZombieList>();
@@ -54,6 +58,8 @@ public class PlayerAimState : PlayerState
     public override void ExitState()
     {
         base.ExitState();
+        canAttack = false;
+        playerShoot.canAttack = false;
         isRotating = false;
     }
 
@@ -65,11 +71,24 @@ public class PlayerAimState : PlayerState
         {
             animator.ResetTrigger("Aim");
         }
+        if(Time.time - startTime > 0.25)
+        {
+            playerShoot.canAttack = true;
+            canAttack = true;
+        }
+        
+        animator.SetFloat("AttackSpeed", (1 / playerShoot.fireRate));
+
+        playerShoot.UpdateAttack();
+
         // Exit if not aiming
         if (!playerMovement.GetAiming())
         {
             playerMovement.StateMachine.ChangeState(playerMovement.MoveState);
         }
+
+        // Attack when necessary
+
 
         if (isRotating)
         {
