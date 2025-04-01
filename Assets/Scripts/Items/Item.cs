@@ -14,8 +14,8 @@ public class Item
         icon = InitializeIcon(iconName);
     }
 
-    public virtual void Use() { }
-    public virtual void Combine(Item item) { }
+    public virtual bool Use() { return false; }
+    public virtual Item Combine(Item item) { return null; }
     public virtual void Examine() { }
     public Sprite InitializeIcon(string itemName)
     {

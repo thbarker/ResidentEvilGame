@@ -1,29 +1,34 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.HID;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
+using UnityEngine.EventSystems;
 
+public enum iStates
+{
+    Default,
+    SlotMenu,
+    Combine
+}
 public class PlayerInventory : MonoBehaviour
 {
     public List<Item> itemList;
     public List<Slot> slotList;
+    public GameObject selectedSlot;
     public int slots = 6;
     public int maxSlots = 8;
+
+    public Item itemToCombine;
+    public int slotToCombine;
+
+    public iStates state;
 
     public GameObject statusCanvas;
 
     private PlayerControls controls;
     public PlayerDamage playerDamage;
     public UIManager uiManager;
+    public EventSystem eventSystem;
 
-        private void Awake()
+    private void Awake()
     {
         // Get reference to player controls
         controls = PlayerInputManager.controls;
@@ -31,6 +36,8 @@ public class PlayerInventory : MonoBehaviour
         uiManager = GameObject.FindWithTag("Player")?.transform.Find("UIManager")?.GetComponent<UIManager>();
         //Get a reference to player damage
         playerDamage = transform.parent.GetComponent<PlayerDamage>();
+        // Get a reference to event system
+        eventSystem = GameObject.Find("EventSystem")?.GetComponent<EventSystem>();
 
         statusCanvas = transform.Find("Canvas").gameObject;
 
@@ -45,6 +52,10 @@ public class PlayerInventory : MonoBehaviour
         controls.UI.Exit.performed += ctx =>
         {
             CloseStatus();
+        };
+        controls.UI.Cancel.performed += ctx =>
+        {
+            Back();
         };
     }
 
@@ -67,20 +78,61 @@ public class PlayerInventory : MonoBehaviour
                     slotList[i - 1].gameObject.SetActive(false);
             }
         }
+        selectedSlot = slotList[0]?.transform.Find("SelectButton")?.gameObject;
         statusCanvas.SetActive(false);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void ChangeState(iStates iState)
     {
-        if(Input.GetKeyDown(KeyCode.KeypadPlus))
+        state = iState;
+        switch(iState)
         {
-            AddItem(new GreenHerb(this));
+            case iStates.Default:
+                DefaultUpdate();
+                break;
+            case iStates.SlotMenu:
+                SlotMenuUpdate();
+                break;
+            case iStates.Combine:
+                CombineUpdate();
+                break;
         }
-        if (Input.GetKeyDown(KeyCode.KeypadMinus))
+    }
+
+    public void DefaultUpdate()
+    {
+        foreach (Slot slot in slotList)
         {
-            AddItem(new RedHerb(this));
+            slot.SetCombineButton(false);
+            slot.SetSelectButton(true); 
+            slot.SetSlotMenu(false);
+            itemToCombine = null;
+            slotToCombine = 0;
         }
+        eventSystem.SetSelectedGameObject(null);
+        eventSystem.SetSelectedGameObject(selectedSlot);
+    }
+    public void SlotMenuUpdate()
+    {
+        foreach (Slot slot in slotList)
+        {
+            slot.SetCombineButton(false);
+            slot.SetSelectButton(false);
+            slot.SetSlotMenu(false);
+            itemToCombine = null;
+            slotToCombine = 0;
+        }
+        //eventSystem.SetSelectedGameObject(null);
+    }
+    public void CombineUpdate()
+    {
+        foreach (Slot slot in slotList)
+        {
+            slot.SetCombineButton(true);
+            slot.SetSelectButton(false);
+            slot.SetSlotMenu(false);
+        }
+        //eventSystem.SetSelectedGameObject(null);
     }
 
     public void AddItem(Item item)
@@ -96,14 +148,45 @@ public class PlayerInventory : MonoBehaviour
             Debug.Log("No space in inventory");
         }
     }
+    public void ReplaceItemAt(Item item, int index)
+    {
+        if (index < 0 || index >= itemList.Count)
+        {
+            return;
+        }
+        itemList[index] = item;
+    }
     public void RemoveItem(Item item)
     {
-        int index = itemList.IndexOf(item);
         itemList.Remove(item);
-        slotList[index].item = null;
+        for (int i = 0; i < slots; i++)
+        {
+            if (i < itemList.Count)
+                slotList[i].item = itemList[i];
+            else
+                slotList[i].item = null;
+        }
+    }
+    public void RemoveItemAt(int index)
+    {
+        if (index < 0)
+        {
+            index = 0;
+        }
+        else if (index >= itemList.Count)
+        {
+            index = itemList.Count - 1;
+        }
+        itemList.RemoveAt(index);
+        for (int i = 0; i < slots; i++)
+        {
+            if (i < itemList.Count)
+                slotList[i].item = itemList[i];
+            else
+                slotList[i].item = null;
+        }
     }
 
-    
     public void Interact()
     {
         bool isHit = false;
@@ -188,14 +271,32 @@ public class PlayerInventory : MonoBehaviour
         {
             uiManager.StartUI();
             statusCanvas.SetActive(true);
+            selectedSlot = slotList[0].gameObject;
+            ChangeState(iStates.Default);
         }
+        
     }
     public void CloseStatus()
     {
         if (statusCanvas.activeSelf)
         {
+            ChangeState(iStates.Default);
             uiManager.EndUI();
             statusCanvas.SetActive(false);
+        }
+    }
+    public void Back()
+    {
+        if(state == iStates.Combine)
+        {
+            ChangeState(iStates.Default);
+        }
+        else if(state == iStates.SlotMenu)
+        {
+            ChangeState(iStates.Default);
+        } else
+        {
+            CloseStatus();
         }
     }
     public void PrintList()

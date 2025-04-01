@@ -16,24 +16,23 @@ public class RedHerb : Item
         isKeyItem = false;
     }
 
-    public override void Use()
+    public override bool Use()
     {
         Debug.Log("You cannot use this item alone");
+        return false;
     }
-    public override void Combine(Item item)
+    public override Item Combine(Item item)
     {
         switch (item.name)
         {
             case "Green Herb":
                 Debug.Log("Can Combine with Green Herb");
-                break;
-            case "Double Green Herb":
-                Debug.Log("Can Combine with Double Green Herb");
-                break;
+                return new RedGreenHerb(playerInventory);
             default:
                 Debug.Log("Cannot Combine with " + item.name);
                 break;
         }
+        return null;
     }
     public override void Examine()
     {

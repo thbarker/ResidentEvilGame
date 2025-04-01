@@ -40,15 +40,22 @@ public class PlayerDamage : Damageable
 
     private void Awake()
     {
+        rb = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>();
+        playerMovement = GetComponent<PlayerMovement>();
         health = maxHealth;
     }
 
     // Start is called before the first frame update
     void Start()
+    { 
+    }
+    private void Update()
     {
-        rb = GetComponent<Rigidbody>();
-        animator = GetComponent<Animator>();
-        playerMovement = GetComponent<PlayerMovement>();
+        if(Input.GetKeyDown(KeyCode.KeypadMinus))
+        {
+            ApplyDamage(10);
+        }
     }
 
     public void GetBit(GameObject zombie, Transform zombieTransform)

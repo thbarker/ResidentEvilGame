@@ -9,11 +9,14 @@ public class ConfirmPickup : MonoBehaviour
     public GameObject confirmationPanel;
     public TextMeshProUGUI confirmationMessage;
 
-    private void Start()
+    private void Awake()
     {
         uiManager = GameObject.FindWithTag("Player")?.transform.Find("UIManager")?.GetComponent<UIManager>();
         confirmationPanel = transform.Find("ConfirmPickupPanel").gameObject;
         confirmationMessage = confirmationPanel.transform.Find("Text")?.GetComponent<TextMeshProUGUI>();
+    }
+    private void Start()
+    {
         confirmationPanel.SetActive(false);
     }
     public void ShowPickupConfirmation(string itemName)

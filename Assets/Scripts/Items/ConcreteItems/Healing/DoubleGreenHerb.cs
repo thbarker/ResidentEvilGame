@@ -6,34 +6,35 @@ public class DoubleGreenHerb : Item
 {
     protected PlayerInventory playerInventory;
     protected List<Item> itemList;
+    private PlayerDamage playerDamage;
 
-
-    public DoubleGreenHerb(PlayerInventory playerInventory) : base("GreenHerb")
+    public DoubleGreenHerb(PlayerInventory playerInventory) : base("DoubleGreenHerb")
     {
         this.playerInventory = playerInventory;
+        playerDamage = playerInventory.playerDamage;
         name = "Double Green Herb";
         description = "A Mix of two medicinal herb used to greatly restore one's health";
         isKeyItem = false;
     }
 
-    public override void Use()
+    public override bool Use()
     {
-        Debug.Log("You have gained health");
+        playerDamage.Heal(50);
+        Debug.Log("You have restored a great amount of health");
+        return true;
     }
-    public override void Combine(Item item) 
+    public override Item Combine(Item item)
     {
         switch (item.name)
         {
-            case "Red Herb":
-                Debug.Log("Can Combine with Red Herb");
-                break;
             case "Green Herb":
                 Debug.Log("Can Combine with Green Herb");
-                break;
+                return new TripleGreenHerb(playerInventory);
             default:
                 Debug.Log("Cannot Combine with " + item.name);
                 break;
         }
+        return null;
     }
     public override void Examine() 
     {

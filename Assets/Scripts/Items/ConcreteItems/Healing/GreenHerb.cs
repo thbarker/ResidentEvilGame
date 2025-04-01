@@ -24,28 +24,30 @@ public class GreenHerb : Item
         }
     }
 
-    public override void Use()
+    public override bool Use()
     {
         playerDamage.Heal(25);
-        Debug.Log("You have gained health");
+        Debug.Log("You have restored a small amount of health");
+        return true;
     }
-    public override void Combine(Item item) 
+    public override Item Combine(Item item)
     {
         switch(item.name)
         {
             case "Red Herb":
                 Debug.Log("Can Combine with Red Herb");
-                break;
+                return new RedGreenHerb(playerInventory);
             case "Green Herb":
                 Debug.Log("Can Combine with Green Herb");
-                break;
+                return new DoubleGreenHerb(playerInventory);
             case "Double Green Herb":
                 Debug.Log("Can Combine with Double Green Herb");
-                break;
+                return new TripleGreenHerb(playerInventory);
             default:
                 Debug.Log("Cannot Combine with " + item.name);
                 break;
         }
+        return null;
     }
     public override void Examine() 
     {
