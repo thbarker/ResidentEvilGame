@@ -49,6 +49,14 @@ public class PlayerInventory : MonoBehaviour
         {
             OpenStatus();
         };
+        controls.UI.Submit.performed += ctx =>
+        {
+            SubmitCanceled();
+        };
+        controls.UI.Submit.canceled += ctx =>
+        {
+            SubmitCanceled();
+        };
         controls.UI.Exit.performed += ctx =>
         {
             CloseStatus();
@@ -79,7 +87,7 @@ public class PlayerInventory : MonoBehaviour
             }
         }
         selectedSlot = slotList[0]?.transform.Find("SelectButton")?.gameObject;
-        statusCanvas.SetActive(false);
+        statusCanvas.SetActive(false); 
     }
 
     public void ChangeState(iStates iState)
@@ -88,7 +96,7 @@ public class PlayerInventory : MonoBehaviour
         switch(iState)
         {
             case iStates.Default:
-                DefaultUpdate();
+                DefaultUpdate(); 
                 break;
             case iStates.SlotMenu:
                 SlotMenuUpdate();
@@ -109,7 +117,6 @@ public class PlayerInventory : MonoBehaviour
             itemToCombine = null;
             slotToCombine = 0;
         }
-        eventSystem.SetSelectedGameObject(null);
         eventSystem.SetSelectedGameObject(selectedSlot);
     }
     public void SlotMenuUpdate()
@@ -122,17 +129,15 @@ public class PlayerInventory : MonoBehaviour
             itemToCombine = null;
             slotToCombine = 0;
         }
-        //eventSystem.SetSelectedGameObject(null);
     }
     public void CombineUpdate()
     {
         foreach (Slot slot in slotList)
         {
-            slot.SetCombineButton(true);
+            slot.SetCombineButton(false);
             slot.SetSelectButton(false);
             slot.SetSlotMenu(false);
         }
-        //eventSystem.SetSelectedGameObject(null);
     }
 
     public void AddItem(Item item)
@@ -212,7 +217,7 @@ public class PlayerInventory : MonoBehaviour
             Debug.Log("Hit: " + hit.collider.name);
             if (hit.collider.gameObject.GetComponent<ItemPickup>())
             {
-                ItemPickup itemPickup = hit.collider.gameObject.GetComponent<ItemPickup>();
+                ItemPickup itemPickup = hit.collider.gameObject.GetComponent<ItemPickup>(); 
                 itemPickup.Interact();
                 Debug.Log("Hit: " + hit.collider.name);
                 return;
@@ -271,10 +276,10 @@ public class PlayerInventory : MonoBehaviour
         {
             uiManager.StartUI();
             statusCanvas.SetActive(true);
-            selectedSlot = slotList[0].gameObject;
             ChangeState(iStates.Default);
+            // selectedSlot = slotList[0].gameObject;
         }
-        
+
     }
     public void CloseStatus()
     {
@@ -298,6 +303,9 @@ public class PlayerInventory : MonoBehaviour
         {
             CloseStatus();
         }
+    }
+    public void SubmitCanceled()
+    {
     }
     public void PrintList()
     {

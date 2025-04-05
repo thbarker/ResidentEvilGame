@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public enum Items
 {
@@ -16,11 +17,16 @@ public class ItemPickup : MonoBehaviour
     public Item item;
     public PlayerInventory playerInventory;
     public ConfirmPickup confirmPickup;
+    public EventSystem eventSystem;
+    private void Awake()
+    {
+        eventSystem = GameObject.Find("EventSystem")?.GetComponent<EventSystem>();
+    }
 
     void Start()
     {
         playerInventory = GameObject.FindWithTag("Player")?.transform.Find("Inventory")?.GetComponent<PlayerInventory>();
-        confirmPickup = transform.Find("ConfirmPickupCanvas")?.GetComponent<ConfirmPickup>();
+        confirmPickup = GameObject.FindWithTag("Player")?.transform.Find("ConfirmPickupCanvas")?.GetComponent<ConfirmPickup>();
         InitializeItemRef();
     }
 
@@ -28,25 +34,13 @@ public class ItemPickup : MonoBehaviour
     {
         if(playerInventory.itemList.Count < playerInventory.slots)
         {
+            confirmPickup.itemPickup = this;
             confirmPickup.ShowPickupConfirmation(item.name);
         } else
         {
             Debug.Log("Not enough inventory space.");
         }
     }
-
-    public void ConfirmPickup()
-    {
-        confirmPickup.HidePickupConfirmation();
-        playerInventory.AddItem(item);
-        Destroy(gameObject);
-
-    }
-    public void DenyPickup()
-    {
-        confirmPickup.HidePickupConfirmation();
-    }
-
     public void InitializeItemRef()
     {
         switch (itemEnum)

@@ -20,7 +20,7 @@ public class Slot : MonoBehaviour
         playerInventory = GameObject.FindWithTag("Player")?.transform.Find("Inventory")?.GetComponent<PlayerInventory>();
         eventSystem = GameObject.Find("EventSystem")?.GetComponent<EventSystem>();
         slotMenu = transform.Find("SlotMenu")?.gameObject;
-        useButton = slotMenu?.transform.Find("UseButton")?.gameObject;
+        useButton = slotMenu?.transform.Find("Use")?.gameObject;
         selectButton = transform.Find("SelectButton")?.gameObject;
         combineButton = transform.Find("CombineButton")?.gameObject;
     }
@@ -36,10 +36,12 @@ public class Slot : MonoBehaviour
         {
             icon.sprite = item.icon;
             icon.color = new Color(1, 1, 1, 1);
+            selectButton.SetActive(true);
         } else
         {
             icon.sprite = null;
-            icon.color = new Color(1, 1, 1, 0); 
+            icon.color = new Color(1, 1, 1, 0);
+            selectButton.SetActive(false);
         }
     }
 
@@ -57,10 +59,35 @@ public class Slot : MonoBehaviour
             Debug.Log("Not enough items to combine");
             return;
         }
-        playerInventory.itemToCombine = item;
-        playerInventory.slotToCombine = slotNumber;
-        playerInventory.ChangeState(iStates.Combine);
-        SetCombineButton(false);
+        bool canCombine = false;
+        List<Slot> combineSlots = new List<Slot>();
+        foreach (Slot slot in playerInventory.slotList)
+        {
+            if (slot == this)
+                continue;
+            if (slot.item != null && item.Combine(slot.item) != null)
+            {
+                combineSlots.Add(slot);
+                canCombine = true;
+            }
+        }
+        if(!canCombine)
+        {
+            playerInventory.ChangeState(iStates.Default);
+            Debug.Log("No valid items to combine with");
+            return;
+        } else
+        {
+            playerInventory.itemToCombine = item;
+            playerInventory.slotToCombine = slotNumber;
+            playerInventory.ChangeState(iStates.Combine);
+            foreach (Slot slot in combineSlots)
+            {
+                slot.SetCombineButton(true);
+            }
+            eventSystem.SetSelectedGameObject(null);
+            eventSystem.SetSelectedGameObject(combineSlots[0].combineButton);
+        }
     }
     public void Combine()
     {
@@ -68,6 +95,13 @@ public class Slot : MonoBehaviour
         replacement = item.Combine(playerInventory.itemToCombine);
         if (replacement != null)
         {
+            if(playerInventory.slotToCombine < slotNumber)
+            {
+                playerInventory.selectedSlot = playerInventory.slotList[slotNumber - 2].selectButton;
+            } else
+            {
+                playerInventory.selectedSlot = playerInventory.slotList[slotNumber - 1].selectButton;
+            }
             playerInventory.ReplaceItemAt(replacement, slotNumber - 1);
             playerInventory.RemoveItemAt(playerInventory.slotToCombine - 1);
         }
@@ -99,9 +133,9 @@ public class Slot : MonoBehaviour
             playerInventory.ChangeState(iStates.SlotMenu);
             Debug.Log("Setting Slot menu of " + gameObject + "To active");
             slotMenu.SetActive(true);
-            //eventSystem.SetSelectedGameObject(null);
+            eventSystem.SetSelectedGameObject(null);
             eventSystem.SetSelectedGameObject(useButton);
-            playerInventory.selectedSlot = gameObject;
+            playerInventory.selectedSlot = selectButton;
         } 
     }
     
