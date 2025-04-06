@@ -28,6 +28,11 @@ public class TripleGreenHerb : Item
         Debug.Log("Cannot Combine with " + item.name);
         return null;
     }
+    public override bool CanCombine(Item item)
+    {
+        Debug.Log("Cannot Combine with " + item.name);
+        return false;
+    }
     public override void Examine() 
     {
         Debug.Log(description);

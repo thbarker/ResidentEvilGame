@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -12,6 +13,7 @@ public class Slot : MonoBehaviour
     public Item item;
     public int slotNumber = 1;
     public GameObject slotMenu, useButton, selectButton, combineButton;
+    public TextMeshProUGUI count;
 
     // Start is called before the first frame update
     void Awake()
@@ -23,37 +25,33 @@ public class Slot : MonoBehaviour
         useButton = slotMenu?.transform.Find("Use")?.gameObject;
         selectButton = transform.Find("SelectButton")?.gameObject;
         combineButton = transform.Find("CombineButton")?.gameObject;
+        count = transform.Find("Count")?.GetComponent<TextMeshProUGUI>();
     }
     private void Start()
     {
         slotMenu.SetActive(false);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (item != null)
-        {
-            icon.sprite = item.icon;
-            icon.color = new Color(1, 1, 1, 1);
-            selectButton.SetActive(true);
-        } else
-        {
-            icon.sprite = null;
-            icon.color = new Color(1, 1, 1, 0);
-            selectButton.SetActive(false);
-        }
-    }
-
     public void Use()
     {
-        item.Use();
-        playerInventory.RemoveItemAt(slotNumber-1);
+        if(item.Use())
+            playerInventory.RemoveItemAt(slotNumber-1);
         playerInventory.ChangeState(iStates.Default);
+        if (item == null)
+        {
+            if (playerInventory.itemList.Count > 0)
+            {
+                eventSystem.SetSelectedGameObject(null);
+                eventSystem.SetSelectedGameObject(playerInventory.slotList[slotNumber - 2].selectButton);
+            } else
+            {
+                eventSystem.SetSelectedGameObject(null);
+            }
+        }
     }
     public void BeginCombine()
     {
-        if(playerInventory.itemList.Count < 2)
+        if (playerInventory.itemList.Count < 2)
         {
             playerInventory.ChangeState(iStates.Default);
             Debug.Log("Not enough items to combine");
@@ -65,13 +63,13 @@ public class Slot : MonoBehaviour
         {
             if (slot == this)
                 continue;
-            if (slot.item != null && item.Combine(slot.item) != null)
+            if (slot.item != null && item.CanCombine(slot.item))
             {
                 combineSlots.Add(slot);
                 canCombine = true;
             }
         }
-        if(!canCombine)
+        if (!canCombine)
         {
             playerInventory.ChangeState(iStates.Default);
             Debug.Log("No valid items to combine with");
@@ -88,6 +86,12 @@ public class Slot : MonoBehaviour
             eventSystem.SetSelectedGameObject(null);
             eventSystem.SetSelectedGameObject(combineSlots[0].combineButton);
         }
+        // Grey out non combinable slots
+        foreach (Slot slot in playerInventory.slotList)
+        {
+            if(!combineSlots.Contains(slot) && slot.item != null)
+                slot.UpdateIcon(0.2f, false);
+        } 
     }
     public void Combine()
     {
@@ -142,6 +146,7 @@ public class Slot : MonoBehaviour
     public void SetSelectButton(bool on)
     {
         selectButton.SetActive(on);
+        Debug.Log("Setting" + slotNumber + " To " + on);
     }
     public void SetCombineButton(bool on)
     {
@@ -150,5 +155,34 @@ public class Slot : MonoBehaviour
     public void SetSlotMenu(bool on)
     {
         slotMenu.SetActive(on);
+    }
+    public void UpdateIcon(float alpha, bool active)
+    {
+        if (item != null)
+        {
+            icon.sprite = item.icon;
+            if(item is HandgunBullets)
+            {
+                HandgunBullets bullets = (HandgunBullets)item;
+                count.text = bullets.count.ToString();
+                if(bullets.count == bullets.stackSize)
+                {
+                    count.color = Color.yellow;
+                } else
+                {
+                    count.color = Color.white;
+                }
+            } else
+            {
+                count.text = "";
+            }
+        } else
+        {
+            icon.sprite = null;
+            count.text = "";
+        }
+        icon.color = new Color(1, 1, 1, alpha);
+        selectButton.SetActive(active);
+        
     }
 }

@@ -35,19 +35,31 @@ public class GreenHerb : Item
         switch(item.name)
         {
             case "Red Herb":
-                Debug.Log("Can Combine with Red Herb");
                 return new RedGreenHerb(playerInventory);
             case "Green Herb":
-                Debug.Log("Can Combine with Green Herb");
                 return new DoubleGreenHerb(playerInventory);
             case "Double Green Herb":
-                Debug.Log("Can Combine with Double Green Herb");
                 return new TripleGreenHerb(playerInventory);
+            default:
+                break;
+        }
+        return null;
+    }
+    public override bool CanCombine(Item item)
+    {
+        switch (item.name)
+        {
+            case "Red Herb":
+                return true;
+            case "Green Herb":
+                return true;
+            case "Double Green Herb":
+                return true;
             default:
                 Debug.Log("Cannot Combine with " + item.name);
                 break;
         }
-        return null;
+        return false;
     }
     public override void Examine() 
     {
