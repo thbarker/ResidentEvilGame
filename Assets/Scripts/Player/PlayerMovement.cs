@@ -2,6 +2,7 @@ using System.Collections;
 using System.Xml;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(Rigidbody))]
@@ -41,7 +42,10 @@ public class PlayerMovement : MonoBehaviour
     public float downAimOffset = 0.5f;
     [Range(0.01f, 1f)]
     [Tooltip("Amount of time it takes to look up/down. Used for the vertical aim smoothing")]
-    public float verticalAimTime = 0.1f; 
+    public float verticalAimTime = 0.1f;
+    [Range(0.01f, 5f)]
+    [Tooltip("Duration of the transition sequence when using a door.")]
+    public float roomTransitionDuration = 2f;
 
     public Rigidbody rb; // Reference to the Rigidbody component
     public PlayerControls controls;
@@ -52,6 +56,9 @@ public class PlayerMovement : MonoBehaviour
     private bool canQuickTurn = true;
     private bool aimAfterQuickTurn = false;
     private float verticalAimLerpValue = 0;
+
+    private Image blackScreen;
+    private float fadeStartTime;
 
     private float currentSpeed;
     private float x, z;
@@ -91,6 +98,7 @@ public class PlayerMovement : MonoBehaviour
 
         rb = GetComponent<Rigidbody>(); // Get the Rigidbody component
         animator = GetComponent<Animator>();
+        blackScreen = transform.Find("FadeCanvas")?.Find("Image")?.GetComponent<Image>();
         currentSpeed = moveSpeed;
 
         StateMachine = new PlayerStateMachine();
@@ -171,7 +179,7 @@ public class PlayerMovement : MonoBehaviour
         if (z > 0.1 && isRunning)
         {
             // If We transition from walk to run, start the run cycle at the corresponding offset
-            if(animator.GetCurrentAnimatorStateInfo(0).IsName("Walking"))
+            if (animator.GetCurrentAnimatorStateInfo(0).IsName("Walking"))
             {
                 float animationProgress = (animator.GetCurrentAnimatorStateInfo(0).normalizedTime + 0.275f) % 1;
                 animator.SetFloat("RunCycleOffset", animationProgress);
@@ -260,7 +268,44 @@ public class PlayerMovement : MonoBehaviour
             animator.SetFloat("VerticalAim", verticalAimTemp);
         }
     }
+    /// <summary>
+    /// This function should be used by a door script to teleport the player
+    /// safely to the other side of the door. It is expected to handle all of 
+    /// the updates that come with entering a new room.
+    /// </summary>
+    /// <param name="spawnPoint">The spawnpoint that the player should be teleported to.</param>
+    public void UseDoor(Transform spawnPoint)
+    {
+        StartCoroutine(RoomTransition(roomTransitionDuration, spawnPoint));
+    }
 
+    IEnumerator RoomTransition(float seconds, Transform spawnPoint)
+    {
+        rb.velocity = Vector3.zero;
+        fadeStartTime = Time.time;
+        StateMachine.ChangeState(IdleState);
+        while (Time.time - fadeStartTime < seconds/3)
+        {
+            float t = (Time.time - fadeStartTime) / (seconds / 3);
+            float alpha = Mathf.Lerp(0, 1, t);
+            blackScreen.color = new Color(0,0,0,alpha);
+            yield return null;
+        }
+        blackScreen.color = new Color(0, 0, 0, 1);
+        transform.position = spawnPoint.position;
+        transform.rotation = spawnPoint.rotation;
+        yield return new WaitForSeconds(seconds / 3);
+        StateMachine.ChangeState(MoveState);
+        fadeStartTime = Time.time;
+        while (Time.time - fadeStartTime < seconds / 3)
+        {
+            float t = (Time.time - fadeStartTime) / (seconds / 3);
+            float alpha = Mathf.Lerp(1, 0, t);
+            blackScreen.color = new Color(0, 0, 0, alpha);
+            yield return null;
+        }
+        blackScreen.color = new Color(0, 0, 0, 0);
+    }
     public void UpdateRotationAnim()
     {
         animator.SetFloat("Rotation", x);

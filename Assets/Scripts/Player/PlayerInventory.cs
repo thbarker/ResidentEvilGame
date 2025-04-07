@@ -228,10 +228,10 @@ public class PlayerInventory : MonoBehaviour
         foreach (RaycastHit hit in hits)
         {
             Debug.Log("Hit: " + hit.collider.name);
-            if (hit.collider.gameObject.GetComponent<ItemPickup>())
+            if (hit.collider.gameObject.GetComponent<Interactable>())
             {
-                ItemPickup itemPickup = hit.collider.gameObject.GetComponent<ItemPickup>(); 
-                itemPickup.Interact();
+                Interactable interactable = hit.collider.gameObject.GetComponent<Interactable>();
+                interactable.Interact();
                 Debug.Log("Hit: " + hit.collider.name);
                 return;
             }
@@ -257,8 +257,8 @@ public class PlayerInventory : MonoBehaviour
                 Debug.Log("Hit: " + hit.collider.name);
                 if (hit.collider.gameObject.GetComponent<ItemPickup>())
                 {
-                    ItemPickup itemPickup = hit.collider.gameObject.GetComponent<ItemPickup>();
-                    itemPickup.Interact();
+                    Interactable interactable = hit.collider.gameObject.GetComponent<Interactable>();
+                    interactable.Interact();
                     Debug.Log("Hit: " + hit.collider.name);
                     return;
                 }

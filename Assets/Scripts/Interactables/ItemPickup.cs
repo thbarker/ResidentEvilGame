@@ -11,9 +11,10 @@ public enum Items
     HandgunBullets,
     Key
 }
-public class ItemPickup : MonoBehaviour
+public class ItemPickup : Interactable
 {
     public Items itemEnum;
+    public int count;
     public Item item;
     public PlayerInventory playerInventory;
     public ConfirmPickup confirmPickup;
@@ -30,7 +31,7 @@ public class ItemPickup : MonoBehaviour
         InitializeItemRef();
     }
 
-    public void Interact()
+    public override void Interact()
     {
         if(playerInventory.itemList.Count < playerInventory.slots)
         {
@@ -52,10 +53,10 @@ public class ItemPickup : MonoBehaviour
                 item = new RedHerb(playerInventory);
                 break;
             case Items.FirstAidSpray:
-                item = new GreenHerb(playerInventory);
+                item = new FirstAidSpray(playerInventory);
                 break;
             case Items.HandgunBullets:
-                item = new GreenHerb(playerInventory);
+                item = new HandgunBullets(playerInventory, count);
                 break;
             case Items.Key:
                 item = new GreenHerb(playerInventory);

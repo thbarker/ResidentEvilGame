@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class PlayerMoveState : PlayerState
 {
+    private Animator animator;
     public PlayerMoveState(PlayerMovement playerMovement, PlayerStateMachine playerStateMachine) : base(playerMovement, playerStateMachine)
     {
+        animator = playerMovement.animator;
     }
 
     public override void AnimationTriggerEvent(PlayerMovement.AnimationTriggerType triggerType)
@@ -21,6 +23,8 @@ public class PlayerMoveState : PlayerState
     public override void ExitState()
     {
         base.ExitState();
+        animator.SetBool("Walking", false);
+        animator.SetBool("Running", false);
     }
 
     public override void FrameUpdate()
