@@ -8,7 +8,9 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SPP_1
-  m_Shader: {fileID: -6465566751694194690, guid: f45b04819d154eeab5ae755751d2cd31, type: 3}
+  m_Shader: {fileID: 4800000, guid: 986ca04635e014a4fbafff095b965221, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -17,6 +19,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -49,7 +52,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: ad24373ad51243ae9109ab316cfac9f4, type: 3}
+        m_Texture: {fileID: 2800000, guid: d8796f1ee08b4a2f9221b431ac7f716a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -70,11 +73,15 @@ Material:
     - _BUILTIN_QueueControl: 0
     - _BUILTIN_QueueOffset: 0
     - _BumpScale: 1
-    - _Cutoff: 0.5
+    - _Cutoff: 0.4
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
+    - _GlintInterval: 1.71
+    - _GlintSpeed: 0.5
+    - _GlintStrength: 0.694
+    - _GlintWidth: 0.127
     - _GlossMapScale: 1
-    - _Glossiness: 0.5
+    - _Glossiness: 0
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Metallic2: 0
@@ -90,6 +97,7 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _GlintColor: {r: 0.8679245, g: 0.8679245, b: 0.8679245, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &4162234968455837708
 MonoBehaviour:
