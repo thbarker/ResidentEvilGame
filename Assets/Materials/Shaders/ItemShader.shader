@@ -37,7 +37,8 @@ Shader "Custom/ItemShader"
         struct Input
         {
             float2 uv_MainTex;
-            float3 worldPos; // Needed for glint world-space effect
+            float3 worldPos;
+            float3 viewDir; // View direction in world space
         };
 
         UNITY_INSTANCING_BUFFER_START(Props)
@@ -50,11 +51,25 @@ Shader "Custom/ItemShader"
             // Alpha clip
             clip(c.a - _Cutoff);
 
-            // Glint mask calculation
-            float glint = abs(frac((IN.worldPos.x + IN.worldPos.y + _Time.y * _GlintSpeed)) - 0.5); // Diagonal line
-            glint = smoothstep(0.0, _GlintWidth, _GlintWidth - glint); // Soft edge
+            // Get view direction in world space
+            float3 viewDir = normalize(IN.viewDir);
 
-            // Add glint color
+            // Create a diagonal direction in view space (top-left to bottom-right sweep)
+            float3 diagonalDir = normalize(float3(1, 1, 0));
+
+            // Project the world position onto the view-aligned diagonal direction
+            float sweepValue = dot(IN.worldPos, diagonalDir);
+
+            // Move the glint line along time
+            float movingLine = frac(sweepValue + _Time.y * _GlintSpeed);
+            float glintDist = abs(movingLine - 0.5);
+            float glint = smoothstep(0.0, _GlintWidth, _GlintWidth - glintDist);
+
+            // Toggle glint on/off every other interval
+            // float glintToggle = fmod(floor(_Time.y * _GlintSpeed), 2);
+            // glint *= step(1.0, glintToggle + 0.01);
+
+            // Blend in glint color
             float3 glintedColor = lerp(c.rgb, _GlintColor.rgb, glint * _GlintStrength);
 
             o.Albedo = glintedColor;

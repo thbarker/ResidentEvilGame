@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SPP_1
-  m_Shader: {fileID: 4800000, guid: 986ca04635e014a4fbafff095b965221, type: 3}
+  m_Shader: {fileID: 4800000, guid: 12e336bf6518d5f4d8dbb7ae17daba38, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -77,11 +77,11 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _GlintInterval: 1.71
-    - _GlintSpeed: 0.5
-    - _GlintStrength: 0.694
-    - _GlintWidth: 0.127
+    - _GlintSpeed: 0.44
+    - _GlintStrength: 0.825
+    - _GlintWidth: 0.021
     - _GlossMapScale: 1
-    - _Glossiness: 0
+    - _Glossiness: 1
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Metallic2: 0
