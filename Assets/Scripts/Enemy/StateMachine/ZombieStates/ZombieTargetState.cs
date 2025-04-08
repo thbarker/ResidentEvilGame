@@ -11,6 +11,7 @@ public class ZombieTargetState : EnemyState
     private PlayerDamage playerDamage;
     private Transform playerTransform;
     private Transform transform;
+    private PlayerMovement playerMovement;
 
     private float reachThreshold;
     private float reachThresholdMultiplier;
@@ -27,6 +28,7 @@ public class ZombieTargetState : EnemyState
         playerTransform = zombieController.player.transform;
         aiPath = zombieController.aiPath;
         transform = zombieController.transform;
+        playerMovement = GameObject.FindWithTag("Player")?.GetComponent<PlayerMovement>();
 
         reachThreshold = zombieController.GetReachThreshold();
         reachThresholdMultiplier = zombieController.GetReachThresholdMultiplier();
@@ -84,10 +86,11 @@ public class ZombieTargetState : EnemyState
         {
             zombieController.StateMachine.ChangeState(zombieController.IdleState);
         }
-        // If the reach threshold is entered and the player isn't being bit or dead, reach toward the player
+        // If the reach threshold is entered and the player isn't being bit / dead / using a door, reach toward the player
         if (zombieController.GetDistanceToPlayer() < scaledReachThreshold 
             && !playerDamage.GetIsBeingBitten() 
-            && !playerDamage.dead)
+            && !playerDamage.dead
+            && !playerMovement.isUsingDoor)
         {
             zombieController.StateMachine.ChangeState(zombieController.ReachState);
         }

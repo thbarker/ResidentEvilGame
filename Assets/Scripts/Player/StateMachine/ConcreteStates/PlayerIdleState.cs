@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class PlayerIdleState : PlayerState
 {
+    private Animator animator;
     public PlayerIdleState(PlayerMovement playerMovement, PlayerStateMachine playerStateMachine) : base(playerMovement, playerStateMachine)
     {
+        animator = playerMovement.animator;
     }
 
     public override void AnimationTriggerEvent(PlayerMovement.AnimationTriggerType triggerType)
@@ -16,11 +18,13 @@ public class PlayerIdleState : PlayerState
     public override void EnterState()
     {
         base.EnterState();
+        animator.speed = 0;
     }
 
     public override void ExitState()
     {
         base.ExitState();
+        animator.speed = 1f;
     }
 
     public override void FrameUpdate()

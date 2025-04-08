@@ -49,10 +49,12 @@ public class PlayerMovement : MonoBehaviour
 
     public Rigidbody rb; // Reference to the Rigidbody component
     public PlayerControls controls;
+    public RoomManager currentRoom;
     private bool inputEnabled = true;  // Default to true to allow player input
     private bool aiming = false;
     private bool isRunning = false;
     private bool isQuickTurning = false;
+    public bool isUsingDoor = false;
     private bool canQuickTurn = true;
     private bool aimAfterQuickTurn = false;
     private float verticalAimLerpValue = 0;
@@ -274,16 +276,20 @@ public class PlayerMovement : MonoBehaviour
     /// the updates that come with entering a new room.
     /// </summary>
     /// <param name="spawnPoint">The spawnpoint that the player should be teleported to.</param>
-    public void UseDoor(Transform spawnPoint)
+    /// <param name="playableArea">A Box collider provided by the door that represents the playable space for zombies to be repositioned to in case they are violating the safe distance.</param>
+    /// <param name="from">The room the player is exiting.</param>
+    /// <param name="to">The room the player is entering.</param>
+    public void UseDoor(Transform spawnPoint, BoxCollider playableArea, RoomManager from, RoomManager to)
     {
-        StartCoroutine(RoomTransition(roomTransitionDuration, spawnPoint));
+        StartCoroutine(RoomTransition(roomTransitionDuration, spawnPoint, playableArea, from, to));
     }
 
-    IEnumerator RoomTransition(float seconds, Transform spawnPoint)
+    IEnumerator RoomTransition(float seconds, Transform spawnPoint, BoxCollider playableArea, RoomManager from, RoomManager to)
     {
         rb.velocity = Vector3.zero;
         fadeStartTime = Time.time;
         StateMachine.ChangeState(IdleState);
+        isUsingDoor = true;
         while (Time.time - fadeStartTime < seconds/3)
         {
             float t = (Time.time - fadeStartTime) / (seconds / 3);
@@ -294,7 +300,16 @@ public class PlayerMovement : MonoBehaviour
         blackScreen.color = new Color(0, 0, 0, 1);
         transform.position = spawnPoint.position;
         transform.rotation = spawnPoint.rotation;
+
+        // Exit previous room
+        from.ExitRoom();
+
         yield return new WaitForSeconds(seconds / 3);
+
+        // Enter next room
+        to.EnterRoom(spawnPoint, playableArea);
+        currentRoom = to;
+
         StateMachine.ChangeState(MoveState);
         fadeStartTime = Time.time;
         while (Time.time - fadeStartTime < seconds / 3)
@@ -305,6 +320,7 @@ public class PlayerMovement : MonoBehaviour
             yield return null;
         }
         blackScreen.color = new Color(0, 0, 0, 0);
+        isUsingDoor = false;
     }
     public void UpdateRotationAnim()
     {

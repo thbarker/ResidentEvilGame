@@ -38,7 +38,7 @@ public class ZombieIdleState : EnemyState
     public override void FrameUpdate()
     {
         base.FrameUpdate();
-        if (!playerDamage.dead)
+        if (!playerDamage.dead && !zombieController.dead)
         {
             // Perform raycast to detect line of sight of zombie
             Vector3 direction = player.transform.position - transform.position;

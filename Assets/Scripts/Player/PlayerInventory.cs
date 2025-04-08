@@ -25,6 +25,7 @@ public class PlayerInventory : MonoBehaviour
 
     private PlayerControls controls;
     public PlayerDamage playerDamage;
+    public PlayerMovement playerMovement;
     public UIManager uiManager;
     public EventSystem eventSystem;
 
@@ -36,6 +37,8 @@ public class PlayerInventory : MonoBehaviour
         uiManager = GameObject.FindWithTag("Player")?.transform.Find("UIManager")?.GetComponent<UIManager>();
         //Get a reference to player damage
         playerDamage = transform.parent.GetComponent<PlayerDamage>();
+        //Get a reference to player movement
+        playerMovement = transform.parent.GetComponent<PlayerMovement>();
         // Get a reference to event system
         eventSystem = GameObject.Find("EventSystem")?.GetComponent<EventSystem>();
 
@@ -47,7 +50,10 @@ public class PlayerInventory : MonoBehaviour
         }; 
         controls.Player.Status.performed += ctx =>
         {
-            OpenStatus();
+            if (playerMovement.StateMachine.CurrentPlayerState == playerMovement.MoveState)
+            {
+                OpenStatus();
+            }
         };
         controls.UI.Submit.performed += ctx =>
         {

@@ -91,14 +91,23 @@ public class ZombieList : MonoBehaviour
         allZombies.Add(zombie); 
         Sort();
     }
+    public void ResetList(List<GameObject> zombies)
+    {
 
+        allZombies.Clear();
+        visibleZombies.Clear();
+        foreach (GameObject zombie in zombies)
+        {
+            allZombies.Add(zombie);
+        }
+        UpdateVisibleZombies();
+    }
     public void Remove(GameObject zombie)
     {
         allZombies.Remove(zombie);
         visibleZombies.Remove(zombie);
         Sort();
     }
-
     public SortType GetSortType()
     {
         return sortBy;
@@ -152,7 +161,7 @@ public class ZombieList : MonoBehaviour
             zombieController  = zombie.GetComponent<ZombieController>();
             if(!zombieController.GetDetectedPlayer())
             {
-                zombieController.DetectPlayer();
+                zombieController.DetectPlayer(true);
             }
         }
     }

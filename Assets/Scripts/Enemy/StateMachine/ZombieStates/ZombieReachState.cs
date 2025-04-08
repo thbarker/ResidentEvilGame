@@ -8,9 +8,11 @@ public class ZombieReachState : EnemyState
 {
     private GameObject player;
     private PlayerDamage playerDamage;
+    private PlayerMovement playerMovement;
     private Animator animator;
     private ReachCollision reachCollision;
     private Transform zombieTransform;
+    private UIManager uiManager;
     private float reachRotationSpeed;
     private float rotationSpeedDynamic;
     private float reachDuration;
@@ -20,9 +22,12 @@ public class ZombieReachState : EnemyState
     {
         player = zombieController.player;
         playerDamage = zombieController.playerDamage;
+        playerMovement = playerDamage.GetComponent<PlayerMovement>();
         animator = zombieController.animator;
         reachCollision = zombieController.reachCollisionScript;
         zombieTransform = zombieController.transform;
+        // Get a reference to uimanager
+        uiManager = GameObject.FindWithTag("Player")?.transform.Find("UIManager")?.GetComponent<UIManager>();
 
         reachRotationSpeed = zombieController.GetReachRotationSpeed();
         reachDuration = zombieController.GetReachDuration();
@@ -40,14 +45,12 @@ public class ZombieReachState : EnemyState
         animator.SetTrigger("Reach");
         startTime = Time.time;
         rotationSpeedDynamic = 0.5f * reachRotationSpeed;
-        Debug.Log("I'm starting to Reach with start time of " + (Time.time - startTime));
     }
 
     public override void ExitState()
     {
         base.ExitState();
         zombieController.bite = false;
-        Debug.Log("I'm done with Reach with start time of " + (Time.time - startTime));
         animator.ResetTrigger("Reach");
         reachCollision.Activate(false);
     }
@@ -55,26 +58,31 @@ public class ZombieReachState : EnemyState
     public override void FrameUpdate()
     {
         base.FrameUpdate();
-        // If the player is being bit or dead while the zombie is reaching, return to idle
-        if (playerDamage.GetIsBeingBitten() || playerDamage.dead)
+        // If the player is being bit or dead or using a door while the zombie is reaching, return to idle
+        if (playerDamage.GetIsBeingBitten() || playerDamage.dead || playerMovement.isUsingDoor)
         {
             zombieController.StateMachine.ChangeState(zombieController.IdleState);
         }
-
-        // During the duration of the reach, the zombie rotates towards the player
-        if (Time.time - startTime < reachDuration)
+        if(uiManager.uiActive)
         {
-            // Don't bite immidiately at the beginning of the reach for the sake of animation
-            if (Time.time - startTime > 0.5f)
-                reachCollision.Activate(true);
-            if (zombieController.bite)
-                zombieController.StateMachine.ChangeState(zombieController.BiteState);
-            RotateTowardsPlayer(rotationSpeedDynamic); // Rotate towards player while reaching
-        } 
-        // After the reach, change to a cooldown
-        else
+            startTime += Time.deltaTime;
+        } else
         {
-            zombieController.StateMachine.ChangeState(zombieController.CooldownState);
+            // During the duration of the reach, the zombie rotates towards the player
+            if (Time.time - startTime < reachDuration)
+            {
+                // Don't bite immidiately at the beginning of the reach for the sake of animation
+                if (Time.time - startTime > 0.5f)
+                    reachCollision.Activate(true);
+                if (zombieController.bite)
+                    zombieController.StateMachine.ChangeState(zombieController.BiteState);
+                RotateTowardsPlayer(rotationSpeedDynamic); // Rotate towards player while reaching
+            }
+            // After the reach, change to a cooldown
+            else
+            {
+                zombieController.StateMachine.ChangeState(zombieController.CooldownState);
+            }
         }
     }
 

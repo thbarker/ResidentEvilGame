@@ -54,7 +54,6 @@ public class Pushable : MonoBehaviour
     {
         if (player != null)
         {
-            Debug.Log(this.name + "Getting Pushed");
             animator.applyRootMotion = false;
             if(playerDamage.GetBitingZombie() != gameObject)
                 controllerScript.StateMachine.ChangeState(controllerScript.KnockbackState);

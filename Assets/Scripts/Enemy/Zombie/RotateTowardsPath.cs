@@ -38,7 +38,6 @@ public class RotateTowardsPath : MonoBehaviour
         {
             RotateContinuously();
         }
-        Debug.Log(walkingRotationSpeed);
     }
     private void UpdateTarget() {
         RaycastHit hit;

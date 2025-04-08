@@ -23,7 +23,7 @@ public class ZombieController : Damageable
     public CapsuleCollider capsuleCollider;
     public GameObject player;
     public PlayerDamage playerDamage;
-    public RotateTowardsPath script;
+    public RotateTowardsPath rotateTowardsPath;
     public Transform biteTransform; // This is where the player will be when the bite animation occurs
     public Rigidbody rb;
     public ReachCollision reachCollisionScript;
@@ -36,7 +36,7 @@ public class ZombieController : Damageable
     private bool shouldTarget = false;
     private float walkReachTransitionCounter = 0f;
     private bool detectedPlayer = false;
-    private bool dead = false;
+    public bool dead = false;
     public bool bite = false;
     private float knockbackThreshold;
     #endregion
@@ -115,6 +115,7 @@ public class ZombieController : Damageable
         }
     }
     #endregion
+
     #region Getters
     public float GetMinReachThreshold()
     {
@@ -207,6 +208,7 @@ public class ZombieController : Damageable
         base.Die();
         zombieList.Remove(gameObject);
         StateMachine.ChangeState(DieState);
+        dead = true;
     }
 
     public void AnimationTriggerEvent(AnimationTriggerType triggerType)
@@ -229,6 +231,7 @@ public class ZombieController : Damageable
         player = GameObject.FindWithTag("Player");
         playerDamage = player.GetComponent<PlayerDamage>();
         aiPath = GetComponent<AIPath>();
+        rotateTowardsPath = GetComponent<RotateTowardsPath>();
         zombieList = player.transform.Find("ZombieList").GetComponent<ZombieList>();
 
         if (!zombieList) Debug.LogError("Scene must have a zombie list gameobject tagged as ZombieList");
@@ -255,8 +258,8 @@ public class ZombieController : Damageable
     // Start is called before the first frame update
     void Start()
     {
-        StateMachine.Initialize(IdleState);
-
+        if(!dead)
+            StateMachine.Initialize(IdleState);
         knockbackThreshold = Random.Range(minKnockThreshold, maxKnockThreshold);
     }
 
@@ -363,11 +366,34 @@ public class ZombieController : Damageable
         //animator.applyRootMotion = true;
     }
 
-    public void DetectPlayer()
+    public void DetectPlayer(bool flag)
     {
-        animator.SetBool("Detect", true);
-        SetDetectedPlayer(true);
-        StateMachine.ChangeState(TargetState);
+        animator.SetBool("Detect", flag);
+        SetDetectedPlayer(flag);
+        if (flag)
+            StateMachine.ChangeState(TargetState);
+        else
+            StateMachine.ChangeState(IdleState); ;
+    }
+    public void Deactivate()
+    {
+        if(!dead)
+            DetectPlayer(false);
+        gameObject.SetActive(false);
+    }
+    public void Activate()
+    {
+        gameObject.SetActive(true);
+    }
+    public void Pause()
+    {
+        animator.speed = 0;
+        rotateTowardsPath.enabled = false;
+    }
+    public void Resume()
+    {
+        animator.speed = 1f;
+        rotateTowardsPath.enabled = true;
     }
     void OnDrawGizmosSelected()
     {

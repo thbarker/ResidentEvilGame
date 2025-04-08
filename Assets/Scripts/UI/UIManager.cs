@@ -8,6 +8,13 @@ public class UIManager : MonoBehaviour
 {
     private PlayerControls controls;
     public bool uiActive = false;
+    public ZombieList zombieList;
+    public PlayerMovement playerMovement;
+    private void Awake()
+    {
+        zombieList = GameObject.FindWithTag("Player")?.transform.Find("ZombieList")?.GetComponent<ZombieList>();
+        playerMovement = GameObject.FindWithTag("Player")?.GetComponent<PlayerMovement>();
+    }
     private void Start()
     {
         controls = PlayerInputManager.controls;
@@ -16,12 +23,14 @@ public class UIManager : MonoBehaviour
     {
         PlayerInputManager.ToggleActionMap(controls.UI);
         uiActive = true;
-        //Time.timeScale = 0;
+        playerMovement.currentRoom.PauseAllZombies();
+        playerMovement.StateMachine.ChangeState(playerMovement.IdleState);
     }
     public void EndUI()
     {
         PlayerInputManager.ToggleActionMap(controls.Player);
         uiActive = false;
-        Time.timeScale = 1;
+        playerMovement.currentRoom.ResumeAllZombies();
+        playerMovement.StateMachine.ChangeState(playerMovement.MoveState);
     }
 }
