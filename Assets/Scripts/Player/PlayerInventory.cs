@@ -157,6 +157,20 @@ public class PlayerInventory : MonoBehaviour
 
     public void AddItem(Item item)
     {
+        foreach (Item listItem in  itemList)
+        {
+            // If the item is already in the inventory and there is room to stack, do so
+            if(listItem.name == item.name && item is HandgunBullets)
+            {
+                HandgunBullets bullets = (HandgunBullets)item;
+                HandgunBullets listBullets = (HandgunBullets)listItem;
+                if (bullets.count + listBullets.count <= bullets.stackSize)
+                {
+                    listBullets.count += bullets.count;
+                    return;
+                }
+            }
+        }
         if (itemList.Count < slots)
         {
             Debug.Log("Adding " + item.name + " to inventory");

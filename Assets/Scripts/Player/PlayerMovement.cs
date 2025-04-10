@@ -281,7 +281,11 @@ public class PlayerMovement : MonoBehaviour
     /// <param name="to">The room the player is entering.</param>
     public void UseDoor(Transform spawnPoint, BoxCollider playableArea, RoomManager from, RoomManager to)
     {
-        StartCoroutine(RoomTransition(roomTransitionDuration, spawnPoint, playableArea, from, to));
+        if (StateMachine.CurrentPlayerState == MoveState)
+        {
+            StartCoroutine(RoomTransition(roomTransitionDuration, spawnPoint, playableArea, from, to));
+        }
+        
     }
 
     IEnumerator RoomTransition(float seconds, Transform spawnPoint, BoxCollider playableArea, RoomManager from, RoomManager to)
