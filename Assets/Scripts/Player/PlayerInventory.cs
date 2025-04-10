@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static UnityEditor.Progress;
 
 public enum iStates
 {
@@ -101,6 +102,10 @@ public class PlayerInventory : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.KeypadMultiply))
         {
             AddItem(new HandgunBullets(this, 15));
+        }
+        if (Input.GetKeyDown(KeyCode.KeypadDivide))
+        {
+            AddItem(new MansionKey(this, 1));
         }
     }
 
@@ -354,6 +359,22 @@ public class PlayerInventory : MonoBehaviour
             else
                 slot.UpdateIcon(0, false);
         }
+    }
+    /// <summary>
+    /// This function checks the player's inventory for a key with name keyName.
+    /// </summary>
+    /// <param name="keyName">Name of the key that should be checked for.</param>
+    /// <returns>The first item with the same name as the keyName, or null if nothing was found.</returns>
+    public Key CheckForKey(string keyName)
+    {
+        foreach (Item listItem in itemList)
+        {
+            if (listItem.name == keyName)
+            {
+                return (Key)listItem;
+            }
+        }
+        return null;
     }
     public void PrintList()
     {

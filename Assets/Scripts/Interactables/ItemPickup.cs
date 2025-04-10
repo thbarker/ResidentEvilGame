@@ -9,7 +9,7 @@ public enum Items
     RedHerb,
     FirstAidSpray,
     HandgunBullets,
-    Key
+    MansionKey
 }
 public class ItemPickup : Interactable
 {
@@ -58,8 +58,8 @@ public class ItemPickup : Interactable
             case Items.HandgunBullets:
                 item = new HandgunBullets(playerInventory, count);
                 break;
-            case Items.Key:
-                item = new GreenHerb(playerInventory);
+            case Items.MansionKey:
+                item = new MansionKey(playerInventory, 1);
                 break;
         }
     }

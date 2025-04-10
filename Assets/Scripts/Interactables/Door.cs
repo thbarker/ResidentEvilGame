@@ -10,14 +10,23 @@ public class Door : Interactable
     private Transform spawnA, spawnB;
     public BoxCollider aPlayableArea, bPlayableArea;
     private PlayerMovement playerMovement;
+    private PlayerInventory playerInventory;
     private PlayerDamage playerDamage;
 
     private void Awake()
     {
         playerMovement = GameObject.FindWithTag("Player")?.gameObject.GetComponent<PlayerMovement>();
+        playerInventory = GameObject.FindWithTag("Player")?.transform.Find("Inventory")?.GetComponent<PlayerInventory>();
         playerDamage = GameObject.FindWithTag("Player")?.gameObject.GetComponent<PlayerDamage>();
         spawnA = transform.Find("Spawn 1");
         spawnB = transform.Find("Spawn 2");
+    }
+    private void Start()
+    {
+        if (key == "")
+            locked = false;
+        else
+            locked = true;
     }
 
     public override void Interact()
@@ -26,13 +35,33 @@ public class Door : Interactable
         {
             return;
         }
+        if(locked)
+        {
+            Key keyItem = playerInventory.CheckForKey(key);
+            if (keyItem != null)
+            {
+                keyItem.uses--;
+                if (keyItem.uses <= 0)
+                {
+                    Debug.Log("This item is no longer needed, it is being discarded.");
+                    playerInventory.RemoveItem(keyItem);
+                }
+                locked = false;
+            }
+            else
+            {
+                Debug.Log("This door is locked.");
+                return;
+            }
+        }
         Transform spawn;
         if (Vector3.Distance(playerMovement.transform.position, spawnA.position)
           < Vector3.Distance(playerMovement.transform.position, spawnB.position))
         {
             spawn = spawnB;
             playerMovement.UseDoor(spawn, bPlayableArea, aRoom, bRoom);
-        } else
+        }
+        else
         {
             spawn = spawnA;
             playerMovement.UseDoor(spawn, aPlayableArea, bRoom, aRoom);

@@ -3948,6 +3948,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Door
       objectReference: {fileID: 0}
+    - target: {fileID: 2585406173533761085, guid: 7196b260d4d59a749851fb4e7c24af30, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 6816a7bb9203d1d4793205f2fa99f725, type: 2}
+    - target: {fileID: 3017897427893345462, guid: 7196b260d4d59a749851fb4e7c24af30, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 5801834429277776007, guid: 7196b260d4d59a749851fb4e7c24af30, type: 3}
       propertyPath: m_LocalScale.z
       value: 1
@@ -4007,6 +4015,10 @@ PrefabInstance:
     - target: {fileID: 7133384621716806433, guid: 7196b260d4d59a749851fb4e7c24af30, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8079635739600966509, guid: 7196b260d4d59a749851fb4e7c24af30, type: 3}
+      propertyPath: key
+      value: Mansion Key
       objectReference: {fileID: 0}
     - target: {fileID: 8079635739600966509, guid: 7196b260d4d59a749851fb4e7c24af30, type: 3}
       propertyPath: aRoom

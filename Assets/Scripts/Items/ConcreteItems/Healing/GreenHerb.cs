@@ -5,7 +5,6 @@ using UnityEngine;
 public class GreenHerb : Item
 {
     protected PlayerInventory playerInventory;
-    protected List<Item> itemList;
 
     private PlayerDamage playerDamage;
 

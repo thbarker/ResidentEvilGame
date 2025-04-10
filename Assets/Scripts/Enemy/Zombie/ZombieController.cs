@@ -368,12 +368,15 @@ public class ZombieController : Damageable
 
     public void DetectPlayer(bool flag)
     {
-        animator.SetBool("Detect", flag);
-        SetDetectedPlayer(flag);
-        if (flag)
-            StateMachine.ChangeState(TargetState);
-        else
-            StateMachine.ChangeState(IdleState); ;
+        if (gameObject.activeSelf)
+        {
+            animator.SetBool("Detect", flag);
+            SetDetectedPlayer(flag);
+            if (flag)
+                StateMachine.ChangeState(TargetState);
+            else
+                StateMachine.ChangeState(IdleState); 
+        }
     }
     public void Deactivate()
     {
@@ -387,13 +390,19 @@ public class ZombieController : Damageable
     }
     public void Pause()
     {
-        animator.speed = 0;
-        rotateTowardsPath.enabled = false;
+        if (gameObject.activeSelf)
+        {
+            animator.speed = 0;
+            rotateTowardsPath.enabled = false;
+        }
     }
     public void Resume()
     {
-        animator.speed = 1f;
-        rotateTowardsPath.enabled = true;
+        if (gameObject.activeSelf)
+        {
+            animator.speed = 1;
+            rotateTowardsPath.enabled = true;
+        }
     }
     void OnDrawGizmosSelected()
     {
