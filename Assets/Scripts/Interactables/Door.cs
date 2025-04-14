@@ -6,7 +6,10 @@ public class Door : Interactable
 {
     public bool locked = false;
     public string key;
-    public RoomManager aRoom, bRoom;
+    [Tooltip("Room on the Blue Side of the door.")]
+    public RoomManager aRoom;
+    [Tooltip("Room on the Magenta Side of the door.")]
+    public RoomManager bRoom;
     private Transform spawnA, spawnB;
     public BoxCollider aPlayableArea, bPlayableArea;
     private PlayerMovement playerMovement;

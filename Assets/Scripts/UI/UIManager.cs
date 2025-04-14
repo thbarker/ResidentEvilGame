@@ -23,14 +23,16 @@ public class UIManager : MonoBehaviour
     {
         PlayerInputManager.ToggleActionMap(controls.UI);
         uiActive = true;
-        playerMovement.currentRoom.PauseAllZombies();
+        if(playerMovement.currentRoom != null)
+            playerMovement.currentRoom.PauseAllZombies();
         playerMovement.StateMachine.ChangeState(playerMovement.IdleState);
     }
     public void EndUI()
     {
         PlayerInputManager.ToggleActionMap(controls.Player);
         uiActive = false;
-        playerMovement.currentRoom.ResumeAllZombies();
+        if (playerMovement.currentRoom != null)
+            playerMovement.currentRoom.ResumeAllZombies();
         playerMovement.StateMachine.ChangeState(playerMovement.MoveState);
     }
 }

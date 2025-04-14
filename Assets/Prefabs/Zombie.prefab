@@ -117,7 +117,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.2
+      value: 0.55
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalPosition.y
@@ -125,23 +125,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2.34
+      value: 2.47
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: -0.97040224
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.24149437
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -149,7 +149,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 332.05
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2c97cda7c1adeb447bfb8f99066f4635, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -490,12 +490,13 @@ MonoBehaviour:
   capsuleCollider: {fileID: 0}
   player: {fileID: 0}
   playerDamage: {fileID: 0}
-  script: {fileID: 6987880576637890375}
+  rotateTowardsPath: {fileID: 0}
   biteTransform: {fileID: 1110648040963748045}
   rb: {fileID: 0}
   reachCollisionScript: {fileID: 4593006263817351901}
   colliderRadius: 0
   startStanding: 1
+  dead: 0
   bite: 0
   biteThreshold: 0.5
   reachThreshold: 1.75
