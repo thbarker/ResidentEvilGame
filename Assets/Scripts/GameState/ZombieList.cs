@@ -7,7 +7,7 @@ public enum SortType
     AimNear,
     AimFar,
     DistanceNear,
-    DistanceFar,
+    DistanceFar
 }
 
 public class ZombieList : MonoBehaviour

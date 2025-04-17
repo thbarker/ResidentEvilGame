@@ -275,6 +275,7 @@ public class ZombieController : Damageable
 
         DebugTimeScale();
         UpdateAnimController();
+
     }
     private void FixedUpdate()
     {

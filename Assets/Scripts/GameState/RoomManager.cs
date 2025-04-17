@@ -25,7 +25,7 @@ public class RoomManager : MonoBehaviour
     }
     public void Start()
     {
-        
+        ExitRoom();
     }
     public void EnterRoom(Transform playerSpawn, BoxCollider playableArea)
     {

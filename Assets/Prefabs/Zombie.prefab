@@ -535,7 +535,6 @@ MonoBehaviour:
   minRotationSpeed: 0.2
   active: 0
   aiPath: {fileID: 2999398385124668116}
-  visual: {fileID: 0}
 --- !u!114 &1308341620092205938
 MonoBehaviour:
   m_ObjectHideFlags: 0

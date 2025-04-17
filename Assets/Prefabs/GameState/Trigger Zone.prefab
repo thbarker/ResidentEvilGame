@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6216939517593750255}
   - component: {fileID: 1636440166031159628}
   - component: {fileID: 5067348539905554545}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: cm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -106,7 +106,7 @@ GameObject:
   - component: {fileID: 1682482292319784414}
   - component: {fileID: 7574093034464106045}
   - component: {fileID: 1368737915112108445}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Trigger Zone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -174,7 +174,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1356180798531311070}
   - component: {fileID: 5289405980973411640}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Virtual Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
