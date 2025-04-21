@@ -9,7 +9,8 @@ public enum Items
     RedHerb,
     FirstAidSpray,
     HandgunBullets,
-    MansionKey
+    MansionKey,
+    GateKey
 }
 public class ItemPickup : Interactable
 {
@@ -60,6 +61,9 @@ public class ItemPickup : Interactable
                 break;
             case Items.MansionKey:
                 item = new MansionKey(playerInventory, 1);
+                break;
+            case Items.GateKey:
+                item = new GateKey(playerInventory, 1);
                 break;
         }
     }

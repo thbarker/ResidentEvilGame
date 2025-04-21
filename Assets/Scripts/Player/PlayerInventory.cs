@@ -28,6 +28,7 @@ public class PlayerInventory : MonoBehaviour
     public PlayerDamage playerDamage;
     public PlayerMovement playerMovement;
     public UIManager uiManager;
+    public MessageHandler messageHandler;
     public EventSystem eventSystem;
 
     private void Awake()
@@ -40,6 +41,8 @@ public class PlayerInventory : MonoBehaviour
         playerDamage = transform.parent.GetComponent<PlayerDamage>();
         //Get a reference to player movement
         playerMovement = transform.parent.GetComponent<PlayerMovement>();
+        // Get a reference to the message handler
+        messageHandler = GameObject.FindWithTag("Player")?.transform.Find("MessageHandler")?.GetComponent<MessageHandler>();
         // Get a reference to event system
         eventSystem = GameObject.Find("EventSystem")?.GetComponent<EventSystem>();
 
@@ -94,7 +97,9 @@ public class PlayerInventory : MonoBehaviour
             }
         }
         selectedSlot = slotList[0]?.transform.Find("SelectButton")?.gameObject;
-        statusCanvas.SetActive(false); 
+        statusCanvas.SetActive(false);
+
+        AddItem(new HandgunBullets(this, 15));
     }
 
     private void Update()
@@ -106,6 +111,13 @@ public class PlayerInventory : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.KeypadDivide))
         {
             AddItem(new MansionKey(this, 1));
+        }
+        if(Input.GetKeyDown(KeyCode.M)) 
+        {
+            Debug.Log("Attempting to send messages");
+            messageHandler.QueueMessage("This is the first message!");
+            messageHandler.QueueMessage("This is the second message!");
+            messageHandler.QueueMessage("This is the third message!");
         }
     }
 
@@ -332,6 +344,10 @@ public class PlayerInventory : MonoBehaviour
             uiManager.EndUI();
             statusCanvas.SetActive(false);
         }
+        if (messageHandler.IsActive())
+        {
+            NextMessage();
+        }
     }
     public void Back()
     {
@@ -345,6 +361,26 @@ public class PlayerInventory : MonoBehaviour
         } else
         {
             CloseStatus();
+        }
+    }
+    public void StartMessageSequence()
+    {
+        if (statusCanvas.activeSelf)
+        {
+            return;
+        }
+        uiManager.StartUI();
+        messageHandler.ShowMessage();
+    }
+    public void NextMessage()
+    {
+        if(messageHandler.IsEmpty())
+        {
+            messageHandler.HideMessage();
+            uiManager.EndUI();
+        } else
+        {
+            messageHandler.ShowMessage();
         }
     }
     public void SubmitCanceled()

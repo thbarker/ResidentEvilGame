@@ -15,12 +15,14 @@ public class Door : Interactable
     private PlayerMovement playerMovement;
     private PlayerInventory playerInventory;
     private PlayerDamage playerDamage;
+    private MessageHandler messageHandler;
 
     private void Awake()
     {
         playerMovement = GameObject.FindWithTag("Player")?.gameObject.GetComponent<PlayerMovement>();
         playerInventory = GameObject.FindWithTag("Player")?.transform.Find("Inventory")?.GetComponent<PlayerInventory>();
         playerDamage = GameObject.FindWithTag("Player")?.gameObject.GetComponent<PlayerDamage>();
+        messageHandler = GameObject.FindWithTag("Player")?.transform.Find("MessageHandler")?.GetComponent<MessageHandler>();
         spawnA = transform.Find("Spawn 1");
         spawnB = transform.Find("Spawn 2");
     }
@@ -47,6 +49,7 @@ public class Door : Interactable
                 if (keyItem.uses <= 0)
                 {
                     Debug.Log("This item is no longer needed, it is being discarded.");
+                    messageHandler.QueueMessage("This item is no longer needed, it is being discarded.");
                     playerInventory.RemoveItem(keyItem);
                 }
                 locked = false;
@@ -54,20 +57,23 @@ public class Door : Interactable
             else
             {
                 Debug.Log("This door is locked.");
+                messageHandler.QueueMessage("It is locked.");
                 return;
             }
-        }
-        Transform spawn;
-        if (Vector3.Distance(playerMovement.transform.position, spawnA.position)
-          < Vector3.Distance(playerMovement.transform.position, spawnB.position))
+        } else
         {
-            spawn = spawnB;
-            playerMovement.UseDoor(spawn, bPlayableArea, aRoom, bRoom);
-        }
-        else
-        {
-            spawn = spawnA;
-            playerMovement.UseDoor(spawn, aPlayableArea, bRoom, aRoom);
+            Transform spawn;
+            if (Vector3.Distance(playerMovement.transform.position, spawnA.position)
+              < Vector3.Distance(playerMovement.transform.position, spawnB.position))
+            {
+                spawn = spawnB;
+                playerMovement.UseDoor(spawn, bPlayableArea, aRoom, bRoom);
+            }
+            else
+            {
+                spawn = spawnA;
+                playerMovement.UseDoor(spawn, aPlayableArea, bRoom, aRoom);
+            }
         }
     }
 }
