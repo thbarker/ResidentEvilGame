@@ -21,6 +21,8 @@ public class PlayerMovement : MonoBehaviour
 
     public Transform cameraTransform;
     public Animator animator;
+    public SkinnedMeshRenderer playerMesh;
+    public MeshRenderer gunMesh;
     [SerializeField]
     private string[] disableInputStates;
     public float moveSpeed = 80.0f;
@@ -329,6 +331,17 @@ public class PlayerMovement : MonoBehaviour
     public void UpdateRotationAnim()
     {
         animator.SetFloat("Rotation", x);
+    }
+
+    public void ShowMesh()
+    {
+        playerMesh.enabled = true;
+        gunMesh.enabled = true;
+    }
+    public void HideMesh()
+    {
+        playerMesh.enabled = false;
+        gunMesh.enabled = false;
     }
 
     public bool GetAiming() { return aiming; }

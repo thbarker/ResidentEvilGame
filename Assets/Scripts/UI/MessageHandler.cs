@@ -11,6 +11,7 @@ public class MessageHandler : MonoBehaviour
     public TextMeshProUGUI message;
     public PlayerInventory playerInventory;
     private Queue<string> messageQueue;
+    public List<FocusCamera> focusCameraList;
 
     private void Awake()
     {
@@ -18,6 +19,7 @@ public class MessageHandler : MonoBehaviour
         uiManager = GameObject.FindWithTag("Player")?.transform.Find("UIManager")?.GetComponent<UIManager>();
         panel = transform.Find("Panel")?.gameObject;
         message = panel.transform.Find("Text")?.GetComponent<TextMeshProUGUI>();
+        focusCameraList = new List<FocusCamera>();
     }
     private void Start()
     {
@@ -43,6 +45,10 @@ public class MessageHandler : MonoBehaviour
     {
         message.text = "";
         panel.SetActive(false);
+        foreach (FocusCamera focusCamera in focusCameraList)
+        {
+            focusCamera.Deactivate();
+        }
     }
     public bool IsEmpty()
     {
