@@ -394,6 +394,7 @@ public class ZombieController : Damageable
         if (gameObject.activeSelf)
         {
             animator.speed = 0;
+            rb.velocity = Vector3.zero;
             rotateTowardsPath.enabled = false;
         }
     }

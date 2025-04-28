@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8229684025815254044
 Transform:
   m_ObjectHideFlags: 0
@@ -69,6 +69,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemEnum: 1
+  count: 0
   playerInventory: {fileID: 0}
   confirmPickup: {fileID: 0}
   eventSystem: {fileID: 0}

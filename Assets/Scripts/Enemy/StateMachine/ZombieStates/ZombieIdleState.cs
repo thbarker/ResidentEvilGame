@@ -50,7 +50,6 @@ public class ZombieIdleState : EnemyState
             // Perform the raycast
             if (Physics.Raycast(origin, direction, out RaycastHit hit, distance))
             {
-                Debug.LogWarning(hit.collider);
                 // Check if the hit object is the player
                 if (hit.collider.gameObject == player)
                 {

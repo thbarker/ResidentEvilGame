@@ -24,7 +24,7 @@ public class Key : Item
 
     public override bool Use()
     {
-        UnlockDoor();
+        Unlock();
         return false;
     }
     public override Item Combine(Item item)
@@ -51,7 +51,7 @@ public class Key : Item
         Debug.Log(description);
     }
 
-    private void UnlockDoor()
+    private void Unlock()
     {
         Transform playerTransform = playerInventory.gameObject.transform;
         Vector3 origin = new Vector3(playerTransform.position.x, playerTransform.position.y + 1, playerTransform.position.z);
@@ -74,10 +74,10 @@ public class Key : Item
         foreach (RaycastHit hit in hits)
         {
             Debug.Log("Hit: " + hit.collider.name);
-            if (hit.collider.gameObject.GetComponent<Door>())
+            if (hit.collider.gameObject.GetComponent<Lockable>())
             {
-                Door door = hit.collider.gameObject.GetComponent<Door>();
-                door.Interact();
+                Lockable lockable = hit.collider.gameObject.GetComponent<Lockable>();
+                lockable.Interact();
                 Debug.Log("Hit: " + hit.collider.name);
             }
             else
