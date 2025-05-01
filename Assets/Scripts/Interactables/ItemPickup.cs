@@ -10,7 +10,9 @@ public enum Items
     FirstAidSpray,
     HandgunBullets,
     MansionKey,
-    GateKey
+    GateKey,
+    EmptyFuelCan,
+    SiphonPump
 }
 public class ItemPickup : Interactable
 {
@@ -64,6 +66,12 @@ public class ItemPickup : Interactable
                 break;
             case Items.GateKey:
                 item = new GateKey(playerInventory, 1);
+                break;
+            case Items.EmptyFuelCan:
+                item = new EmptyFuelCan(playerInventory);
+                break;
+            case Items.SiphonPump:
+                item = new SiphonPump(playerInventory);
                 break;
         }
     }

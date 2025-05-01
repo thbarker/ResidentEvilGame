@@ -14,6 +14,7 @@ public class Lockable : Interactable
     protected PlayerInventory playerInventory;
     protected PlayerDamage playerDamage;
     protected MessageHandler messageHandler;
+    private UIManager uiManager;
 
     protected override void Awake()
     {
@@ -22,6 +23,7 @@ public class Lockable : Interactable
         playerInventory = GameObject.FindWithTag("Player")?.transform.Find("Inventory")?.GetComponent<PlayerInventory>();
         playerDamage = GameObject.FindWithTag("Player")?.gameObject.GetComponent<PlayerDamage>();
         messageHandler = GameObject.FindWithTag("Player")?.transform.Find("MessageHandler")?.GetComponent<MessageHandler>();
+        uiManager = GameObject.FindWithTag("Player")?.transform.Find("UIManager")?.GetComponent<UIManager>();
     }
     public virtual void Use() { }
     public override void Interact()
@@ -45,8 +47,9 @@ public class Lockable : Interactable
                 }
                 locked = false;
             }
-            else
+            else if (!uiManager.uiActive)
             {
+                base.Interact();
                 Debug.Log(lockedMessage);
                 messageHandler.QueueMessage(lockedMessage);
             }
@@ -55,6 +58,5 @@ public class Lockable : Interactable
         {
             Use();
         }
-        base.Interact();
     }
 }

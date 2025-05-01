@@ -23,11 +23,15 @@ public class RotateTowardsPath : MonoBehaviour
     private bool active = false;
 
     public AIPath aiPath;
+    public AIDestinationSetter destinationSetter;
     private Vector3 target; // Target to rotate towards
+    public GameObject targetVisual;
 
     private void Start()
     {
         player = GameObject.FindWithTag("Player");
+        destinationSetter = GetComponent<AIDestinationSetter>();
+        destinationSetter.target = player.transform;
     }
 
     void Update()
@@ -36,6 +40,10 @@ public class RotateTowardsPath : MonoBehaviour
         if (aiPath != null && !isRotating) // Only rotate if not currently in the coroutine rotation
         {
             RotateContinuously();
+        }
+        if(targetVisual != null)
+        {
+            targetVisual.transform.position = target;
         }
     }
     private void UpdateTarget() {

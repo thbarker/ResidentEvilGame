@@ -1,19 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class GateKey : Key
+public class EmptyCanAndSiphon : Key
 {
     /// <summary>
-    /// Cosntructor for a gate key
+    /// Cosntructor for a full fuel can
     /// </summary>
     /// <param name="playerInventory">Reference to player inventory script</param>
     /// <param name="uses">Number of uses before this key is automatically discarded</param>
-    public GateKey(PlayerInventory playerInventory, int uses) : base(playerInventory, "GateKey", uses)
+    public EmptyCanAndSiphon(PlayerInventory playerInventory, int uses) : base(playerInventory, "FuelCanAndSiphon", uses)
     {
 
-        name = "Bolt Cutters";
-        description = "A tool used for cutting bolts, chains, and padlocks.";
+        name = "Empty Can and Siphon";
+        description = "A fuel can with a siphon attached.";
 
         if (icon == null)
         {
