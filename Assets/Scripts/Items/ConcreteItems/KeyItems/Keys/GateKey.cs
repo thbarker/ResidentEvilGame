@@ -11,9 +11,9 @@ public class GateKey : Key
     /// <param name="uses">Number of uses before this key is automatically discarded</param>
     public GateKey(PlayerInventory playerInventory, int uses) : base(playerInventory, "GateKey", uses)
     {
-
         name = "Bolt Cutters";
         description = "A tool used for cutting bolts, chains, and padlocks.";
+        plural = true;
 
         if (icon == null)
         {

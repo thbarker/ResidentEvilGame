@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 
 public class Generator : Lockable
@@ -8,6 +9,7 @@ public class Generator : Lockable
 
     public override void Use()
     {
-        safe.Unlock();
+        safe.Unlock(); 
+        messageHandler.QueueMessage("You have turned on the power.");
     }
 }

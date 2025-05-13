@@ -7,6 +7,7 @@ public class Key : Item
 {
     protected PlayerInventory playerInventory;
     public int uses;
+    public bool plural = false;
 
     public Key(PlayerInventory playerInventory, string sprite, int uses) : base(sprite)
     {

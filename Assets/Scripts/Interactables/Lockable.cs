@@ -8,6 +8,7 @@ using UnityEngine.InputSystem;
 public class Lockable : Interactable
 {
     public bool locked = false;
+    public bool instantlyUse = false;
     public string key;
     public string lockedMessage = "It is locked.";
     protected PlayerMovement playerMovement;
@@ -42,8 +43,20 @@ public class Lockable : Interactable
                 {
                     hasFocusCamera = false;
                     Debug.Log("This item is no longer needed, it is being discarded.");
-                    messageHandler.QueueMessage(keyItem.name + " is no longer needed, it is being discarded.");
                     playerInventory.RemoveItem(keyItem);
+                    if(instantlyUse)
+                    {
+                        Use(); 
+                    } else
+                    {
+                        if(keyItem.plural)
+                        {
+                            messageHandler.QueueMessage(keyItem.name + " are no longer needed, they are being discarded.");
+                        } else
+                        {
+                            messageHandler.QueueMessage(keyItem.name + " is no longer needed, it is being discarded.");
+                        }
+                    }
                 }
                 locked = false;
             }
