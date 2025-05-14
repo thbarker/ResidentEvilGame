@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using static UnityEditor.Progress;
@@ -30,6 +31,7 @@ public class PlayerInventory : MonoBehaviour
     public UIManager uiManager;
     public MessageHandler messageHandler;
     public EventSystem eventSystem;
+    public TextMeshProUGUI messageText;
 
     private void Awake()
     {
@@ -110,7 +112,7 @@ public class PlayerInventory : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.KeypadDivide))
         {
-            AddItem(new MansionKey(this, 1));
+            AddItem(new GateKey(this, 1));
         }
         if(Input.GetKeyDown(KeyCode.M)) 
         {
@@ -326,6 +328,7 @@ public class PlayerInventory : MonoBehaviour
         {
             uiManager.StartUI();
             statusCanvas.SetActive(true);
+            SetMessageText("");
             ChangeState(iStates.Default);
             if (slotList[0].item != null)
             {
@@ -411,6 +414,10 @@ public class PlayerInventory : MonoBehaviour
             }
         }
         return null;
+    }
+    public void SetMessageText(string message)
+    {
+        messageText.text = message;
     }
     public void PrintList()
     {

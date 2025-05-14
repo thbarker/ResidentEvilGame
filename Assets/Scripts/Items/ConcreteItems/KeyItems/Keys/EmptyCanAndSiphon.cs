@@ -12,7 +12,6 @@ public class EmptyCanAndSiphon : Key
     /// <param name="uses">Number of uses before this key is automatically discarded</param>
     public EmptyCanAndSiphon(PlayerInventory playerInventory, int uses) : base(playerInventory, "FuelCanAndSiphon", uses)
     {
-
         name = "Empty Can and Siphon";
         description = "A fuel can with a siphon attached.";
 

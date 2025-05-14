@@ -2,11 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class SiphonPump : Item
 {
-    protected PlayerInventory playerInventory;
-
     public SiphonPump(PlayerInventory playerInventory) : base("SiphonPump")
     {
         this.playerInventory = playerInventory;
@@ -24,6 +23,7 @@ public class SiphonPump : Item
     public override bool Use()
     {
         Debug.Log("It is not necessary to use this right now.");
+        playerInventory.SetMessageText("It is not necessary to use this right now.");
         return false;
     }
     public override Item Combine(Item item)
@@ -32,6 +32,9 @@ public class SiphonPump : Item
         {
             case "Empty Fuel Can":
                 return new EmptyCanAndSiphon(playerInventory, 1);
+            default:
+                playerInventory.SetMessageText("Cannot Combine with " + item.name);
+                break;
         }
         return null;
     }
@@ -46,9 +49,5 @@ public class SiphonPump : Item
                 break;
         }
         return false;
-    }
-    public override void Examine()
-    {
-        Debug.Log(description);
     }
 }

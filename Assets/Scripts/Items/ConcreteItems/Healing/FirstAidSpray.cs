@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class FirstAidSpray : Item
 {
-    protected PlayerInventory playerInventory;
     protected List<Item> itemList;
 
     private PlayerDamage playerDamage;
@@ -27,11 +27,13 @@ public class FirstAidSpray : Item
     public override bool Use()
     {
         playerDamage.Heal(100);
-        Debug.Log("You have restored a vast amount of health");
+        Debug.Log("You have restored a vast amount of health"); 
+        playerInventory.SetMessageText("You have restored a vast amount of health");
         return true;
     }
     public override Item Combine(Item item)
     {
+        playerInventory.SetMessageText("Cannot Combine with " + item.name);
         return null;
     }
     public override bool CanCombine(Item item)
@@ -39,13 +41,9 @@ public class FirstAidSpray : Item
         switch (item.name)
         {
             default:
-                Debug.Log("Cannot Combine with " + item.name);
+                Debug.Log("Cannot Combine with " + item.name); 
                 break;
         }
         return false;
-    }
-    public override void Examine() 
-    {
-        Debug.Log(description);
     }
 }

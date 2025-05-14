@@ -42,12 +42,22 @@ public class Lockable : Interactable
                 if (keyItem.uses <= 0)
                 {
                     hasFocusCamera = false;
-                    Debug.Log("This item is no longer needed, it is being discarded.");
+                    if(uiManager.uiActive)
+                    {
+                        if (keyItem.plural)
+                        {
+                            playerInventory.SetMessageText(keyItem.name + " are no longer needed, they are being discarded.");
+                        }
+                        else
+                        {
+                            playerInventory.SetMessageText(keyItem.name + " is no longer needed, it is being discarded.");
+                        }
+                    }
                     playerInventory.RemoveItem(keyItem);
                     if(instantlyUse)
                     {
                         Use(); 
-                    } else
+                    } else if (!uiManager.uiActive)
                     {
                         if(keyItem.plural)
                         {
@@ -65,6 +75,9 @@ public class Lockable : Interactable
                 base.Interact();
                 Debug.Log(lockedMessage);
                 messageHandler.QueueMessage(lockedMessage);
+            } else if (uiManager.uiActive)
+            {
+                playerInventory.SetMessageText("It is not necessary to use this right now.");
             }
         }
         else

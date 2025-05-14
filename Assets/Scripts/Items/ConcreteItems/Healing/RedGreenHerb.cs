@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class RedGreenHerb : Item
 {
-    protected PlayerInventory playerInventory;
     protected List<Item> itemList;
     private PlayerDamage playerDamage;
 
@@ -22,6 +21,7 @@ public class RedGreenHerb : Item
     {
         playerDamage.Heal(100);
         Debug.Log("You have restored a vast amount of health");
+        playerInventory.SetMessageText("You have restored a vast amount of health");
         return true;
     }
     public override Item Combine(Item item)
@@ -43,9 +43,5 @@ public class RedGreenHerb : Item
                 break;
         }
         return false;
-    }
-    public override void Examine()
-    {
-        Debug.Log(description);
     }
 }

@@ -8,6 +8,7 @@ public class QuickHealthIndicator: MonoBehaviour
 {
     PlayerDamage playerDamage;
     public Image image;
+    public Image background;
     private void Awake()
     {
         playerDamage = transform.parent.GetComponent<PlayerDamage>();
@@ -15,7 +16,8 @@ public class QuickHealthIndicator: MonoBehaviour
 
     void Update()
     {
-        image.color = GetColorBasedOnValue(playerDamage.GetHealth());
+        image.material.SetColor("_Color", GetColorBasedOnValue(playerDamage.GetHealth()));
+        background.color = Color.Lerp(GetColorBasedOnValue(playerDamage.GetHealth()), new Color(0.2f,0.2f,0.2f,0.5f), 0.9f); 
     }
 
     Color GetColorBasedOnValue(float value)
@@ -26,10 +28,15 @@ public class QuickHealthIndicator: MonoBehaviour
         // Define the colors at specific points
         Color red = Color.red;
         Color yellow = Color.yellow;
-        Color green = Color.green;
+        Color green = new Color(0,0.7f,0.4f);
 
         // Lerp between red, yellow, and green
-        if (normalizedValue < 0.5f) // From 0 to 50
+        if(normalizedValue < 0.25f)
+        {
+            // Return Red if Danger
+            return red;
+        }
+        else if (normalizedValue < 0.5f) // From 0 to 50
         {
             // Lerp from red to yellow
             return Color.Lerp(red, yellow, normalizedValue * 2); // Multiplied by 2 to normalize 0-0.5 to 0-1

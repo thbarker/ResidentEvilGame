@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class TripleGreenHerb : Item
 {
-    protected PlayerInventory playerInventory;
     protected List<Item> itemList;
     private PlayerDamage playerDamage;
 
@@ -21,6 +20,7 @@ public class TripleGreenHerb : Item
     {
         playerDamage.Heal(100);
         Debug.Log("You have restored a vast amount of health");
+        playerInventory.SetMessageText("You have restored a vast amount of health");
         return true;
     }
     public override Item Combine(Item item)
@@ -32,9 +32,5 @@ public class TripleGreenHerb : Item
     {
         Debug.Log("Cannot Combine with " + item.name);
         return false;
-    }
-    public override void Examine() 
-    {
-        Debug.Log(description);
     }
 }

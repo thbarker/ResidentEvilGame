@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class HandgunBullets : Item
 {
-    protected PlayerInventory playerInventory;
     protected List<Item> itemList;
 
     private PlayerShoot playerShoot;
@@ -35,6 +34,7 @@ public class HandgunBullets : Item
     {
         count = playerShoot.Reload(count);
         Debug.Log("You have reloaded your handgun");
+        playerInventory.SetMessageText("You have reloaded your handgun");
         if (count < 1)
             return true;
         else
@@ -80,9 +80,5 @@ public class HandgunBullets : Item
                 break;
         }
         return false;
-    }
-    public override void Examine()
-    {
-        Debug.Log(description);
     }
 }

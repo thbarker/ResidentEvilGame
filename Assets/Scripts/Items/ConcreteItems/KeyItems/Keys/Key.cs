@@ -5,7 +5,6 @@ using UnityEngine.Analytics;
 
 public class Key : Item
 {
-    protected PlayerInventory playerInventory;
     public int uses;
     public bool plural = false;
 
@@ -47,10 +46,6 @@ public class Key : Item
         }
         return false;
     }
-    public override void Examine()
-    {
-        Debug.Log(description);
-    }
 
     private void Unlock()
     {
@@ -83,7 +78,8 @@ public class Key : Item
             }
             else
             {
-                Debug.Log("No hit");
+                Debug.Log("No hit"); 
+                playerInventory.SetMessageText("It is not necessary to use this right now.");
             }
         }
     }

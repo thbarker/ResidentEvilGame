@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Item
 {
+    protected PlayerInventory playerInventory;
     public string name;
     public string description;
     public bool isKeyItem;
@@ -39,7 +40,13 @@ public class Item
     /// <summary>
     /// Virtual method to examine the item. Can be overridden to provide more detailed examination behavior.
     /// </summary>
-    public virtual void Examine() { }
+    public virtual void Examine() 
+    {
+        if (playerInventory != null)
+        {
+            playerInventory.SetMessageText(description);
+        }
+    }
     /// <summary>
     /// Helper method to initialize the sprite icon for the item from the specified item name.
     /// </summary>

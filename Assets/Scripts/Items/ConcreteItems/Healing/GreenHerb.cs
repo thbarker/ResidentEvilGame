@@ -1,11 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class GreenHerb : Item
 {
-    protected PlayerInventory playerInventory;
-
     private PlayerDamage playerDamage;
 
     public GreenHerb(PlayerInventory playerInventory) : base("GreenHerb")
@@ -27,6 +26,7 @@ public class GreenHerb : Item
     {
         playerDamage.Heal(25);
         Debug.Log("You have restored a small amount of health");
+        playerInventory.SetMessageText("You have restored a small amount of health");
         return true;
     }
     public override Item Combine(Item item)
@@ -40,6 +40,7 @@ public class GreenHerb : Item
             case "Double Green Herb":
                 return new TripleGreenHerb(playerInventory);
             default:
+                playerInventory.SetMessageText("Cannot Combine with " + item.name);
                 break;
         }
         return null;
@@ -59,9 +60,5 @@ public class GreenHerb : Item
                 break;
         }
         return false;
-    }
-    public override void Examine() 
-    {
-        Debug.Log(description);
     }
 }

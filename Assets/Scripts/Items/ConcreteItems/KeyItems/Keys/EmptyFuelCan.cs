@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class EmptyFuelCan : Item
 {
-    protected PlayerInventory playerInventory;
-
     public EmptyFuelCan(PlayerInventory playerInventory) : base("FuelCan")
     {
         this.playerInventory = playerInventory;
@@ -24,6 +22,7 @@ public class EmptyFuelCan : Item
     public override bool Use()
     {
         Debug.Log("It is not necessary to use this right now.");
+        playerInventory.SetMessageText("It is not necessary to use this right now.");
         return false;
     }
     public override Item Combine(Item item)
@@ -46,9 +45,5 @@ public class EmptyFuelCan : Item
                 break;
         }
         return false;
-    }
-    public override void Examine()
-    {
-        Debug.Log(description);
     }
 }

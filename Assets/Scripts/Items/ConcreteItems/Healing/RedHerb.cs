@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class RedHerb : Item
 {
-    protected PlayerInventory playerInventory;
     protected List<Item> itemList;
 
 
@@ -19,6 +19,7 @@ public class RedHerb : Item
     public override bool Use()
     {
         Debug.Log("You cannot use this item alone");
+        playerInventory.SetMessageText("You cannot use this item alone");
         return false;
     }
     public override Item Combine(Item item)
@@ -29,6 +30,7 @@ public class RedHerb : Item
                 return new RedGreenHerb(playerInventory);
             default:
                 Debug.Log("Cannot Combine with " + item.name);
+                playerInventory.SetMessageText("Cannot Combine with " + item.name);
                 break;
         }
         return null;
@@ -44,9 +46,5 @@ public class RedHerb : Item
                 break;
         }
         return false;
-    }
-    public override void Examine()
-    {
-        Debug.Log(description);
     }
 }

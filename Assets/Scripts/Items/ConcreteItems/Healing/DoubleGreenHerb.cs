@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class DoubleGreenHerb : Item
 {
-    protected PlayerInventory playerInventory;
     protected List<Item> itemList;
     private PlayerDamage playerDamage;
 
@@ -21,6 +20,7 @@ public class DoubleGreenHerb : Item
     {
         playerDamage.Heal(50);
         Debug.Log("You have restored a great amount of health");
+        playerInventory.SetMessageText("You have restored a great amount of health");
         return true;
     }
     public override Item Combine(Item item)
@@ -32,6 +32,7 @@ public class DoubleGreenHerb : Item
                 return new TripleGreenHerb(playerInventory);
             default:
                 Debug.Log("Cannot Combine with " + item.name);
+                playerInventory.SetMessageText("Cannot Combine with " + item.name);
                 break;
         }
         return null;
@@ -47,9 +48,5 @@ public class DoubleGreenHerb : Item
                 break;
         }
         return false;
-    }
-    public override void Examine() 
-    {
-        Debug.Log(description);
     }
 }
