@@ -10,6 +10,8 @@ public class Door : Lockable
     public RoomManager bRoom;
     private Transform spawnA, spawnB;
     public BoxCollider aPlayableArea, bPlayableArea;
+    public AudioSource doorAudioSource;
+    public AudioClip doorClip;
 
     protected override void Awake()
     {
@@ -28,6 +30,7 @@ public class Door : Lockable
     public override void Use()
     {
         Transform spawn;
+        doorAudioSource.PlayOneShot(doorClip);
         if (Vector3.Distance(playerMovement.transform.position, spawnA.position)
           < Vector3.Distance(playerMovement.transform.position, spawnB.position))
         {

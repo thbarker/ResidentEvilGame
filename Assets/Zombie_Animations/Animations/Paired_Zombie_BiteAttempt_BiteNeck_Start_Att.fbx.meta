@@ -65,7 +65,35 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0.30935252
+        functionName: PlayFootsteps
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: db543acdff7fb094bb71d5c0356721ed, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.7371376
+        functionName: PlayBite
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: db543acdff7fb094bb71d5c0356721ed, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.4388489
+        functionName: PlayFootsteps
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: db543acdff7fb094bb71d5c0356721ed, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.6738609
+        functionName: PlayFootsteps
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: db543acdff7fb094bb71d5c0356721ed, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}

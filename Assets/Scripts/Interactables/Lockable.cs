@@ -16,6 +16,8 @@ public class Lockable : Interactable
     protected PlayerDamage playerDamage;
     protected MessageHandler messageHandler;
     private UIManager uiManager;
+    public AudioSource lockableAudioSource;
+    public AudioClip unlockingClip;
 
     protected override void Awake()
     {
@@ -54,6 +56,9 @@ public class Lockable : Interactable
                         }
                     }
                     playerInventory.RemoveItem(keyItem);
+                    if(lockableAudioSource != null){
+                        lockableAudioSource.PlayOneShot(unlockingClip);
+                    }
                     if(instantlyUse)
                     {
                         Use(); 

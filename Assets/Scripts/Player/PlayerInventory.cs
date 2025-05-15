@@ -246,6 +246,10 @@ public class PlayerInventory : MonoBehaviour
 
     public void Interact()
     {
+        if(playerMovement.isUsingDoor){
+            return;
+        }
+
         bool isHit = false;
         Vector3 origin = new Vector3(transform.position.x, transform.position.y + 1, transform.position.z);
 
@@ -425,5 +429,9 @@ public class PlayerInventory : MonoBehaviour
         {
             Debug.Log(item.name);
         }
+    }
+
+    public void PlayBoltCutters(){
+        playerMovement.PlayBoltCutters();
     }
 }

@@ -61,6 +61,12 @@ public class PlayerMovement : MonoBehaviour
     private bool aimAfterQuickTurn = false;
     private float verticalAimLerpValue = 0;
 
+    public AudioSource playerAudioSource;
+    public AudioClip grassFootstepClip;
+    public AudioClip concreteFootstepClip;
+    public AudioClip gunshotClip;
+    public AudioClip boltCuttersClip;
+
     private Image blackScreen;
     private float fadeStartTime;
 
@@ -348,4 +354,53 @@ public class PlayerMovement : MonoBehaviour
     public bool GetIsRunning() { return isRunning; }
     public bool GetIsQuickTurning() { return isQuickTurning; }
     public float GetZ() { return z; }
+
+    #region AUDIO
+    public void PlayFootsteps()
+    {
+        RaycastHit hit;
+        Vector3 origin = transform.position + Vector3.up * 0.1f; // Slightly above the feet
+        Vector3 direction = Vector3.down;
+        float rayDistance = 1.5f;
+
+        if (Physics.Raycast(origin, direction, out hit, rayDistance))
+        {
+            AudioClip chosenClip = null;
+
+            switch (hit.collider.tag)
+            {
+                case "Grass":
+                    chosenClip = grassFootstepClip;
+                    break;
+                case "Concrete":
+                    chosenClip = concreteFootstepClip;
+                    break;
+                default:
+                    chosenClip = grassFootstepClip; // Fallback
+                    break;
+            }
+
+            if (chosenClip != null)
+            {
+                playerAudioSource.volume = Random.Range(0.5f, 0.7f);
+                playerAudioSource.pitch = Random.Range(0.8f, 1f);
+                playerAudioSource.PlayOneShot(chosenClip);
+            }
+        }
+    }
+
+    public void PlayGunshot()
+    {
+        playerAudioSource.volume = Random.Range(0.8f, 1f);
+        playerAudioSource.pitch = Random.Range(1f, 1.1f);
+        playerAudioSource.PlayOneShot(gunshotClip);
+    }
+
+    public void PlayBoltCutters()
+    {
+        playerAudioSource.volume = Random.Range(1f, 1.2f);
+        playerAudioSource.pitch = Random.Range(0.8f, 1f);
+        playerAudioSource.PlayOneShot(boltCuttersClip);
+    }
+    #endregion
 }

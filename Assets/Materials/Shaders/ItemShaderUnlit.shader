@@ -21,6 +21,7 @@ Shader "Custom/ItemShaderUnlit"
             #pragma vertex vert
             #pragma fragment frag
             #include "UnityCG.cginc"
+            #include "Lighting.cginc"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
@@ -44,6 +45,7 @@ Shader "Custom/ItemShaderUnlit"
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
                 float4 screenPos : TEXCOORD1;
+                float3 worldNormal : TEXCOORD2;
             };
 
             v2f vert (appdata v)
@@ -64,6 +66,14 @@ Shader "Custom/ItemShaderUnlit"
 
                 // Alpha clip
                 clip(texColor.a - _Cutoff);
+
+                // Directional light (Unity _WorldSpaceLightPos0 is a direction if w = 0)
+                float3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
+                float3 normal = normalize(i.worldNormal);
+
+                // Lambert diffuse term
+                float NdotL = saturate(dot(normal, lightDir));
+                //texColor.rgb *= NdotL;
 
                 float glintCoord = screenUV.x + screenUV.y;
                 float glint = abs(frac(glintCoord + _Time.y * _GlintSpeed) - 0.5);

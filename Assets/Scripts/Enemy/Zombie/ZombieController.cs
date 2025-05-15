@@ -28,6 +28,11 @@ public class ZombieController : Damageable
     public Rigidbody rb;
     public ReachCollision reachCollisionScript;
     private ZombieList zombieList;
+    public AudioSource zombieAudioSource;
+    public AudioClip grassFootstepClip;
+    public AudioClip concreteFootstepClip;
+    public AudioClip biteClip;
+    public AudioClip[] reachClips;
     #endregion
 
     #region Helpers
@@ -409,5 +414,54 @@ public class ZombieController : Damageable
     void OnDrawGizmosSelected()
     {
     }
+
+    #region AUDIO
+    public void PlayFootsteps()
+    {
+        RaycastHit hit;
+        Vector3 origin = transform.position + Vector3.up * 0.1f; // Slightly above the feet
+        Vector3 direction = Vector3.down;
+        float rayDistance = 1.5f;
+
+        if (Physics.Raycast(origin, direction, out hit, rayDistance))
+        {
+            AudioClip chosenClip = null;
+
+            switch (hit.collider.tag)
+            {
+                case "Grass":
+                    chosenClip = grassFootstepClip;
+                    break;
+                case "Concrete":
+                    chosenClip = concreteFootstepClip;
+                    break;
+                default:
+                    chosenClip = grassFootstepClip; // Fallback
+                    break;
+            }
+
+            if (chosenClip != null)
+            {
+                zombieAudioSource.volume = Random.Range(0.5f, 0.7f);
+                zombieAudioSource.pitch = Random.Range(0.8f, 1f);
+                zombieAudioSource.PlayOneShot(chosenClip);
+            }
+        }
+    }
+
+    public void PlayBite()
+    {
+        zombieAudioSource.volume = Random.Range(1f, 1.2f);
+        zombieAudioSource.pitch = Random.Range(0.8f, 1f);
+        zombieAudioSource.PlayOneShot(biteClip);
+    }
+
+    public void PlayGroan()
+    {
+        zombieAudioSource.volume = Random.Range(1f, 1.2f);
+        zombieAudioSource.pitch = Random.Range(0.8f, 1f);
+        zombieAudioSource.PlayOneShot(reachClips[(int)Random.Range(0,reachClips.Length)]);
+    }
+    #endregion
     
 }

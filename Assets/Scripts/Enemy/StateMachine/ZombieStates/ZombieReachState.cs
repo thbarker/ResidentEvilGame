@@ -43,6 +43,7 @@ public class ZombieReachState : EnemyState
     {
         base.EnterState(); 
         animator.SetTrigger("Reach");
+        zombieController.PlayGroan();
         startTime = Time.time;
         rotationSpeedDynamic = 0.5f * reachRotationSpeed;
     }

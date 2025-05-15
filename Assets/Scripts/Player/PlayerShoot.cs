@@ -55,6 +55,9 @@ public class PlayerShoot : MonoBehaviour
             yield break;
         if (magazine > 0)
         {
+            playerMovement.PlayGunshot();
+            Debug.Log("play shoot sound");
+
             animator.SetTrigger("Attack");
             attackCooldown = true;
 
