@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using UnityEngine.SceneManagement;
 
 public class PlayerDamage : Damageable
 {
@@ -11,12 +14,15 @@ public class PlayerDamage : Damageable
     public Transform zombieTransform;
     [SerializeField]
     private PlayerMovement playerMovement;
+    public Image image;
+    public TextMeshProUGUI deathText;
     #endregion
 
     #region Helpers
     private bool isBeingBitten = false;
     private float currentLerpTime = 0.0f;
     public bool dead = false;
+    private float deathCanvasStartTime;
     #endregion
 
     #region Tunables
@@ -141,10 +147,24 @@ public class PlayerDamage : Damageable
 
     protected override void Die()
     {
+        StartCoroutine(StartDeathCanvas());
         if(!isBeingBitten)
         {
             playerMovement.StateMachine.ChangeState(playerMovement.DieState);
         }
         dead = true;
+    }
+
+    IEnumerator StartDeathCanvas(){
+        yield return new WaitForSeconds(8);
+        deathCanvasStartTime = Time.time;
+        while(Time.time - deathCanvasStartTime < 2f){
+            float alpha = (Time.time - deathCanvasStartTime) / 2f;
+            image.color = new Color(image.color.r, image.color.g, image.color.b, Mathf.Lerp(0, 1, alpha));
+            deathText.color = new Color(deathText.color.r, deathText.color.g, deathText.color.b, Mathf.Lerp(0, 1, alpha));
+            yield return null;
+        }
+        yield return new WaitForSeconds(2);
+        SceneManager.LoadScene("Level_1");
     }
 }

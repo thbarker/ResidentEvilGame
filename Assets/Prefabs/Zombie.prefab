@@ -501,6 +501,7 @@ MonoBehaviour:
   grassFootstepClip: {fileID: 8300000, guid: 91c87f7cf73d1954985552bcd083f8bd, type: 3}
   concreteFootstepClip: {fileID: 8300000, guid: bfe251847cf25334ab291f87bca39ea9, type: 3}
   biteClip: {fileID: 8300000, guid: 3c16a408ccbcdc24dbcfc1b7e8810756, type: 3}
+  fallingClip: {fileID: 8300000, guid: 120ace2a4c8beeb4bbb6c70cad3a354e, type: 3}
   reachClips:
   - {fileID: 8300000, guid: 3e8c095c0a424dc44915d112f597440b, type: 3}
   - {fileID: 8300000, guid: b891ce19cb3991341b764ff68baf6a60, type: 3}

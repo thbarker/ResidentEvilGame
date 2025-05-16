@@ -66,6 +66,7 @@ public class PlayerMovement : MonoBehaviour
     public AudioClip concreteFootstepClip;
     public AudioClip gunshotClip;
     public AudioClip boltCuttersClip;
+    public AudioClip fallingClip;
 
     private Image blackScreen;
     private float fadeStartTime;
@@ -401,6 +402,12 @@ public class PlayerMovement : MonoBehaviour
         playerAudioSource.volume = Random.Range(1f, 1.2f);
         playerAudioSource.pitch = Random.Range(0.8f, 1f);
         playerAudioSource.PlayOneShot(boltCuttersClip);
+    }
+
+    public void PlayFalling(){
+        playerAudioSource.volume = Random.Range(1f, 1.2f);
+        playerAudioSource.pitch = Random.Range(0.8f, 1f);
+        playerAudioSource.PlayOneShot(fallingClip);
     }
     #endregion
 }

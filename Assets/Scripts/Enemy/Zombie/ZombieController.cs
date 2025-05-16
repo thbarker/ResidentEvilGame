@@ -32,6 +32,7 @@ public class ZombieController : Damageable
     public AudioClip grassFootstepClip;
     public AudioClip concreteFootstepClip;
     public AudioClip biteClip;
+    public AudioClip fallingClip;
     public AudioClip[] reachClips;
     #endregion
 
@@ -44,6 +45,7 @@ public class ZombieController : Damageable
     public bool dead = false;
     public bool bite = false;
     private float knockbackThreshold;
+    private float hitstopStartTime;
     #endregion
 
     #region Tunables
@@ -194,6 +196,11 @@ public class ZombieController : Damageable
 
     public override void ApplyDamage(int damage)
     {
+        zombieAudioSource.time = 0.234f;
+        zombieAudioSource.pitch = 2;
+        zombieAudioSource.PlayOneShot(biteClip);
+        zombieAudioSource.pitch = 1;
+        zombieAudioSource.time = 0;
         health -= damage;
         knockbackThreshold -= damage;
         if(knockbackThreshold <= 0 && health > 0)
@@ -205,6 +212,7 @@ public class ZombieController : Damageable
         {
             // Potentially add a hit reaction that doesn't slow the movement
             // Headshot();
+            StartCoroutine(Hitstop());
         }
     }
 
@@ -415,6 +423,16 @@ public class ZombieController : Damageable
     {
     }
 
+    IEnumerator Hitstop(){
+        hitstopStartTime = Time.time;
+        while(Time.time - hitstopStartTime < 0.25f){
+            float alpha = (Time.time - hitstopStartTime) / 0.25f;
+            animator.speed = Mathf.Lerp(0, 1, alpha);
+            yield return null;
+        }
+        animator.speed = 1;
+    }
+
     #region AUDIO
     public void PlayFootsteps()
     {
@@ -461,6 +479,12 @@ public class ZombieController : Damageable
         zombieAudioSource.volume = Random.Range(1f, 1.2f);
         zombieAudioSource.pitch = Random.Range(0.8f, 1f);
         zombieAudioSource.PlayOneShot(reachClips[(int)Random.Range(0,reachClips.Length)]);
+    }
+
+    public void PlayFalling(){
+        zombieAudioSource.volume = Random.Range(1f, 1.2f);
+        zombieAudioSource.pitch = Random.Range(0.8f, 1f);
+        zombieAudioSource.PlayOneShot(fallingClip);
     }
     #endregion
     
