@@ -24,7 +24,7 @@ public class PlayerShoot : MonoBehaviour
     public int magazine = 0;
     [SerializeField]
     [Range(0, 20)]
-    private int magazineSize = 15;
+    public int magazineSize = 15;
 
 
     private void Awake()

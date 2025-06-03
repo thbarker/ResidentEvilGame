@@ -14,7 +14,9 @@ public class PickupTruck : Lockable
         if (!used)
         {
             playerInventory.AddItem(new FuelCan(playerInventory, 1));
-            messageHandler.QueueMessage("You have filled up your fuel can.");
+            if(!uiManager.uiActive)
+                messageHandler.QueueMessage("You have filled up your fuel can.");
+            used = true;
         }
     }
 }

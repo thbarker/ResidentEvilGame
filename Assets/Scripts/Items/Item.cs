@@ -7,6 +7,7 @@ public class Item
     protected PlayerInventory playerInventory;
     public string name;
     public string description;
+    public string discardMessage = "";
     public bool isKeyItem;
 
     public Sprite icon;

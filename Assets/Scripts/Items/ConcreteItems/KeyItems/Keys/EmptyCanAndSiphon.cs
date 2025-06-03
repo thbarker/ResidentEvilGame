@@ -14,6 +14,7 @@ public class EmptyCanAndSiphon : Key
     {
         name = "Empty Can and Siphon";
         description = "A fuel can with a siphon attached.";
+        discardMessage = "Fuel can has been refilled.";
 
         if (icon == null)
         {

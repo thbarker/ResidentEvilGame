@@ -112,7 +112,7 @@ public class PlayerInventory : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.KeypadDivide))
         {
-            AddItem(new GateKey(this, 1));
+            AddItem(new EmptyCanAndSiphon(this, 1));
         }
         if(Input.GetKeyDown(KeyCode.M)) 
         {

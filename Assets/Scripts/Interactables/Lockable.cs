@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEditor.Progress;
 
 public class Lockable : Interactable
 {
@@ -15,7 +17,7 @@ public class Lockable : Interactable
     protected PlayerInventory playerInventory;
     protected PlayerDamage playerDamage;
     protected MessageHandler messageHandler;
-    private UIManager uiManager;
+    protected UIManager uiManager;
     public AudioSource lockableAudioSource;
     public AudioClip unlockingClip;
 
@@ -46,7 +48,11 @@ public class Lockable : Interactable
                     hasFocusCamera = false;
                     if(uiManager.uiActive)
                     {
-                        if (keyItem.plural)
+                        if(keyItem.discardMessage != "")
+                        {
+                            playerInventory.SetMessageText(keyItem.discardMessage);
+                        }
+                        else if (keyItem.plural)
                         {
                             playerInventory.SetMessageText(keyItem.name + " are no longer needed, they are being discarded.");
                         }

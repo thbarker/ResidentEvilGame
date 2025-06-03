@@ -46,6 +46,7 @@ public class ZombieController : Damageable
     public bool bite = false;
     private float knockbackThreshold;
     private float hitstopStartTime;
+    private bool paused = false;
     #endregion
 
     #region Tunables
@@ -292,6 +293,8 @@ public class ZombieController : Damageable
     }
     private void FixedUpdate()
     {
+        if(paused)
+            rb.velocity = Vector3.zero;
         StateMachine.CurrentEnemyState.PhysicsUpdate();
     }
 
@@ -409,6 +412,7 @@ public class ZombieController : Damageable
             animator.speed = 0;
             rb.velocity = Vector3.zero;
             rotateTowardsPath.enabled = false;
+            paused = true;
         }
     }
     public void Resume()
@@ -417,6 +421,7 @@ public class ZombieController : Damageable
         {
             animator.speed = 1;
             rotateTowardsPath.enabled = true;
+            paused = false;
         }
     }
     void OnDrawGizmosSelected()
