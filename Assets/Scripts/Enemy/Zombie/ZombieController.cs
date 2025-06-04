@@ -2,6 +2,7 @@ using Pathfinding;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class ZombieController : Damageable
 {
@@ -34,6 +35,7 @@ public class ZombieController : Damageable
     public AudioClip biteClip;
     public AudioClip fallingClip;
     public AudioClip[] reachClips;
+    public VisualEffect bloodVFX;
     #endregion
 
     #region Helpers
@@ -204,6 +206,10 @@ public class ZombieController : Damageable
         zombieAudioSource.time = 0;
         health -= damage;
         knockbackThreshold -= damage;
+
+        if(bloodVFX != null)
+            bloodVFX.Play();
+
         if(knockbackThreshold <= 0 && health > 0)
         {
             StateMachine.ChangeState(KnockbackState);
@@ -247,6 +253,7 @@ public class ZombieController : Damageable
         aiPath = GetComponent<AIPath>();
         rotateTowardsPath = GetComponent<RotateTowardsPath>();
         zombieList = player.transform.Find("ZombieList").GetComponent<ZombieList>();
+        bloodVFX = transform.Find("BloodEffect")?.transform.Find("vfx_blood")?.GetComponent<VisualEffect>();
 
         if (!zombieList) Debug.LogError("Scene must have a zombie list gameobject tagged as ZombieList");
         else
@@ -275,6 +282,10 @@ public class ZombieController : Damageable
         if(!dead)
             StateMachine.Initialize(IdleState);
         knockbackThreshold = Random.Range(minKnockThreshold, maxKnockThreshold);
+        if (bloodVFX != null)
+        {
+            bloodVFX.Stop();  // Ensures it does not play on start
+        }
     }
 
     // Update is called once per frame
@@ -404,6 +415,10 @@ public class ZombieController : Damageable
     public void Activate()
     {
         gameObject.SetActive(true);
+        if(bloodVFX != null)
+        {
+            bloodVFX.Stop();
+        }
     }
     public void Pause()
     {

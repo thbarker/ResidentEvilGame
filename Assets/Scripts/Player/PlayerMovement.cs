@@ -247,7 +247,8 @@ public class PlayerMovement : MonoBehaviour
 
     public void UpdateAiming(bool on)
     {
-        rb.velocity = Vector3.zero;
+        if(rb)
+            rb.velocity = Vector3.zero;
         if (on)
         {
             currentSpeed = moveSpeed;

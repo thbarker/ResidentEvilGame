@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.VFX;
 
 public class PlayerDamage : Damageable
 {
@@ -16,6 +17,9 @@ public class PlayerDamage : Damageable
     private PlayerMovement playerMovement;
     public Image image;
     public TextMeshProUGUI deathText;
+    public VisualEffect bloodVFX;
+    public GameObject bloodObj;
+    public Transform bloodTransform;
     #endregion
 
     #region Helpers
@@ -50,11 +54,29 @@ public class PlayerDamage : Damageable
         animator = GetComponent<Animator>();
         playerMovement = GetComponent<PlayerMovement>();
         health = maxHealth;
+        bloodVFX =
+            transform.Find("BloodEffect")?.
+            transform.Find("vfx_blood")?.
+            GetComponent<VisualEffect>();
+        bloodTransform =
+            transform.Find("Root")?.
+            transform.Find("Hips")?.
+            transform.Find("Spine")?.
+            transform.Find("Spine1")?.
+            transform.Find("Spine2")?.
+            transform.Find("Neck")?.
+            transform.Find("BloodTransform");
+        bloodObj =
+            transform.Find("BloodEffect")?.gameObject;
     }
 
     // Start is called before the first frame update
     void Start()
     { 
+        if(bloodVFX)
+        {
+            bloodVFX.Stop();
+        }
     }
     private void Update()
     {
@@ -166,5 +188,13 @@ public class PlayerDamage : Damageable
         }
         yield return new WaitForSeconds(2);
         SceneManager.LoadScene("Level_1");
+    }
+
+    public void BloodSpurt()
+    {
+        if (bloodObj && bloodTransform && bloodVFX) {
+            bloodObj.transform.position = bloodTransform.transform.position;
+            bloodVFX.Play(); 
+        }
     }
 }
