@@ -7,11 +7,19 @@ public class RoomManager : MonoBehaviour
     public List<GameObject> zombieObjects;
     private List<ZombieController> zombieControllers;
     public ZombieList zombieList;
+    public bool startInRoom = false;
     public PlayerMovement playerMovement;
     [SerializeField]
     [Tooltip("Distance zombies are reset back from spawn point when player enters the room. This is to ensure zombies can't insta bite a player when they enter the room.")]
     [Range(0f, 10f)]
     private float safeDistance = 3f;
+
+    private AudioSource audioSource; 
+    [SerializeField]
+    [Tooltip("Seconds it takes for ambient audio to fade in or out")]
+    private float audioFadeDuration = 1f;
+
+    private Coroutine audioFadeCoroutine;
 
     private void Awake()
     {
@@ -22,10 +30,25 @@ public class RoomManager : MonoBehaviour
         {
             zombieControllers.Add(zombie.GetComponent<ZombieController>());
         }
+
+        audioSource = GetComponent<AudioSource>();
+
+        if (audioSource != null)
+        {
+            audioSource.volume = 0f;
+            audioSource.loop = true;
+            audioSource.playOnAwake = false; 
+            audioSource.spatialBlend = 0f;
+        }
     }
     public void Start()
     {
-        ExitRoom();
+        if(startInRoom)
+        {
+            FadeAmbientAudio(1f);
+        }
+        else
+            ExitRoom();
     }
     public void EnterRoom(Transform playerSpawn, BoxCollider playableArea)
     {
@@ -50,7 +73,9 @@ public class RoomManager : MonoBehaviour
                 }
             }
         }
-        zombieList.ResetList(zombieObjects);
+        zombieList.ResetList(zombieObjects); 
+        
+        FadeAmbientAudio(1f);
     }
     public void ExitRoom()
     {
@@ -59,6 +84,8 @@ public class RoomManager : MonoBehaviour
         {
             zombie.GetComponent<ZombieController>()?.Deactivate();
         }
+
+        FadeAmbientAudio(0f);
     }
     private Vector3 ClampPositionWithinBounds(Vector3 position, BoxCollider playableArea)
     {
@@ -93,5 +120,38 @@ public class RoomManager : MonoBehaviour
                 controller.Resume();
             }
         }
+    }
+    private void FadeAmbientAudio(float targetVolume)
+    {
+        if (audioSource == null)
+            return;
+
+        if (!audioSource.isPlaying && targetVolume > 0f)
+            audioSource.Play();
+
+        if (audioFadeCoroutine != null)
+            StopCoroutine(audioFadeCoroutine);
+
+        audioFadeCoroutine = StartCoroutine(FadeAudioCoroutine(targetVolume));
+    }
+
+    private IEnumerator FadeAudioCoroutine(float targetVolume)
+    {
+        float startVolume = audioSource.volume;
+        float elapsed = 0f;
+
+        while (elapsed < audioFadeDuration)
+        {
+            elapsed += Time.deltaTime;
+            audioSource.volume = Mathf.Lerp(startVolume, targetVolume, elapsed / audioFadeDuration);
+            yield return null;
+        }
+
+        audioSource.volume = targetVolume;
+
+        if (Mathf.Approximately(targetVolume, 0f))
+            audioSource.Stop();
+
+        audioFadeCoroutine = null;
     }
 }

@@ -112,9 +112,13 @@ public class PlayerInventory : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.KeypadDivide))
         {
-            AddItem(new EmptyCanAndSiphon(this, 1));
+            AddItem(new FuelCan(this, 1));
         }
-        if(Input.GetKeyDown(KeyCode.M)) 
+        if (Input.GetKeyDown(KeyCode.KeypadPlus))
+        {
+            AddItem(new GateKey(this, 1));
+        }
+        if (Input.GetKeyDown(KeyCode.M)) 
         {
             Debug.Log("Attempting to send messages");
             messageHandler.QueueMessage("This is the first message!");
