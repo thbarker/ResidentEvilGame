@@ -7,7 +7,7 @@ public class DoubleGreenHerb : Item
     protected List<Item> itemList;
     private PlayerDamage playerDamage;
 
-    public DoubleGreenHerb(PlayerInventory playerInventory) : base("DoubleGreenHerb")
+    public DoubleGreenHerb(PlayerInventory playerInventory) : base("DoubleGreenHerb", "Sigh")
     {
         this.playerInventory = playerInventory;
         playerDamage = playerInventory.playerDamage;
@@ -18,6 +18,13 @@ public class DoubleGreenHerb : Item
 
     public override bool Use()
     {
+        if (playerDamage.GetHealth() == playerDamage.maxHealth)
+        {
+            playerInventory.PlayErrorClip();
+            playerInventory.SetMessageText("You don't need to heal");
+            return false;
+        }
+        bool baseResult = base.Use();
         playerDamage.Heal(50);
         Debug.Log("You have restored a great amount of health");
         playerInventory.SetMessageText("You have restored a great amount of health");
@@ -33,6 +40,7 @@ public class DoubleGreenHerb : Item
             default:
                 Debug.Log("Cannot Combine with " + item.name);
                 playerInventory.SetMessageText("Cannot Combine with " + item.name);
+                playerInventory.PlayErrorClip();
                 break;
         }
         return null;

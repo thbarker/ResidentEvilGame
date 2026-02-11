@@ -9,6 +9,7 @@ public class Item
     public string description;
     public string discardMessage = "";
     public bool isKeyItem;
+    public AudioClip audioClip;
 
     public Sprite icon;
 
@@ -21,10 +22,21 @@ public class Item
         icon = InitializeIcon(iconName);
     }
     /// <summary>
+    /// Constructor for the Item class that initializes the item's icon based on the provided iconName
+    /// and the Audio Clip meant to be activated when the item is used.
+    /// </summary>
+    /// <param name="iconName">Name of the icon to load from resources.</param>
+    /// <param name="clipName">Name of the audio clip to load from resources.</param>
+    public Item(string iconName, string clipName)
+    {
+        icon = InitializeIcon(iconName);
+        audioClip = InitializeAudioClip(clipName);
+    }
+    /// <summary>
     /// Virtual method for using the item. This should be overridden in derived classes for specific item behaviors.
     /// </summary>
     /// <returns>Boolean indicating if the item was successfully used and should be discarded.</returns>
-    public virtual bool Use() { return false; }
+    public virtual bool Use() { if (audioClip != null) { playerInventory.PlayClip(audioClip); } return false; }
     /// <summary>
     /// Virtual method to combine this item with another item. Should be overridden to specify how items combine.
     /// </summary>
@@ -61,5 +73,18 @@ public class Item
             Debug.LogWarning($"Icon for {itemName} not found!");
         }
         return icon;
+    }/// <summary>
+     /// Helper method to initialize the audio clip for the item from the specified clip name.
+     /// </summary>
+     /// <param name="clipName">The audio clip name used to load the corresponding use audio.</param>
+     /// <returns>The audio clip loaded for the item, or null if not found.</returns>
+    public AudioClip InitializeAudioClip(string clipName)
+    {
+        AudioClip clip = Resources.Load<AudioClip>("Audio/" + clipName);
+        if (clip == null)
+        {
+            Debug.LogWarning($"Audio Clip for {clipName} not found!");
+        }
+        return clip;
     }
 }

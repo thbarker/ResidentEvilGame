@@ -29,21 +29,28 @@ public class ConfirmPickup : MonoBehaviour
     }
     public void ShowPickupConfirmation(string itemName)
     {
+        playerInventory.OpenPreview();
         uiManager.StartUI();
         confirmationPanel.SetActive(true);
-        confirmationMessage.text = "Pick up the " + itemName + "?";
+        // confirmationMessage.text = "Pick up the " + itemName + "?";
+        confirmationMessage.text = "";
+        playerInventory.SetMessageText("Will you pick up the " + itemName + "?");
         eventSystem.SetSelectedGameObject(denyButton);
+        playerInventory.PlaySubmitClip();
         Debug.Log("We're here!!!");
     }
-    public void HidePickupConfirmation()
+    public void HidePickupConfirmation(bool backAudio = true)
     {
         uiManager.EndUI();
         confirmationPanel.SetActive(false);
+        playerInventory.ClosePreview();
+        if(backAudio)
+            playerInventory.PlayBackClip();
         Debug.Log("We're no longer here!!!");
     }
     public void Confirm()
     {
-        HidePickupConfirmation();
+        HidePickupConfirmation(false);
         playerInventory.AddItem(itemPickup.item);
         Destroy(itemPickup.gameObject);
         itemPickup = null;

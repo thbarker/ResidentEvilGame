@@ -14,7 +14,7 @@ public class HandgunBullets : Item
     /// </summary>
     /// <param name="playerInventory">PlayerInventory refernce.</param>
     /// <param name="count">Number of bullets in this stack.</param>
-    public HandgunBullets(PlayerInventory playerInventory, int count) : base("HandgunBullets")
+    public HandgunBullets(PlayerInventory playerInventory, int count) : base("HandgunBullets", "Pistol Reload")
     {
         this.playerInventory = playerInventory;
         this.count = count; 
@@ -32,6 +32,13 @@ public class HandgunBullets : Item
 
     public override bool Use()
     {
+        if (playerShoot.magazine == playerShoot.magazineSize)
+        {
+            playerInventory.SetMessageText("You dont need to reload your handgun");
+            playerInventory.PlayErrorClip();
+            return false;
+        }
+        bool baseResult = base.Use();   
         count = playerShoot.Reload(count);
         Debug.Log("You have reloaded your handgun");
         playerInventory.SetMessageText("You have reloaded your handgun");
@@ -59,6 +66,7 @@ public class HandgunBullets : Item
                 }
             default:
                 Debug.Log("Cannot Combine with " + item.name);
+                playerInventory.PlayErrorClip();
                 break;
         }
         return null;

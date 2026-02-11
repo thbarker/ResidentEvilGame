@@ -22,9 +22,14 @@ public class ItemPickup : Interactable
     public PlayerInventory playerInventory;
     public ConfirmPickup confirmPickup;
     public EventSystem eventSystem;
-    private void Awake()
+    public MessageHandler messageHandler;
+    protected override void Awake()
     {
+        base.Awake();
+        // Get a reference to the event system
         eventSystem = GameObject.Find("EventSystem")?.GetComponent<EventSystem>();
+        // Get a reference to the message handler
+        messageHandler = GameObject.FindWithTag("Player")?.transform.Find("MessageHandler")?.GetComponent<MessageHandler>();
     }
 
     void Start()
@@ -43,6 +48,8 @@ public class ItemPickup : Interactable
         } else
         {
             Debug.Log("Not enough inventory space.");
+            messageHandler.QueueMessage("Not enough inventory space.");
+            playerInventory.PlayErrorClip();
         }
     }
     public void InitializeItemRef()

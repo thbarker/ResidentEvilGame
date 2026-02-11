@@ -7,7 +7,7 @@ public class TripleGreenHerb : Item
     protected List<Item> itemList;
     private PlayerDamage playerDamage;
 
-    public TripleGreenHerb(PlayerInventory playerInventory) : base("TripleGreenHerb")
+    public TripleGreenHerb(PlayerInventory playerInventory) : base("TripleGreenHerb", "Sigh")
     {
         this.playerInventory = playerInventory;
         playerDamage = playerInventory.playerDamage;
@@ -18,6 +18,13 @@ public class TripleGreenHerb : Item
 
     public override bool Use()
     {
+        if (playerDamage.GetHealth() == playerDamage.maxHealth)
+        {
+            playerInventory.PlayErrorClip();
+            playerInventory.SetMessageText("You don't need to heal");
+            return false;
+        }
+        bool baseResult = base.Use();
         playerDamage.Heal(100);
         Debug.Log("You have restored a vast amount of health");
         playerInventory.SetMessageText("You have restored a vast amount of health");

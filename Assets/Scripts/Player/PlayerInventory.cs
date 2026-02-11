@@ -22,6 +22,7 @@ public class PlayerInventory : MonoBehaviour
     public int slotToCombine;
 
     public iStates state;
+    private bool previewOpen = false;
 
     public GameObject statusCanvas;
 
@@ -31,7 +32,18 @@ public class PlayerInventory : MonoBehaviour
     public UIManager uiManager;
     public MessageHandler messageHandler;
     public EventSystem eventSystem;
+    public ConfirmPickup confirmPickup;
     public TextMeshProUGUI messageText;
+
+    private AudioSource audioSource;
+    [SerializeField]
+    private AudioClip openInventoryAudio;
+    [SerializeField]
+    private AudioClip closeInventoryAudio;
+    [SerializeField]
+    private AudioClip navigateInventoryAudio;
+    [SerializeField]
+    private AudioClip errorInventoryAudio;
 
     private void Awake()
     {
@@ -41,12 +53,16 @@ public class PlayerInventory : MonoBehaviour
         uiManager = GameObject.FindWithTag("Player")?.transform.Find("UIManager")?.GetComponent<UIManager>();
         //Get a reference to player damage
         playerDamage = transform.parent.GetComponent<PlayerDamage>();
-        //Get a reference to player movement
+        // Get a reference to player movement
         playerMovement = transform.parent.GetComponent<PlayerMovement>();
         // Get a reference to the message handler
         messageHandler = GameObject.FindWithTag("Player")?.transform.Find("MessageHandler")?.GetComponent<MessageHandler>();
         // Get a reference to event system
         eventSystem = GameObject.Find("EventSystem")?.GetComponent<EventSystem>();
+        // Get a reference to the Audio Source
+        audioSource = GetComponent<AudioSource>();
+        // Get a reference to the confirm pickup
+        confirmPickup = GameObject.Find("ConfirmPickupCanvas")?.GetComponent<ConfirmPickup>();
 
         statusCanvas = transform.Find("Canvas").gameObject;
 
@@ -77,6 +93,7 @@ public class PlayerInventory : MonoBehaviour
         {
             Back();
         };
+
     }
 
     // Start is called before the first frame update
@@ -117,6 +134,10 @@ public class PlayerInventory : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.KeypadPlus))
         {
             AddItem(new GateKey(this, 1));
+        }
+        if (Input.GetKeyDown(KeyCode.KeypadMinus))
+        {
+            AddItem(new EmptyCanAndSiphon(this, 1));
         }
         if (Input.GetKeyDown(KeyCode.M)) 
         {
@@ -198,12 +219,15 @@ public class PlayerInventory : MonoBehaviour
         {
             Debug.Log("Adding " + item.name + " to inventory");
             itemList.Add(item);
+            audioSource.PlayOneShot(openInventoryAudio);
             slotList[itemList.Count - 1].item = item;
             UpdateIcons();
         }
         else
         {
             Debug.Log("No space in inventory");
+            messageHandler.QueueMessage("No space in inventory");
+            audioSource.PlayOneShot(errorInventoryAudio);
         }
     }
     public void ReplaceItemAt(Item item, int index)
@@ -334,6 +358,7 @@ public class PlayerInventory : MonoBehaviour
     {
         if (!uiManager.uiActive)
         {
+            audioSource.PlayOneShot(openInventoryAudio);
             uiManager.StartUI();
             statusCanvas.SetActive(true);
             SetMessageText("");
@@ -345,19 +370,46 @@ public class PlayerInventory : MonoBehaviour
                 eventSystem.SetSelectedGameObject(selectedSlot);
             }
         }
-
+    }
+    public void OpenPreview()
+    {
+        previewOpen = true;
+        statusCanvas.SetActive(true);
+        foreach (Slot slot in slotList)
+        {
+            slot.selectButton.gameObject.SetActive(false);
+            slot.combineButton.gameObject.SetActive(false);
+        }
+        SetMessageText("");
     }
     public void CloseStatus()
     {
-        if (statusCanvas.activeSelf)
+        if (statusCanvas.activeSelf && !previewOpen)
         {
+            audioSource.PlayOneShot(closeInventoryAudio);
             ChangeState(iStates.Default);
             uiManager.EndUI();
             statusCanvas.SetActive(false);
         }
+        if (confirmPickup.isActiveAndEnabled)
+        {
+            confirmPickup.HidePickupConfirmation();
+        }
         if (messageHandler.IsActive())
         {
             NextMessage();
+        }
+    }
+    public void ClosePreview()
+    {
+        if (statusCanvas.activeSelf && previewOpen)
+        {
+            previewOpen = false;
+            foreach (Slot slot in slotList)
+            {
+                slot.selectButton.gameObject.SetActive(true);
+            }
+            statusCanvas.SetActive(false);
         }
     }
     public void Back()
@@ -365,11 +417,14 @@ public class PlayerInventory : MonoBehaviour
         if(state == iStates.Combine)
         {
             ChangeState(iStates.Default);
+            audioSource.PlayOneShot(closeInventoryAudio);
         }
         else if(state == iStates.SlotMenu)
         {
             ChangeState(iStates.Default);
-        } else
+            audioSource.PlayOneShot(closeInventoryAudio);
+        }
+        else
         {
             CloseStatus();
         }
@@ -437,5 +492,27 @@ public class PlayerInventory : MonoBehaviour
 
     public void PlayBoltCutters(){
         playerMovement.PlayBoltCutters();
+    }
+
+    public void PlayClip(AudioClip clip)
+    {
+        if (clip != null)
+            audioSource.PlayOneShot(clip);
+    }
+    public void PlayErrorClip()
+    {
+        audioSource.PlayOneShot(errorInventoryAudio);
+    }
+    public void PlayNavigateClip()
+    {
+        audioSource.PlayOneShot(navigateInventoryAudio);
+    }
+    public void PlaySubmitClip()
+    {
+        audioSource.PlayOneShot(openInventoryAudio);
+    }
+    public void PlayBackClip()
+    {
+        audioSource.PlayOneShot(closeInventoryAudio);
     }
 }

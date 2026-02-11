@@ -18,6 +18,7 @@ public class RedHerb : Item
 
     public override bool Use()
     {
+        playerInventory.PlayErrorClip();
         Debug.Log("You cannot use this item alone");
         playerInventory.SetMessageText("You cannot use this item alone");
         return false;
@@ -31,6 +32,7 @@ public class RedHerb : Item
             default:
                 Debug.Log("Cannot Combine with " + item.name);
                 playerInventory.SetMessageText("Cannot Combine with " + item.name);
+                playerInventory.PlayErrorClip();
                 break;
         }
         return null;

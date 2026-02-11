@@ -54,6 +54,8 @@ public class Slot : MonoBehaviour
         if (playerInventory.itemList.Count < 2)
         {
             playerInventory.ChangeState(iStates.Default);
+            playerInventory.PlayErrorClip();
+            playerInventory.SetMessageText("Nothing to combine with");
             Debug.Log("Not enough items to combine");
             return;
         }
@@ -72,6 +74,8 @@ public class Slot : MonoBehaviour
         if (!canCombine)
         {
             playerInventory.ChangeState(iStates.Default);
+            playerInventory.PlayErrorClip();
+            playerInventory.SetMessageText("Nothing to combine with");
             Debug.Log("No valid items to combine with");
             return;
         } else
@@ -120,6 +124,7 @@ public class Slot : MonoBehaviour
     {
         if(item.isKeyItem)
         {
+            playerInventory.PlayErrorClip();
             playerInventory.SetMessageText("Cannot discard a key item");
             Debug.Log("Cannot Discard a key item");
         } else

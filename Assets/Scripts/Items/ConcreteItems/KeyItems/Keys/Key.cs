@@ -72,15 +72,21 @@ public class Key : Item
             Debug.Log("Hit: " + hit.collider.name);
             if (hit.collider.gameObject.GetComponent<Lockable>())
             {
-                Lockable lockable = hit.collider.gameObject.GetComponent<Lockable>();
-                lockable.Interact();
                 Debug.Log("Hit: " + hit.collider.name);
-            }
-            else
-            {
-                Debug.Log("No hit"); 
-                playerInventory.SetMessageText("It is not necessary to use this right now.");
+                Lockable lockable = hit.collider.gameObject.GetComponent<Lockable>();
+                if(lockable.key == this.name)
+                {
+                    lockable.Interact();
+                    return;
+                }
+                else
+                {
+                    playerInventory.SetMessageText("This is not the right item");
+                    return;
+                }
             }
         }
+        Debug.Log("No hit");
+        playerInventory.SetMessageText("It is not necessary to use this right now");
     }
 }
