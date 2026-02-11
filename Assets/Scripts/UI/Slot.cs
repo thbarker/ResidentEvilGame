@@ -129,18 +129,8 @@ public class Slot : MonoBehaviour
             Debug.Log("Cannot Discard a key item");
         } else
         {
-            if(item.discardMessage != "")
-            {
-                playerInventory.SetMessageText(item.discardMessage);
-            } else
-            {
-                playerInventory.SetMessageText(item.name + " discarded");
-            }
-            Debug.Log(item.name + " Discarded");
-            playerInventory.RemoveItemAt(slotNumber - 1);
-            playerInventory.selectedSlot = null;
+            playerInventory.ConfirmDiscard(slotNumber - 1, item);
         }
-        playerInventory.ChangeState(iStates.Default);
     }
 
     public void Select() 

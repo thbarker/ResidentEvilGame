@@ -50,6 +50,7 @@ public class ConfirmPickup : MonoBehaviour
     }
     public void Confirm()
     {
+        playerInventory.PlaySubmitClip();
         HidePickupConfirmation(false);
         playerInventory.AddItem(itemPickup.item);
         Destroy(itemPickup.gameObject);

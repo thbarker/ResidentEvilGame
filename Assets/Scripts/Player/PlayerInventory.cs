@@ -8,7 +8,8 @@ public enum iStates
 {
     Default,
     SlotMenu,
-    Combine
+    Combine,
+    ConfirmDiscard
 }
 public class PlayerInventory : MonoBehaviour
 {
@@ -20,11 +21,14 @@ public class PlayerInventory : MonoBehaviour
 
     public Item itemToCombine;
     public int slotToCombine;
+    public int slotToDiscard;
 
     public iStates state;
     private bool previewOpen = false;
 
     public GameObject statusCanvas;
+    public GameObject confirmDiscardPanel;
+    public GameObject confirmDiscardDefaultButton;
 
     private PlayerControls controls;
     public PlayerDamage playerDamage;
@@ -63,6 +67,10 @@ public class PlayerInventory : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         // Get a reference to the confirm pickup
         confirmPickup = GameObject.Find("ConfirmPickupCanvas")?.GetComponent<ConfirmPickup>();
+        // Get a reference to the confirm discard panel
+        confirmDiscardPanel = transform.Find("Canvas")?.transform.Find("ConfirmDiscardPanel")?.gameObject;
+        // Get a reference to the default selected button for the discard confirmation panel
+        confirmDiscardDefaultButton = confirmDiscardPanel.transform.Find("No")?.gameObject;
 
         statusCanvas = transform.Find("Canvas").gameObject;
 
@@ -117,6 +125,7 @@ public class PlayerInventory : MonoBehaviour
         }
         selectedSlot = slotList[0]?.transform.Find("SelectButton")?.gameObject;
         statusCanvas.SetActive(false);
+        confirmDiscardPanel.SetActive(false);
 
         AddItem(new HandgunBullets(this, 15));
     }
@@ -162,6 +171,9 @@ public class PlayerInventory : MonoBehaviour
             case iStates.Combine:
                 CombineUpdate();
                 break;
+            case iStates.ConfirmDiscard:
+                ConfirmDiscardUpdate();
+                break;
         }
     }
 
@@ -198,6 +210,16 @@ public class PlayerInventory : MonoBehaviour
             slot.SetSlotMenu(false);
         }
     }
+    public void ConfirmDiscardUpdate()
+    {
+        foreach (Slot slot in slotList)
+        {
+            slot.SetCombineButton(false);
+            slot.SetSelectButton(false);
+            slot.SetSlotMenu(false);
+        }
+        eventSystem.SetSelectedGameObject(confirmDiscardDefaultButton);
+    }
 
     public void AddItem(Item item)
     {
@@ -219,7 +241,6 @@ public class PlayerInventory : MonoBehaviour
         {
             Debug.Log("Adding " + item.name + " to inventory");
             itemList.Add(item);
-            audioSource.PlayOneShot(openInventoryAudio);
             slotList[itemList.Count - 1].item = item;
             UpdateIcons();
         }
@@ -271,7 +292,41 @@ public class PlayerInventory : MonoBehaviour
         }
         UpdateIcons();
     }
+    public void ConfirmDiscard(int slotNumber, Item item)
+    {
+        SetMessageText("Are you sure you want to discard the " + item.name + "?");
+        slotToDiscard = slotNumber;
+        confirmDiscardPanel.SetActive(true); 
+        ChangeState(iStates.ConfirmDiscard);
+    }
+    public void RemoveConfirmDiscard()
+    {
+        SetMessageText("");
+        confirmDiscardPanel.SetActive(false);
+        ChangeState(iStates.Default);
+    }
+    public void Discard()
+    {
+        Slot tempSlot = slotList[slotToDiscard];
+        if (tempSlot.item.discardMessage != "")
+        {
+            SetMessageText(tempSlot.item.discardMessage);
+        }
+        else
+        {
+            SetMessageText(tempSlot.item.name + " discarded");
+        }
+        Debug.Log(tempSlot.slotNumber + " Discarded");
+        RemoveItemAt(tempSlot.slotNumber - 1);
+        selectedSlot = null;
+        if(slotList.Count > 0)
+        {
+            selectedSlot = slotList[0]?.transform.Find("SelectButton")?.gameObject;
+        }
 
+        confirmDiscardPanel.SetActive(false);
+        ChangeState(iStates.Default);
+    }
     public void Interact()
     {
         if(playerMovement.isUsingDoor){
@@ -417,12 +472,12 @@ public class PlayerInventory : MonoBehaviour
         if(state == iStates.Combine)
         {
             ChangeState(iStates.Default);
-            audioSource.PlayOneShot(closeInventoryAudio);
+            audioSource.PlayOneShot(navigateInventoryAudio);
         }
         else if(state == iStates.SlotMenu)
         {
             ChangeState(iStates.Default);
-            audioSource.PlayOneShot(closeInventoryAudio);
+            audioSource.PlayOneShot(navigateInventoryAudio);
         }
         else
         {
