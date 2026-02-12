@@ -49,6 +49,7 @@ public class RoomManager : MonoBehaviour
         }
         else
             ExitRoom();
+        Debug.Log("Start called for Room " + name);
     }
     public void EnterRoom(Transform playerSpawn, BoxCollider playableArea)
     {

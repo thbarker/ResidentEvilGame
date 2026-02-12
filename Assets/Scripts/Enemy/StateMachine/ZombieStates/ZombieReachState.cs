@@ -20,6 +20,17 @@ public class ZombieReachState : EnemyState
     float startTime;
     public ZombieReachState(ZombieController zombieController, EnemyStateMachine enemyStateMachine) : base(zombieController, enemyStateMachine)
     {
+    }
+
+    public override void AnimationTriggerEvent(ZombieController.AnimationTriggerType triggerType)
+    {
+        base.AnimationTriggerEvent(triggerType);
+    }
+
+    public override void EnterState()
+    {
+        base.EnterState();
+
         player = zombieController.player;
         playerDamage = zombieController.playerDamage;
         playerMovement = playerDamage.GetComponent<PlayerMovement>();
@@ -32,16 +43,7 @@ public class ZombieReachState : EnemyState
         reachRotationSpeed = zombieController.GetReachRotationSpeed();
         reachDuration = zombieController.GetReachDuration();
         biteThreshold = zombieController.GetBiteThreshold();
-    }
 
-    public override void AnimationTriggerEvent(ZombieController.AnimationTriggerType triggerType)
-    {
-        base.AnimationTriggerEvent(triggerType);
-    }
-
-    public override void EnterState()
-    {
-        base.EnterState(); 
         animator.SetTrigger("Reach");
         zombieController.PlayGroan();
         startTime = Time.time;

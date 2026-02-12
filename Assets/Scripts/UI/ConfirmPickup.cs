@@ -10,7 +10,7 @@ public class ConfirmPickup : MonoBehaviour
     public GameObject confirmationPanel;
     public TextMeshProUGUI confirmationMessage;
     public EventSystem eventSystem;
-    public GameObject denyButton;
+    public GameObject acceptButton;
     public PlayerInventory playerInventory;
     public ItemPickup itemPickup;
 
@@ -21,7 +21,7 @@ public class ConfirmPickup : MonoBehaviour
         eventSystem = GameObject.Find("EventSystem")?.GetComponent<EventSystem>();
         confirmationPanel = transform.Find("ConfirmPickupPanel").gameObject;
         confirmationMessage = confirmationPanel.transform.Find("Text")?.GetComponent<TextMeshProUGUI>();
-        denyButton = confirmationPanel.transform.Find("No").gameObject;
+        acceptButton = confirmationPanel.transform.Find("Yes").gameObject;
     }
     private void Start()
     {
@@ -35,7 +35,7 @@ public class ConfirmPickup : MonoBehaviour
         // confirmationMessage.text = "Pick up the " + itemName + "?";
         confirmationMessage.text = "";
         playerInventory.SetMessageText("Will you pick up the " + itemName + "?");
-        eventSystem.SetSelectedGameObject(denyButton);
+        eventSystem.SetSelectedGameObject(acceptButton);
         playerInventory.PlaySubmitClip();
         Debug.Log("We're here!!!");
     }

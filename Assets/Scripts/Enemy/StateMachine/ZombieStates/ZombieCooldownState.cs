@@ -9,8 +9,6 @@ public class ZombieCooldownState : EnemyState
     float startTime;
     public ZombieCooldownState(ZombieController zombieController, EnemyStateMachine enemyStateMachine) : base(zombieController, enemyStateMachine)
     {
-        animator = zombieController.animator;
-        reachCooldown = zombieController.GetReachCooldown();
     }
 
     public override void AnimationTriggerEvent(ZombieController.AnimationTriggerType triggerType)
@@ -20,7 +18,11 @@ public class ZombieCooldownState : EnemyState
 
     public override void EnterState()
     {
-        base.EnterState(); 
+        base.EnterState();
+
+        animator = zombieController.animator;
+        reachCooldown = zombieController.GetReachCooldown();
+
         animator.ResetTrigger("Reach");
         Debug.Log("I'm cooling down");
         startTime = Time.time;

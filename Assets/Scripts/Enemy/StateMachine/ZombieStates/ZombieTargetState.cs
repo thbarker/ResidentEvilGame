@@ -22,6 +22,17 @@ public class ZombieTargetState : EnemyState
     private float losePlayerTime;
     public ZombieTargetState(ZombieController zombieController, EnemyStateMachine enemyStateMachine) : base(zombieController, enemyStateMachine)
     {
+    }
+
+    public override void AnimationTriggerEvent(ZombieController.AnimationTriggerType triggerType)
+    {
+        base.AnimationTriggerEvent(triggerType);
+    }
+
+    public override void EnterState()
+    {
+        base.EnterState();
+
         animator = zombieController.animator;
         rotateTowardsPath = zombieController.GetComponent<RotateTowardsPath>();
         playerDamage = zombieController.playerDamage;
@@ -35,16 +46,7 @@ public class ZombieTargetState : EnemyState
         minReachThreshold = zombieController.GetMinReachThreshold();
         maxReachThreshold = zombieController.GetMaxReachThreshold();
         losePlayerTime = zombieController.GetLosePlayerTime();
-    }
 
-    public override void AnimationTriggerEvent(ZombieController.AnimationTriggerType triggerType)
-    {
-        base.AnimationTriggerEvent(triggerType);
-    }
-
-    public override void EnterState()
-    {
-        base.EnterState();
         // Activate the rotation script
         aiPath.enabled = true;
         rotateTowardsPath.Activate(true);

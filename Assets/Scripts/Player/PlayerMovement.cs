@@ -17,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
     public PlayerAimState AimState { get; set; }
     public PlayerBitState BitState { get; set; }
     public PlayerDieState DieState { get; set; }
+    public PlayerWinState WinState { get; set; }
     #endregion
 
     public Transform cameraTransform;
@@ -120,6 +121,7 @@ public class PlayerMovement : MonoBehaviour
         AimState = new PlayerAimState(this, StateMachine);
         BitState = new PlayerBitState(this, StateMachine);
         DieState = new PlayerDieState(this, StateMachine);
+        WinState = new PlayerWinState(this, StateMachine);
     }
     void Start()
     {

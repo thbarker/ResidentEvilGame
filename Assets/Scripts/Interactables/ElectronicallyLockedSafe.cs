@@ -14,5 +14,6 @@ public class ElectronicallyLockedSafe : Lockable
         locked = false;
         safeDoor.transform.rotation = Quaternion.Euler(0, -150, 0);
         mansionKey.SetActive(true);
+        GetComponent<BoxCollider>().enabled = false;
     }
 }

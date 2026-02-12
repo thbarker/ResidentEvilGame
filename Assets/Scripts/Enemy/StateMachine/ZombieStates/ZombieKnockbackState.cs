@@ -14,11 +14,6 @@ public class ZombieKnockbackState : EnemyState
     Quaternion lookRotation;
     public ZombieKnockbackState(ZombieController zombieController, EnemyStateMachine enemyStateMachine) : base(zombieController, enemyStateMachine)
     {
-        player = zombieController.player;
-        playerDamage = zombieController.playerDamage;
-        animator = zombieController.animator;
-        reachCollision = zombieController.reachCollisionScript;
-        zombieTransform = zombieController.transform;
     }
 
     public override void AnimationTriggerEvent(ZombieController.AnimationTriggerType triggerType)
@@ -29,6 +24,13 @@ public class ZombieKnockbackState : EnemyState
     public override void EnterState()
     {
         base.EnterState();
+
+        player = zombieController.player;
+        playerDamage = zombieController.playerDamage;
+        animator = zombieController.animator;
+        reachCollision = zombieController.reachCollisionScript;
+        zombieTransform = zombieController.transform;
+
         Debug.Log("Entering Knockback");
         animator.SetTrigger("PushBack");
         direction = (player.transform.position - zombieTransform.position).normalized;

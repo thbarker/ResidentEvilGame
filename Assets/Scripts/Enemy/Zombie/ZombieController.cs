@@ -229,6 +229,9 @@ public class ZombieController : Damageable
         zombieList.Remove(gameObject);
         StateMachine.ChangeState(DieState);
         dead = true;
+
+        RecordsManager recordsManager = GameObject.Find("Records Manager")?.GetComponent<RecordsManager>();
+        recordsManager.zombiesKilled++;
     }
 
     public void AnimationTriggerEvent(AnimationTriggerType triggerType)
@@ -248,14 +251,15 @@ public class ZombieController : Damageable
         capsuleCollider = GetComponent<CapsuleCollider>();
         colliderRadius = capsuleCollider.radius;
         animator = GetComponent<Animator>();
-        player = GameObject.FindWithTag("Player");
-        playerDamage = player.GetComponent<PlayerDamage>();
         aiPath = GetComponent<AIPath>();
         rotateTowardsPath = GetComponent<RotateTowardsPath>();
-        zombieList = player.transform.Find("ZombieList").GetComponent<ZombieList>();
         bloodVFX = transform.Find("BloodEffect")?.transform.Find("vfx_blood")?.GetComponent<VisualEffect>();
 
-        if (!zombieList) Debug.LogError("Scene must have a zombie list gameobject tagged as ZombieList");
+        player = GameObject.FindWithTag("Player");
+        playerDamage = player.GetComponent<PlayerDamage>();
+        zombieList = player.transform.Find("ZombieList").GetComponent<ZombieList>();
+        if (!zombieList)
+            Debug.LogError("Scene must have a zombie list gameobject tagged as ZombieList");
         else
         {
             zombieList.Add(gameObject);
@@ -272,15 +276,17 @@ public class ZombieController : Damageable
         DieState = new ZombieDieState(this, StateMachine);
         EatState = new ZombieEatState(this, StateMachine);
 
+        if (!dead)
+            StateMachine.Initialize(IdleState);
+
         health = Random.Range(health - healthVariation, health + healthVariation);
         health = Mathf.Clamp(health, 0, int.MaxValue);
+
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        if(!dead)
-            StateMachine.Initialize(IdleState);
         knockbackThreshold = Random.Range(minKnockThreshold, maxKnockThreshold);
         if (bloodVFX != null)
         {
@@ -291,14 +297,17 @@ public class ZombieController : Damageable
     // Update is called once per frame
     void Update()
     {
-        StateMachine.CurrentEnemyState.FrameUpdate();
+        if (StateMachine.CurrentEnemyState != null)
+        {
+            StateMachine.CurrentEnemyState.FrameUpdate();
+        }
 
         if (Input.GetKeyDown(KeyCode.H)) 
         {
             TakeDamage(10);
         }
 
-        DebugTimeScale();
+        //DebugTimeScale();
         UpdateAnimController();
 
     }
@@ -306,7 +315,10 @@ public class ZombieController : Damageable
     {
         if(paused)
             rb.velocity = Vector3.zero;
-        StateMachine.CurrentEnemyState.PhysicsUpdate();
+        if (StateMachine.CurrentEnemyState != null)
+        {
+            StateMachine.CurrentEnemyState.PhysicsUpdate();
+        }
     }
 
 

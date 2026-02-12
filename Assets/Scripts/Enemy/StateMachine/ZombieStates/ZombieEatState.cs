@@ -19,13 +19,6 @@ public class ZombieEatState : EnemyState
     private float targetPosition;
     public ZombieEatState(ZombieController zombieController, EnemyStateMachine enemyStateMachine) : base(zombieController, enemyStateMachine)
     {
-        animator = zombieController.GetComponent<Animator>();
-        rb = zombieController.rb;
-        transform = zombieController.transform;
-        player = zombieController.player;
-        playerDamage = zombieController.playerDamage;
-        minDetectionDistance = zombieController.GetMinDetectionDistance();
-        maxDetectionDistance = zombieController.GetMaxDetectionDistance();
     }
 
     public override void AnimationTriggerEvent(ZombieController.AnimationTriggerType triggerType)
@@ -36,6 +29,15 @@ public class ZombieEatState : EnemyState
     public override void EnterState()
     {
         base.EnterState();
+
+        animator = zombieController.GetComponent<Animator>();
+        rb = zombieController.rb;
+        transform = zombieController.transform;
+        player = zombieController.player;
+        playerDamage = zombieController.playerDamage;
+        minDetectionDistance = zombieController.GetMinDetectionDistance();
+        maxDetectionDistance = zombieController.GetMaxDetectionDistance();
+
         animator.SetTrigger("Eat");
         zombieController.GetComponent<CapsuleCollider>().radius = 0.15f;
         zombieController.GetComponent<CapsuleCollider>().height = 0.5f;

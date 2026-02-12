@@ -20,6 +20,7 @@ public class PlayerDamage : Damageable
     public VisualEffect bloodVFX;
     public GameObject bloodObj;
     public Transform bloodTransform;
+    public RecordsManager records;
     #endregion
 
     #region Helpers
@@ -68,6 +69,8 @@ public class PlayerDamage : Damageable
             transform.Find("BloodTransform");
         bloodObj =
             transform.Find("BloodEffect")?.gameObject;
+        records = GameObject.Find("Records Manager")?.GetComponent<RecordsManager>();
+
     }
 
     // Start is called before the first frame update
@@ -78,9 +81,9 @@ public class PlayerDamage : Damageable
             bloodVFX.Stop();
         }
     }
-    private void Update()
+    private void Update() 
     {
-        if(Input.GetKeyDown(KeyCode.KeypadMinus))
+        if(Input.GetKeyDown(KeyCode.P))
         {
             ApplyDamage(10);
         }
@@ -91,6 +94,7 @@ public class PlayerDamage : Damageable
         bitingZombie = zombie;
         this.zombieTransform = zombieTransform;
         playerMovement.StateMachine.ChangeState(playerMovement.BitState);
+        records.timesBitten++;
     }
 
     public float GetPushForce()
@@ -165,6 +169,7 @@ public class PlayerDamage : Damageable
         health += damage;
         if(health > maxHealth) 
             health = maxHealth;
+        records.timesHealed++;
     }
 
     protected override void Die()

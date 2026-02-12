@@ -16,12 +16,6 @@ public class ZombieDieState : EnemyState
     Quaternion lookRotation;
     public ZombieDieState(ZombieController zombieController, EnemyStateMachine enemyStateMachine) : base(zombieController, enemyStateMachine)
     {
-        player = zombieController.player;
-        playerDamage = zombieController.playerDamage;
-        animator = zombieController.animator;
-        reachCollision = zombieController.reachCollisionScript;
-        zombieTransform = zombieController.transform;
-        capsuleCollider = zombieController.capsuleCollider;
     }
 
     public override void AnimationTriggerEvent(ZombieController.AnimationTriggerType triggerType)
@@ -32,6 +26,13 @@ public class ZombieDieState : EnemyState
     public override void EnterState()
     {
         base.EnterState();
+        player = zombieController.player;
+        playerDamage = zombieController.playerDamage;
+        animator = zombieController.animator;
+        reachCollision = zombieController.reachCollisionScript;
+        zombieTransform = zombieController.transform;
+        capsuleCollider = zombieController.capsuleCollider;
+
         animator.SetTrigger("Death");
         startTime = Time.time;
     }

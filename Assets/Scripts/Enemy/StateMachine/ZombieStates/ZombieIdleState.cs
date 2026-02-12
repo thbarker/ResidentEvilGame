@@ -12,12 +12,6 @@ public class ZombieIdleState : EnemyState
     private PlayerDamage playerDamage;
     public ZombieIdleState(ZombieController zombieController, EnemyStateMachine enemyStateMachine) : base(zombieController, enemyStateMachine)
     {
-        animator = zombieController.GetComponent<Animator>();
-        transform = zombieController.transform;
-        player = zombieController.player;
-        playerDamage = zombieController.playerDamage;
-        minDetectionDistance = zombieController.GetMinDetectionDistance();
-        maxDetectionDistance = zombieController.GetMaxDetectionDistance();
     }
 
     public override void AnimationTriggerEvent(ZombieController.AnimationTriggerType triggerType)
@@ -28,6 +22,12 @@ public class ZombieIdleState : EnemyState
     public override void EnterState()
     {
         base.EnterState();
+        animator = zombieController.GetComponent<Animator>();
+        transform = zombieController.transform;
+        player = zombieController.player;
+        playerDamage = zombieController.playerDamage;
+        minDetectionDistance = zombieController.GetMinDetectionDistance();
+        maxDetectionDistance = zombieController.GetMaxDetectionDistance();
     }
 
     public override void ExitState()

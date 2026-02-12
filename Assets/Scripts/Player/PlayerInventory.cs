@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using static UnityEditor.Progress;
 
 public enum iStates
 {
@@ -95,11 +94,17 @@ public class PlayerInventory : MonoBehaviour
         };
         controls.UI.Exit.performed += ctx =>
         {
-            CloseStatus();
+            if (playerMovement.StateMachine.CurrentPlayerState != playerMovement.WinState)
+            {
+                CloseStatus();
+            }
         };
         controls.UI.Cancel.performed += ctx =>
         {
-            Back();
+            if (playerMovement.StateMachine.CurrentPlayerState != playerMovement.WinState)
+            {
+                Back();
+            }
         };
 
     }
@@ -146,7 +151,7 @@ public class PlayerInventory : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.KeypadMinus))
         {
-            AddItem(new EmptyCanAndSiphon(this, 1));
+            AddItem(new MansionKey(this, 1));
         }
         if (Input.GetKeyDown(KeyCode.M)) 
         {
@@ -439,6 +444,11 @@ public class PlayerInventory : MonoBehaviour
     }
     public void CloseStatus()
     {
+        if (messageHandler.IsActive())
+        {
+            NextMessage();
+            return;
+        }
         if (statusCanvas.activeSelf && !previewOpen)
         {
             audioSource.PlayOneShot(closeInventoryAudio);
@@ -449,10 +459,6 @@ public class PlayerInventory : MonoBehaviour
         if (confirmPickup.isActiveAndEnabled)
         {
             confirmPickup.HidePickupConfirmation();
-        }
-        if (messageHandler.IsActive())
-        {
-            NextMessage();
         }
     }
     public void ClosePreview()
