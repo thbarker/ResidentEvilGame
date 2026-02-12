@@ -396,7 +396,7 @@ public class PlayerMovement : MonoBehaviour
     public void PlayGunshot()
     {
         playerAudioSource.volume = Random.Range(0.8f, 1f);
-        playerAudioSource.pitch = Random.Range(1f, 1.1f);
+        playerAudioSource.pitch = Random.Range(0.8f, 1.2f);
         playerAudioSource.PlayOneShot(gunshotClip);
     }
 

@@ -21,6 +21,7 @@ public class PlayerDamage : Damageable
     public GameObject bloodObj;
     public Transform bloodTransform;
     public RecordsManager records;
+    public AudioSource deathMusicAudio;
     #endregion
 
     #region Helpers
@@ -70,6 +71,7 @@ public class PlayerDamage : Damageable
         bloodObj =
             transform.Find("BloodEffect")?.gameObject;
         records = GameObject.Find("Records Manager")?.GetComponent<RecordsManager>();
+        deathMusicAudio = transform.Find("DeathCanvas")?.GetComponent<AudioSource>();
 
     }
 
@@ -183,6 +185,9 @@ public class PlayerDamage : Damageable
     }
 
     IEnumerator StartDeathCanvas(){
+        deathMusicAudio.spatialBlend = 0;
+        deathMusicAudio.volume = 0.7f;
+        deathMusicAudio.PlayOneShot(deathMusicAudio.clip);
         yield return new WaitForSeconds(8);
         deathCanvasStartTime = Time.time;
         while(Time.time - deathCanvasStartTime < 2f){
