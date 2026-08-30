@@ -421,6 +421,7 @@ public class PlayerInventory : MonoBehaviour
             audioSource.PlayOneShot(openInventoryAudio);
             uiManager.StartUI();
             statusCanvas.SetActive(true);
+            Canvas.ForceUpdateCanvases();
             SetMessageText("");
             ChangeState(iStates.Default);
             if (slotList[0].item != null)
@@ -435,6 +436,7 @@ public class PlayerInventory : MonoBehaviour
     {
         previewOpen = true;
         statusCanvas.SetActive(true);
+        Canvas.ForceUpdateCanvases();
         foreach (Slot slot in slotList)
         {
             slot.selectButton.gameObject.SetActive(false);

@@ -16,8 +16,12 @@ public class QuickHealthIndicator: MonoBehaviour
 
     void Update()
     {
-        image.material.SetColor("_Color", GetColorBasedOnValue(playerDamage.GetHealth()));
-        background.color = Color.Lerp(GetColorBasedOnValue(playerDamage.GetHealth()), new Color(0.2f,0.2f,0.2f,0.5f), 0.9f); 
+        if(image.IsActive())
+        {
+            image.material.SetColor("_Color", GetColorBasedOnValue(playerDamage.GetHealth()));
+            background.color = Color.Lerp(GetColorBasedOnValue(playerDamage.GetHealth()), new Color(0.2f, 0.2f, 0.2f, 0.5f), 0.9f);
+        }
+
     }
 
     Color GetColorBasedOnValue(float value)

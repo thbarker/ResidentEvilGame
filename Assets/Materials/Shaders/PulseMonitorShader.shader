@@ -3,7 +3,7 @@ Shader"Custom/PulseMonitorShader"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _Color ("Tint Color", Color) = (1,1,1,1)   // <- Add this line
+        _Color ("Tint Color", Color) = (1,1,1,1)
         _Speed ("Pulse Speed", Float) = 1.0
         _Width ("Pulse Width", Float) = 0.02
         _Sharpness ("Right Edge Sharpness", Float) = 0.005
@@ -53,7 +53,7 @@ Shader"Custom/PulseMonitorShader"
                 float xLine = frac(_Time.y * _Speed);
                 float dx = i.uv.x - xLine;
 
-                dx = dx - floor(dx + 0.5); // wrap to [-0.5, 0.5]
+                dx = dx - floor(dx + 0.5); 
 
                 float alphaPulse = 0.0;
 
@@ -66,7 +66,7 @@ Shader"Custom/PulseMonitorShader"
                     alphaPulse = 1.0 - smoothstep(0.0, _Sharpness, dx);
                 }
 
-                fixed4 col = tex2D(_MainTex, i.uv) * _Color; // <- Multiply by tint color
+                fixed4 col = tex2D(_MainTex, i.uv) * _Color;
                 col.a *= saturate(alphaPulse);
                 return col;
             }
